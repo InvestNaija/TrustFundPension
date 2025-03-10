@@ -1,0 +1,14 @@
+name: Test Backend
+
+on:
+  pull_request:
+    paths:
+      - 'Backend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd Backend && npm install && npm run test:ci

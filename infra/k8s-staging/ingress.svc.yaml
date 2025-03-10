@@ -1,0 +1,68 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: inv2
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: www.inv2test.com.ng
+      http:
+        paths:
+          - pathType: Prefix
+            path: /api/v2/auth/?(.*)
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3001
+          - pathType: Prefix
+            path: /api/v2/logs/?(.*)
+            backend:
+              service:
+                name: logs-srv
+                port:
+                  number: 3100
+          - pathType: Prefix
+            path: /api/v2/customer/saveplan/?(.*)
+            backend:
+              service:
+                name: saveplan-srv
+                port:
+                  number: 3100
+          - pathType: Prefix
+            path: /api/v2/admin/saveplan/?(.*)
+            backend:
+              service:
+                name: saveplan-srv
+                port:
+                  number: 3100
+          - pathType: Prefix
+            path: /api/v2/users/?(.*)
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3001
+    - host: app.inv2test.com.ng
+      http:
+        paths:
+          - pathType: Prefix
+            path: /?(.*)
+            backend:
+              service:
+                name: web-client-srv
+                port:
+                  number: 80
+    - host: admin.inv2test.com.ng
+      http:
+        paths:
+          - pathType: Prefix
+            path: /?(.*)
+            backend:
+              service:
+                name: web-admin-srv
+                port:
+                  number: 80

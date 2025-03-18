@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: depl-lms
-  namespace: inv2
+  name: depl-backend
+  namespace: trustfund
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: lms
+      app: backend
   template:
     metadata:
       labels:
-        app: lms
+        app: backend
     spec:
       containers:
-        - name: lms
-          # image: inv2registry.azurecr.io/demo/lms
-          image: integrationschd/inv2-lms
+        - name: backend
+          # image: trustfundregistry.azurecr.io/demo/backend
+          image: integrationschd/trustfund-backend
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
@@ -65,49 +65,49 @@ spec:
             - name: PORT
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: PORT
             - name: DB_PG_HOST
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_HOST
             - name: DB_PG_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_DB_NAME
             - name: DB_PG_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_PASSWORD
             - name: DB_PG_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_USERNAME
             - name: DB_PG_PORT
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_PORT
             - name: DB_PG_TIMEZONE
               valueFrom:
                 secretKeyRef:
-                  name: lms.depl
+                  name: backend.depl
                   key: DB_PG_TIMEZONE
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: lms-srv
-  namespace: inv2
+  name: backend-srv
+  namespace: trustfund
 spec:
   selector:
-    app: lms
+    app: backend
   ports:
-    - name: lms
+    - name: backend
       protocol: TCP
       port: 3001
       targetPort: 3001

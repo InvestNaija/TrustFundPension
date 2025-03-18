@@ -2,10 +2,10 @@
 # apiVersion: v1
 # kind: Service
 # metadata:
-#   name: auth-srv-ext
+#   name: backend-srv-ext
 # spec:
 #   type: ExternalName
-#   externalName: auth-srv.inv2.svc.cluster.local
+#   externalName: backend-srv.inv2.svc.cluster.local
 #   ports:
 #     - port: 3001
 #       targetPort: 3001
@@ -24,17 +24,17 @@ spec:
       http:
         paths:
           - pathType: Prefix
-            path: /api/v2/auth/?(.*)
+            path: /api/v2/backend/?(.*)
             backend:
               service:
-                name: auth-srv
+                name: backend-srv
                 port:
                   number: 3001
           - pathType: Prefix
             path: /api/v2/users/?(.*)
             backend:
               service:
-                name: auth-srv
+                name: backend-srv
                 port:
                   number: 3001
           # - pathType: Prefix

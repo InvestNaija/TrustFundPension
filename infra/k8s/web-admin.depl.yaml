@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: depl-web-admin
-  namespace: inv2
+  namespace: trustfund
 spec:
   replicas: 1
   selector:
@@ -15,13 +15,13 @@ spec:
     spec:
       containers:
         - name: web-admin
-          image: integrationschd/inv2-web-admin
+          image: integrationschd/trustfund-web-admin
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: web-admin-srv
-  namespace: inv2
+  namespace: trustfund
 spec:
   selector:
     app: web-admin

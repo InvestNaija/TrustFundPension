@@ -1,4 +1,4 @@
-name: Deploy WebClient-Master To AWS
+name: Deploy WebAdmin-Master To AWS
 
 on:
   push:
@@ -18,4 +18,4 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           username: ${{ secrets.AWS_USER }}
           script: |
-            kubectl rollout restart deployment depl-web-admin -n inv2
+            kubectl rollout restart deployment depl-web-admin -n trustfund

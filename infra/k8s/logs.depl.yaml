@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: depl-logs
-  namespace: inv2
+  namespace: trustfund
 spec:
   replicas: 1
   selector:
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: logs
-          image: integrationschd/inv2-logs
-          # image: inv2registry.azurecr.io/demo/logs
+          image: integrationschd/trustfund-logs
+          # image: trustfundregistry.azurecr.io/demo/logs
           env:
             - name: PORT
               valueFrom:
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: logs-srv
-  namespace: inv2
+  namespace: trustfund
 spec:
   selector:
     app: logs

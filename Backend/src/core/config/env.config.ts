@@ -24,6 +24,9 @@ export const envConfig = {
   JWT_REFRESH_TOKEN_SECRET: process.env.JWT_REFRESH_TOKEN_SECRET,
   JWT_ACCESS_TOKEN_EXPIRY: process.env.JWT_ACCESS_TOKEN_EXPIRY,
   JWT_REFRESH_TOKEN_EXPIRY: process.env.JWT_REFRESH_TOKEN_EXPIRY,
+  TRUSTFUND_USERNAME: process.env.TRUSTFUND_USERNAME,
+  TRUSTFUND_PASSWORD: process.env.TRUSTFUND_PASSWORD,
+  TRUSTFUND_URL: process.env.TRUSTFUND_URL,
 }
 
 
@@ -43,4 +46,7 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
   JWT_ACCESS_TOKEN_EXPIRY: Joi.string().required(),
   JWT_REFRESH_TOKEN_EXPIRY: Joi.string().required(),
+  TRUSTFUND_USERNAME: Joi.string().required(),
+  TRUSTFUND_PASSWORD: Joi.string().required(),
+  TRUSTFUND_URL: Joi.string().required(),
 });

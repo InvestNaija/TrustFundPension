@@ -5,36 +5,42 @@ import { envConfig } from './env.config';
 
 dotenv.config();
 
-export const databaseConfig: TypeOrmModuleOptions = {
+export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.NODE_ENV === 'test' ? process.env.TEST_DB_NAME : process.env.DB_NAME,
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV === 'development',
+  host: envConfig.DB_HOST,
+  port: Number(envConfig.DB_PORT),
+  username: envConfig.DB_USERNAME,
+  password: envConfig.DB_PASSWORD,
+  database: envConfig.DB_NAME,
+  schema: envConfig.DB_SCHEMA_NAME,
+  entities: ['dist/**/*.entity.js'],
+  migrations: ['dist/core/database/migrations/*.js'],
+  synchronize: false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
+ 
+const databaseSource = new DataSource(dataSourceOptions);
 
-export const dataSource = new DataSource(databaseConfig as DataSourceOptions);
-
-export const initializeDatabase = async (): Promise<void> => {
-  try {
-    if (!dataSource.isInitialized) {
-      await dataSource.initialize();
-      console.log('Database connection established successfully');
-    } else {
-      console.log('Using existing database connection');
-    }
-  } catch (error) {
-    console.error(`Connection to database failed: ${error}`);
-    // Only exit if not in test environment
-    if (process.env.NODE_ENV !== 'test') {
+// Attempt database connection
+export const initializeSchema = async () => {
+  databaseSource
+    .initialize()
+    .then(async () => {
+      // Create schema if it doesn't exist
+      await databaseSource.query(
+        `CREATE SCHEMA IF NOT EXISTS ${envConfig.DB_SCHEMA_NAME};`,
+      );
+ 
+      console.log(
+        `Schema '${envConfig.DB_SCHEMA_NAME}' created or already exists.`,
+      );
+    })
+    .catch((error) => {
+      console.error(`Connection to database failed: ${error}`);
       process.exit(1);
-    }
-    throw error;
-  }
+    });
 };
 
-export default dataSource;
+export default databaseSource;

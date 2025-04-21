@@ -11,4 +11,4 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v2
-      - run: cd Backend && npm install && npm run test:ci
+      - run: cd Backend && npm install && npm run test

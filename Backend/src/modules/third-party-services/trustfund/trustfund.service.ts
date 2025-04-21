@@ -1,0 +1,209 @@
+import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
+import { envConfig } from '../../../core/config';
+import { HttpRequestService } from '../../../shared/http-request';
+import {
+  IEmailRequest,
+  IEmailResponse,
+  ISmsRequest,
+  ISmsResponse,
+  IFundType,
+  IContribution,
+  IContributionRequest,
+  IAccountManagerRequest,
+  IAccountManager,
+  ILoginResponse,
+  ISummaryRequest,
+  ISummaryResponse,
+  ICustomerOnboardingRequest,
+  IGenerateReportRequest,
+  IWelcomeLetterRequest,
+} from './types';
+
+@Injectable()
+export class TrustFundService {
+  private logger = new Logger(TrustFundService.name);
+  private accessToken: string | null = null;
+
+  constructor(private readonly httpRequest: HttpRequestService) {}
+
+  private getRequestHeaders(withAuth = true) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (!withAuth) {
+      headers.Authorization = `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`;
+    } else if (this.accessToken) {
+      headers.Authorization = `Bearer ${this.accessToken}`;
+    }
+
+    return headers;
+  }
+
+  async login(): Promise<void> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/auth/login`;
+      const response = await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        headers: this.getRequestHeaders(false),
+      });
+      this.accessToken = response.access_token;
+    } catch (error) {
+      this.logger.error('Error during login:', error);
+      throw new UnprocessableEntityException('Could not authenticate');
+    }
+  }
+
+  async sendEmail(emailData: IEmailRequest): Promise<IEmailResponse> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/mobile/sendemail.php`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data: emailData,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error sending email:', error);
+      throw new UnprocessableEntityException('Could not send email');
+    }
+  }
+
+  async sendSms(smsData: ISmsRequest): Promise<ISmsResponse> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/mobile/sendsms.php`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data: smsData,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error sending SMS:', error);
+      throw new UnprocessableEntityException('Could not send SMS');
+    }
+  }
+
+  async getFundTypes(): Promise<IFundType[]> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_schemes.php`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error getting fund types:', error);
+      throw new UnprocessableEntityException('Could not get fund types');
+    }
+  }
+
+  async getLastTenContributions(data: IContributionRequest): Promise<IContribution[]> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_contributions.php`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error getting contributions:', error);
+      throw new UnprocessableEntityException('Could not get contributions');
+    }
+  }
+
+  async getAccountManager(data: IAccountManagerRequest): Promise<IAccountManager[]> {
+    try {
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_agent.php`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error getting account manager:', error);
+      throw new UnprocessableEntityException('Could not get account manager');
+    }
+  }
+
+  async getSummary(data: ISummaryRequest): Promise<ISummaryResponse> {
+    try {
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/getsummary`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error getting summary:', error);
+      throw new UnprocessableEntityException('Could not get summary');
+    }
+  }
+
+  async customerOnboarding(data: ICustomerOnboardingRequest): Promise<any> {
+    try {
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/regmodule-ecrs/onboarding`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: this.getRequestHeaders(),
+      });
+    } catch (error) {
+      this.logger.error('Error during customer onboarding:', error);
+      throw new UnprocessableEntityException('Could not complete customer onboarding');
+    }
+  }
+
+  async generateReport(data: IGenerateReportRequest): Promise<Buffer> {
+    try {
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: {
+          ...this.getRequestHeaders(),
+          responseType: 'arraybuffer'
+        }
+      });
+    } catch (error) {
+      this.logger.error('Error generating report:', error);
+      throw new UnprocessableEntityException('Could not generate report');
+    }
+  }
+
+  async generateWelcomeLetter(data: IWelcomeLetterRequest): Promise<Buffer> {
+    try {
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data,
+        headers: {
+          ...this.getRequestHeaders(),
+          responseType: 'arraybuffer'
+        }
+      });
+    } catch (error) {
+      this.logger.error('Error generating welcome letter:', error);
+      throw new UnprocessableEntityException('Could not generate welcome letter');
+    }
+  }
+}

@@ -1,5 +1,9 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import * as dotenv from 'dotenv';
 import { envConfig } from './env.config';
+
+dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
@@ -16,7 +20,7 @@ export const dataSourceOptions: DataSourceOptions = {
     rejectUnauthorized: false,
   },
 };
-
+ 
 const databaseSource = new DataSource(dataSourceOptions);
 
 // Attempt database connection
@@ -28,7 +32,7 @@ export const initializeSchema = async () => {
       await databaseSource.query(
         `CREATE SCHEMA IF NOT EXISTS ${envConfig.DB_SCHEMA_NAME};`,
       );
-
+ 
       console.log(
         `Schema '${envConfig.DB_SCHEMA_NAME}' created or already exists.`,
       );

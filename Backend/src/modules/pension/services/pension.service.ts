@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { TrustFundService } from '../../third-party-services/trustfund/trustfund.service';
+import { TrustFundService } from '../../third-party-services/trustfund';
 import { IApiResponse } from '../../../shared/types';
 import {
   IEmailRequest,

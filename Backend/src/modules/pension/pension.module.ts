@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PensionController } from './controllers';
 import { PensionService } from './services';
-import { TrustFundService } from '../third-party-services/trustfund/trustfund.service';
-import { HttpRequestService } from '../../shared/http-request';
+import { ThirdPartyServicesModule } from '../third-party-services';
+
 
 @Module({
-  imports: [],
+  imports: [ThirdPartyServicesModule],
   controllers: [PensionController],
-  providers: [PensionService, TrustFundService, HttpRequestService],
+  providers: [PensionService],
   exports: [PensionService],
 })
 export class PensionModule {}

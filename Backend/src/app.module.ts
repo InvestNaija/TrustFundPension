@@ -7,6 +7,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './core/database';
 import { UserModule } from './modules/user';
+import { PensionModule} from './modules/pension';
 import { ThirdPartyServicesModule } from './modules/third-party-services';
 import { AppService } from './app.service';
 
@@ -19,7 +20,8 @@ import { AppService } from './app.service';
     }),
     UserModule,
     DatabaseModule,
-    ThirdPartyServicesModule
+    ThirdPartyServicesModule,
+    PensionModule
 
   ],
   controllers: [AppController],

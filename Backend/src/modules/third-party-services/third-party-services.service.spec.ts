@@ -16,7 +16,7 @@ describe('ThirdPartyServicesModule', () => {
     expect(module).toBeDefined();
   });
 
-  it('should provide MusicBrainzService', () => {
+  it('should provide TrustFundService', () => {
     const service = module.get<TrustFundService>(TrustFundService);
     expect(service).toBeDefined();
   });

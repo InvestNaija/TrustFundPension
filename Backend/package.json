@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:db:up": "chmod +x ./scripts/setup-test-db.sh && ./scripts/setup-test-db.sh up",
+    "test:db:down": "./scripts/setup-test-db.sh down",
+    "test:db:view": "./scripts/setup-test-db.sh view",
+    "test:with-db": "npm run test:db:up && npm run test && npm run test:e2e && npm run test:db:down"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",

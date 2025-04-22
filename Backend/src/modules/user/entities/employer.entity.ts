@@ -1,11 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
+import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
+import { User } from '.';
+import { AbstractEntity } from 'src/core/database';
 
 @Entity('employer')
-export class Employer {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Employer extends AbstractEntity {
   @Column()
   user_id: number;
 
@@ -23,6 +21,9 @@ export class Employer {
 
   @Column({ type: 'date' })
   first_appoint_date: string;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt: Date;
 
   @ManyToOne(() => User, user => user.employers)
   user: User;

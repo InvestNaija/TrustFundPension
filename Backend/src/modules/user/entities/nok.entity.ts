@@ -1,11 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
+import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
+import { User } from '.';
+import { AbstractEntity } from 'src/core/database';
 
 @Entity('nok')
-export class Nok {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Nok extends AbstractEntity {
   @Column()
   user_id: number;
 
@@ -26,6 +24,9 @@ export class Nok {
 
   @Column()
   phone: string;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deletedAt: Date;
 
   @ManyToOne(() => User, user => user.noks)
   user: User;

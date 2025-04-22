@@ -10,6 +10,8 @@ import { UserModule } from './modules/user';
 import { PensionModule} from './modules/pension';
 import { ThirdPartyServicesModule } from './modules/third-party-services';
 import { AppService } from './app.service';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AuthModule } from './modules/auth';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AppService } from './app.service';
       load: [],
       validationSchema: envValidationSchema,
     }),
+    EventEmitterModule.forRoot(),
+    AuthModule,
     UserModule,
     DatabaseModule,
     ThirdPartyServicesModule,

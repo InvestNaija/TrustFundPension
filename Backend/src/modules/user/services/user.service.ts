@@ -1,12 +1,15 @@
 import {
     Injectable,
     Logger,
-    NotFoundException
+    NotFoundException,
+    UnauthorizedException
   } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../entities';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../dto';
+import { User } from '../entities/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { UserRepository } from '../repositories/user.repository';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -15,76 +18,76 @@ export class UserService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    try {
-      const user = this.userRepository.create(createUserDto);
-      const savedUser = await this.userRepository.save(user);
-      return plainToClass(UserResponseDto, savedUser);
-    } catch (error) {
-      this.logger.error(`Error creating user: ${error.message}`);
-      throw error;
-    }
+    const user = new User();
+    Object.assign(user, {
+      ...createUserDto,
+      otpCodeHash: createUserDto.otpCodeHash || undefined,
+    });
+    const savedUser = await this.userRepository.save(user);
+    return this.mapToResponseDto(savedUser);
   }
 
   async findAll(): Promise<UserResponseDto[]> {
-    try {
-      const users = await this.userRepository.find();
-      return users.map(user => plainToClass(UserResponseDto, user));
-    } catch (error) {
-      this.logger.error(`Error finding all users: ${error.message}`);
-      throw error;
-    }
+    const users = await this.userRepository.findMany({});
+    return users.map(user => this.mapToResponseDto(user));
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return this.mapToResponseDto(user);
+  }
+
+  async findByEmail(email: string): Promise<UserResponseDto | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { id } });
-      if (!user) {
-        throw new NotFoundException(`User with ID ${id} not found`);
-      }
-      return plainToClass(UserResponseDto, user);
+      const user = await this.userRepository.findOne({ where: { email } });
+      return user ? this.mapToResponseDto(user) : null;
     } catch (error) {
-      this.logger.error(`Error finding user: ${error.message}`);
+      this.logger.error(`Error finding user by email: ${error.message}`);
       throw error;
     }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
-    try {
-      const user = await this.userRepository.findOne({ where: { id } });
-      if (!user) {
-        throw new NotFoundException(`User with ID ${id} not found`);
-      }
-
-      Object.assign(user, updateUserDto);
-      const updatedUser = await this.userRepository.save(user);
-      return plainToClass(UserResponseDto, updatedUser);
-    } catch (error) {
-      this.logger.error(`Error updating user: ${error.message}`);
-      throw error;
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
+    Object.assign(user, updateUserDto);
+    const updatedUser = await this.userRepository.save(user);
+    return this.mapToResponseDto(updatedUser);
   }
 
   async remove(id: string): Promise<void> {
-    try {
-      const result = await this.userRepository.softDelete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException(`User with ID ${id} not found`);
-      }
-    } catch (error) {
-      this.logger.error(`Error removing user: ${error.message}`);
-      throw error;
+    const result = await this.userRepository.softDelete({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
   }
 
-  async getClientDetails(
-  ){
+  async getClientDetails() {
     return {
       status: true,
       message: 'User details fetched successfully'
     };
+  }
+
+  async generateSignedUrlsForUserFiles(user: UserResponseDto) {
+    return {
+      profileImageUrl: null,
+      businessCertificateUrl: null
+    };
+  }
+
+  private mapToResponseDto(user: User): UserResponseDto {
+    return plainToClass(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 }

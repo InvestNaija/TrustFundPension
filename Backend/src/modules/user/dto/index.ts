@@ -12,4 +12,5 @@ export * from './update-employer.dto';
 export * from './employer-response.dto';
 export * from './create-bvn-data.dto';
 export * from './update-bvn-data.dto';
-export * from './bvn-data-response.dto'; 
+export * from './bvn-data-response.dto';
+export * from './excluded-user-props.dto'; 

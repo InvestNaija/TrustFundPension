@@ -2,13 +2,18 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAccessTokenStrategy, JwtRefreshTokenStrategy } from './strategies';
 import { UserModule } from '../user';
-import { EventModule } from '../event';
 
 @Module({
-  imports: [JwtModule.register({}), UserModule, EventModule],
+  imports: [
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY },
+    }),
+    UserModule
+  ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
+  providers: [AuthService],
 })
 export class AuthModule {}

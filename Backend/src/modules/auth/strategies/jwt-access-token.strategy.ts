@@ -10,10 +10,13 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
   JWT_TOKEN_TYPE.ACCESS_TOKEN,
 ) {
   constructor() {
+    if (!envConfig.JWT_ACCESS_TOKEN_SECRET) {
+      throw new Error('JWT_ACCESS_TOKEN_SECRET is not configured');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          let token = null;
+          let token: string | null = null;
 
           if (req && req.cookies) {
             token = req.cookies['accessToken']; // Cookie extraction

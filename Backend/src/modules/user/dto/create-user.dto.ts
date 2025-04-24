@@ -1,5 +1,6 @@
-import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional, IsDate, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { USER_ROLE } from '../../../core/constants';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -57,16 +58,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  state_of_posting: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  lga_of_posting: string;
-
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -76,6 +67,21 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   show_balance?: boolean;
+
+  @ApiProperty({ enum: USER_ROLE })
+  @IsEnum(USER_ROLE)
+  @IsNotEmpty()
+  role: USER_ROLE;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  otpCodeHash?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDate()
+  otpCodeExpiry?: Date | null;
 
   @ApiProperty({ default: true })
   @IsBoolean()

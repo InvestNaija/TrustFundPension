@@ -6,23 +6,41 @@ import {
   IsString,
   Matches,
   MinLength,
-  ValidateIf,
-  IsOptional,
+  IsDateString,
 } from 'class-validator';
-import { AGENT_ACCOUNT_TYPE, IAgent } from '../../user/types';
+import { USER_ROLE } from '../../../core/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AgentRegistrationDto implements Partial<IAgent> {
-  // BASIC INFO(s)
+export class SignupUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  firstName: string;
+  bvn: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  lastName: string;
+  nin: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  rsa_pin: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  first_name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  middle_name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  last_name: string;
 
   @ApiProperty()
   @IsString()
@@ -44,18 +62,23 @@ export class AgentRegistrationDto implements Partial<IAgent> {
   )
   password: string;
 
-  @ApiProperty({ enum: AGENT_ACCOUNT_TYPE })
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
-  @IsEnum(AGENT_ACCOUNT_TYPE)
-  accountType: AGENT_ACCOUNT_TYPE;
+  phone: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
-  businessCertificateUrl?: string;
+  @IsNotEmpty()
+  gender: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  companyName?: string;
-}
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  dob: string;
+
+  @ApiProperty({ enum: USER_ROLE })
+  @IsNotEmpty()
+  @IsEnum(USER_ROLE)
+  role: USER_ROLE;
+} 

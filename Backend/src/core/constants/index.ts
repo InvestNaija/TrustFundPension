@@ -24,10 +24,8 @@ export enum JWT_TOKEN_TYPE {
 }
 
 export enum USER_ROLE {
-  AGENT = 'agent',
   CLIENT = 'client',
   ADMIN = 'admin',
-  AGENT_STAFF = 'agentStaff',
 }
 
 export const PRESIGNED_URL_EXPIRY = 3600; // 1 hour

@@ -7,18 +7,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
-  AgentRegistrationDto,
   LoginDto,
   ResendEmailVerificationTokenDto,
   ResetPasswordDto,
   SendPasswordResetTokenDto,
+  SignupUserDto,
   ValidateOtpDto,
   VerifyEmailDto,
 } from './dto';
-
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';
-import { EMAIL_TEMPLATE, USER_ROLE } from '../../core/constants';
+import { USER_ROLE } from '../../core/constants';
 import { IApiResponse } from '../../core/types';
 import {
   generateOtpCodeHash,
@@ -27,58 +26,41 @@ import {
   verifyPassword,
 } from '../../shared/utils';
 import { UserService } from '../user/services';
-import { AGENT_ACCOUNT_TYPE } from '../user/types';
-import { UserFactory } from '../user/user-factory';
-import { IDecodedJwtToken } from './strategies';
-import { EventPublisherService } from '../event';
+import { IDecodedJwtToken } from '../../core/decorators/authenticated-user.decorator';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
 
   constructor(
-    private readonly userFactory: UserFactory,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly eventPublisherService: EventPublisherService,
   ) {}
 
-  async signupAgent(dto: AgentRegistrationDto): Promise<IApiResponse> {
-    const userRepository = this.userFactory.getRepository(USER_ROLE.AGENT);
+  async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
+    const existingUser = await this.userService.findByEmail(dto.email);
 
-    const existingAgent = await userRepository.findOne({
-      where: { email: dto.email },
-    });
-
-    if (existingAgent) {
+    if (existingUser) {
       throw new ConflictException(
-        'An agent with this email address already exists. Please use a different email address.',
+        'A user with this email address already exists. Please use a different email address.',
       );
     }
 
-    // Clean up payload for individual accounts
-    // This ensures data consistency even if frontend validation is bypassed
-    if (dto.accountType === AGENT_ACCOUNT_TYPE.INDIVIDUAL) {
-      if ('businessCertificateUrl' in dto) delete dto.businessCertificateUrl;
-      if ('companyName' in dto) delete dto.companyName;
+    const hashedPassword = await hashPassword(dto.password);
+    if (!hashedPassword) {
+      throw new BadRequestException('Failed to hash password');
     }
 
-    // Hash password B4 saving to DB
-    const hashedPassword = await hashPassword(dto.password);
-
-    // Generate OTP details for email verification
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
 
-    const user = await userRepository.save({
+    const user = await this.userService.create({
       ...dto,
-      role: USER_ROLE.AGENT,
       password: hashedPassword,
       otpCodeHash,
       otpCodeExpiry,
     });
 
-    // Trigger event to send OTP verification email
-    this.sendEmailVerificationOTP(user.firstName, user.email, otpCode);
+    this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
 
     return {
       status: true,
@@ -89,11 +71,9 @@ export class AuthService {
   }
 
   async verifyEmail(dto: VerifyEmailDto): Promise<IApiResponse> {
-    const { email, otpCode, role } = dto;
+    const { email, otpCode } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     const otpCodeHash = generateOtpCodeHash(otpCode);
@@ -101,18 +81,15 @@ export class AuthService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    if (new Date() > user.otpCodeExpiry) {
+    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
       throw new BadRequestException('OTP has expired');
     }
 
-    await userRepository.update(
-      { email },
-      {
-        isEmailVerified: true,
-        otpCodeHash: null,
-        otpCodeExpiry: null,
-      },
-    );
+    await this.userService.update(user.id, {
+      isEmailVerified: true,
+      otpCodeHash: null,
+      otpCodeExpiry: null,
+    });
 
     return {
       status: true,
@@ -124,11 +101,9 @@ export class AuthService {
   async resendEmailVerificationToken(
     dto: ResendEmailVerificationTokenDto,
   ): Promise<IApiResponse> {
-    const { email, role } = dto;
+    const { email } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     if (user.isEmailVerified) {
@@ -136,10 +111,10 @@ export class AuthService {
     }
 
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
-    await userRepository.update({ email }, { otpCodeHash, otpCodeExpiry });
+    await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
     // Trigger event to send OTP verification email
-    this.sendEmailVerificationOTP(user.firstName, user.email, otpCode);
+    this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
 
     return {
       status: true,
@@ -151,11 +126,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const { email, password, role } = dto;
+    const { email, password } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const isValidPassword = await verifyPassword(password, user.password);
@@ -168,8 +141,7 @@ export class AuthService {
       role: user.role,
     });
 
-    const signedUrls =
-      await this.userService.generateSignedUrlsForUserFiles(user);
+    const signedUrls = await this.userService.generateSignedUrlsForUserFiles(user);
 
     return {
       ...user,
@@ -179,14 +151,7 @@ export class AuthService {
   }
 
   async refreshUserToken(authenticatedUser: IDecodedJwtToken) {
-    const userRepository = this.userFactory.getRepository(
-      authenticatedUser.role,
-    );
-
-    const user = await userRepository.findOne({
-      where: { id: authenticatedUser.id },
-    });
-
+    const user = await this.userService.findOne(authenticatedUser.id);
     if (!user) throw new UnauthorizedException('Invalid refresh token');
 
     const tokens = await this.generateJwtTokens({
@@ -203,22 +168,20 @@ export class AuthService {
   async sendPasswordResetToken(
     dto: SendPasswordResetTokenDto,
   ): Promise<IApiResponse> {
-    const { email, role } = dto;
+    const { email } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
-    await userRepository.update({ email }, { otpCodeHash, otpCodeExpiry });
+    await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
-    this.eventPublisherService.publishSendEmail({
-      to: user.email,
-      subject: 'Reset Your Password',
-      template: EMAIL_TEMPLATE.PASSWORD_RESET_OTP,
-      templateData: { name: user.firstName, otp: otpCode },
-    });
+    // this.eventPublisherService.publishSendEmail({
+    //   to: user.email,
+    //   subject: 'Reset Your Password',
+    //   template: EMAIL_TEMPLATE.PASSWORD_RESET_OTP,
+    //   templateData: { name: user.first_name, otp: otpCode },
+    // });
 
     return {
       status: true,
@@ -230,11 +193,9 @@ export class AuthService {
   }
 
   async validateOtp(dto: ValidateOtpDto): Promise<IApiResponse> {
-    const { email, otpCode, role } = dto;
+    const { email, otpCode } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     const otpCodeHash = generateOtpCodeHash(otpCode);
@@ -242,7 +203,7 @@ export class AuthService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    if (new Date() > user.otpCodeExpiry) {
+    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
       throw new BadRequestException('OTP has expired');
     }
 
@@ -254,11 +215,9 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<IApiResponse> {
-    const { email, otpCode, password, role } = dto;
+    const { email, otpCode, password } = dto;
 
-    const userRepository = this.userFactory.getRepository(role);
-
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     const otpCodeHash = generateOtpCodeHash(otpCode);
@@ -266,20 +225,17 @@ export class AuthService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    if (new Date() > user.otpCodeExpiry) {
+    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
       throw new BadRequestException('OTP has expired');
     }
 
     const hashedPassword = await hashPassword(password);
-    await userRepository.update(
-      { email },
-      {
-        password: hashedPassword,
-        passwordChangedAt: new Date(),
-        otpCodeHash: null,
-        otpCodeExpiry: null,
-      },
-    );
+    await this.userService.update(user.id, {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+      otpCodeHash: null,
+      otpCodeExpiry: null,
+    });
 
     return {
       status: true,
@@ -289,7 +245,7 @@ export class AuthService {
   }
 
   private async generateJwtTokens(
-    payload: IDecodedJwtToken,
+    payload: { id: string; role: USER_ROLE },
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: envConfig.JWT_ACCESS_TOKEN_SECRET,
@@ -309,11 +265,11 @@ export class AuthService {
     email: string,
     otp: string,
   ): void {
-    this.eventPublisherService.publishSendEmail({
-      to: email,
-      subject: 'Verify Your Account',
-      template: EMAIL_TEMPLATE.EMAIL_VERIFICATION_OTP,
-      templateData: { name, otp },
-    });
+    // this.eventPublisherService.publishSendEmail({
+    //   to: email,
+    //   subject: 'Verify Your Account',
+    //   template: EMAIL_TEMPLATE.EMAIL_VERIFICATION_OTP,
+    //   templateData: { name, otp },
+    // });
   }
 }

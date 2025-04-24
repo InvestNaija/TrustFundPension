@@ -14,11 +14,11 @@ import { ExcludedUserPropsDto } from '../user/dto';
 import { IApiResponse } from './../../core/types/index';
 import { AuthService } from './auth.service';
 import {
-  AgentRegistrationDto,
   LoginDto,
   ResendEmailVerificationTokenDto,
   ResetPasswordDto,
   SendPasswordResetTokenDto,
+  SignupUserDto,
   ValidateOtpDto,
   VerifyEmailDto,
 } from './dto';
@@ -31,10 +31,10 @@ import { IDecodedJwtToken } from './strategies';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/agents/sign-up')
+  @Post('/sign-up')
   @TransformResponse(ExcludedUserPropsDto)
-  async signupAgent(@Body() dto: AgentRegistrationDto): Promise<IApiResponse> {
-    return this.authService.signupAgent(dto);
+  async signupUser(@Body() dto: SignupUserDto): Promise<IApiResponse> {
+    return this.authService.signupUser(dto);
   }
 
   @Post('/verify-email')

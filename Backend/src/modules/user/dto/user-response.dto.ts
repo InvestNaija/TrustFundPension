@@ -1,9 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { USER_ROLE } from '../../../core/constants';
 
 export class UserResponseDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
   bvn: string;
@@ -65,6 +66,21 @@ export class UserResponseDto {
   @ApiProperty()
   two_factor_auth: boolean;
 
+  @ApiProperty({ enum: USER_ROLE })
+  role: USER_ROLE;
+
+  @ApiProperty()
+  otpCodeHash: string | null;
+
+  @ApiProperty()
+  otpCodeExpiry: Date | null;
+
+  @ApiProperty()
+  isEmailVerified: boolean;
+
+  @ApiProperty()
+  passwordChangedAt: Date | null;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -74,6 +90,6 @@ export class UserResponseDto {
   @Exclude()
   password: string;
 
-  @Exclude()
-  deletedAt: Date;
+  @ApiProperty()
+  deletedAt: Date | null;
 } 

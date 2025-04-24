@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EmployerRepository } from '../repositories';
 import { Employer } from '../entities';
 import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto } from '../dto';
 import { plainToClass } from 'class-transformer';
@@ -11,24 +11,20 @@ export class EmployerService {
 
   constructor(
     @InjectRepository(Employer)
-    private readonly employerRepository: Repository<Employer>,
+    private readonly employerRepository: EmployerRepository,
   ) {}
 
   async create(createEmployerDto: CreateEmployerDto): Promise<EmployerResponseDto> {
-    try {
-      const employer = this.employerRepository.create(createEmployerDto);
-      const savedEmployer = await this.employerRepository.save(employer);
-      return plainToClass(EmployerResponseDto, savedEmployer);
-    } catch (error) {
-      this.logger.error(`Error creating employer: ${error.message}`);
-      throw error;
-    }
+    const employer = new Employer();
+    Object.assign(employer, createEmployerDto);
+    const savedEmployer = await this.employerRepository.save(employer);
+    return this.mapToResponseDto(savedEmployer);
   }
 
   async findAll(): Promise<EmployerResponseDto[]> {
     try {
-      const employers = await this.employerRepository.find();
-      return employers.map(employer => plainToClass(EmployerResponseDto, employer));
+      const employers = await this.employerRepository.findMany({});
+      return employers.map(employer => this.mapToResponseDto(employer));
     } catch (error) {
       this.logger.error(`Error finding all employers: ${error.message}`);
       throw error;
@@ -41,7 +37,7 @@ export class EmployerService {
       if (!employer) {
         throw new NotFoundException(`Employer with ID ${id} not found`);
       }
-      return plainToClass(EmployerResponseDto, employer);
+      return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);
       throw error;
@@ -57,7 +53,7 @@ export class EmployerService {
 
       Object.assign(employer, updateEmployerDto);
       const updatedEmployer = await this.employerRepository.save(employer);
-      return plainToClass(EmployerResponseDto, updatedEmployer);
+      return this.mapToResponseDto(updatedEmployer);
     } catch (error) {
       this.logger.error(`Error updating employer: ${error.message}`);
       throw error;
@@ -66,7 +62,7 @@ export class EmployerService {
 
   async remove(id: string): Promise<void> {
     try {
-      const result = await this.employerRepository.softDelete(id);
+      const result = await this.employerRepository.softDelete({ id });
       if (result.affected === 0) {
         throw new NotFoundException(`Employer with ID ${id} not found`);
       }
@@ -74,5 +70,11 @@ export class EmployerService {
       this.logger.error(`Error removing employer: ${error.message}`);
       throw error;
     }
+  }
+
+  private mapToResponseDto(employer: Employer): EmployerResponseDto {
+    return plainToClass(EmployerResponseDto, employer, {
+      excludeExtraneousValues: true,
+    });
   }
 } 

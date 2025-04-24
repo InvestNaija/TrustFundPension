@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { BVNDataRepository } from '../repositories';
 import { BVNData } from '../entities';
 import { CreateBvnDataDto, UpdateBvnDataDto, BvnDataResponseDto } from '../dto';
 import { plainToClass } from 'class-transformer';
@@ -11,24 +11,20 @@ export class BvnDataService {
 
   constructor(
     @InjectRepository(BVNData)
-    private readonly bvnDataRepository: Repository<BVNData>,
+    private readonly bvnDataRepository: BVNDataRepository,
   ) {}
 
   async create(createBvnDataDto: CreateBvnDataDto): Promise<BvnDataResponseDto> {
-    try {
-      const bvnData = this.bvnDataRepository.create(createBvnDataDto);
-      const savedBvnData = await this.bvnDataRepository.save(bvnData);
-      return plainToClass(BvnDataResponseDto, savedBvnData);
-    } catch (error) {
-      this.logger.error(`Error creating BVN data: ${error.message}`);
-      throw error;
-    }
+    const bvnData = new BVNData();
+    Object.assign(bvnData, createBvnDataDto);
+    const savedBvnData = await this.bvnDataRepository.save(bvnData);
+    return this.mapToResponseDto(savedBvnData);
   }
 
   async findAll(): Promise<BvnDataResponseDto[]> {
     try {
-      const bvnData = await this.bvnDataRepository.find();
-      return bvnData.map(data => plainToClass(BvnDataResponseDto, data));
+      const bvnData = await this.bvnDataRepository.findMany({});
+      return bvnData.map(data => this.mapToResponseDto(data));
     } catch (error) {
       this.logger.error(`Error finding all BVN data: ${error.message}`);
       throw error;
@@ -41,7 +37,7 @@ export class BvnDataService {
       if (!bvnData) {
         throw new NotFoundException(`BVN data with ID ${id} not found`);
       }
-      return plainToClass(BvnDataResponseDto, bvnData);
+      return this.mapToResponseDto(bvnData);
     } catch (error) {
       this.logger.error(`Error finding BVN data: ${error.message}`);
       throw error;
@@ -57,7 +53,7 @@ export class BvnDataService {
 
       Object.assign(bvnData, updateBvnDataDto);
       const updatedBvnData = await this.bvnDataRepository.save(bvnData);
-      return plainToClass(BvnDataResponseDto, updatedBvnData);
+      return this.mapToResponseDto(updatedBvnData);
     } catch (error) {
       this.logger.error(`Error updating BVN data: ${error.message}`);
       throw error;
@@ -66,7 +62,7 @@ export class BvnDataService {
 
   async remove(id: string): Promise<void> {
     try {
-      const result = await this.bvnDataRepository.softDelete(id);
+      const result = await this.bvnDataRepository.softDelete({ id });
       if (result.affected === 0) {
         throw new NotFoundException(`BVN data with ID ${id} not found`);
       }
@@ -74,5 +70,11 @@ export class BvnDataService {
       this.logger.error(`Error removing BVN data: ${error.message}`);
       throw error;
     }
+  }
+
+  private mapToResponseDto(bvnData: BVNData): BvnDataResponseDto {
+    return plainToClass(BvnDataResponseDto, bvnData, {
+      excludeExtraneousValues: true,
+    });
   }
 } 

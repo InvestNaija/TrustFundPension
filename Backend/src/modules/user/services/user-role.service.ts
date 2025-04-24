@@ -1,7 +1,11 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { UserRole } from '../entities';
+import { UserRoleRepository } from '../repositories';
 import { CreateUserRoleDto, UpdateUserRoleDto, UserRoleResponseDto } from '../dto';
 import { plainToClass } from 'class-transformer';
 
@@ -11,23 +15,19 @@ export class UserRoleService {
 
   constructor(
     @InjectRepository(UserRole)
-    private readonly userRoleRepository: Repository<UserRole>,
+    private readonly userRoleRepository: UserRoleRepository,
   ) {}
 
   async create(createUserRoleDto: CreateUserRoleDto): Promise<UserRoleResponseDto> {
-    try {
-      const userRole = this.userRoleRepository.create(createUserRoleDto);
-      const savedUserRole = await this.userRoleRepository.save(userRole);
-      return plainToClass(UserRoleResponseDto, savedUserRole);
-    } catch (error) {
-      this.logger.error(`Error creating user role: ${error.message}`);
-      throw error;
-    }
+    const userRole = new UserRole();
+    Object.assign(userRole, createUserRoleDto);
+    const savedUserRole = await this.userRoleRepository.save(userRole);
+    return this.mapToResponseDto(savedUserRole);
   }
 
   async findAll(): Promise<UserRoleResponseDto[]> {
     try {
-      const userRoles = await this.userRoleRepository.find();
+      const userRoles = await this.userRoleRepository.findMany({});
       return userRoles.map(userRole => plainToClass(UserRoleResponseDto, userRole));
     } catch (error) {
       this.logger.error(`Error finding all user roles: ${error.message}`);
@@ -41,7 +41,7 @@ export class UserRoleService {
       if (!userRole) {
         throw new NotFoundException(`User role with ID ${id} not found`);
       }
-      return plainToClass(UserRoleResponseDto, userRole);
+      return this.mapToResponseDto(userRole);
     } catch (error) {
       this.logger.error(`Error finding user role: ${error.message}`);
       throw error;
@@ -57,7 +57,7 @@ export class UserRoleService {
 
       Object.assign(userRole, updateUserRoleDto);
       const updatedUserRole = await this.userRoleRepository.save(userRole);
-      return plainToClass(UserRoleResponseDto, updatedUserRole);
+      return this.mapToResponseDto(updatedUserRole);
     } catch (error) {
       this.logger.error(`Error updating user role: ${error.message}`);
       throw error;
@@ -66,7 +66,7 @@ export class UserRoleService {
 
   async remove(id: string): Promise<void> {
     try {
-      const result = await this.userRoleRepository.softDelete(id);
+      const result = await this.userRoleRepository.softDelete({ id });
       if (result.affected === 0) {
         throw new NotFoundException(`User role with ID ${id} not found`);
       }
@@ -74,5 +74,11 @@ export class UserRoleService {
       this.logger.error(`Error removing user role: ${error.message}`);
       throw error;
     }
+  }
+
+  private mapToResponseDto(userRole: UserRole): UserRoleResponseDto {
+    return plainToClass(UserRoleResponseDto, userRole, {
+      excludeExtraneousValues: true,
+    });
   }
 } 

@@ -1,5 +1,6 @@
-import { IsString, IsEmail, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsBoolean, IsOptional, IsDate, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { USER_ROLE } from '../../../core/constants';
 
 export class UpdateUserDto {
   @ApiProperty({ required: false })
@@ -96,4 +97,29 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   two_factor_auth?: boolean;
+
+  @ApiProperty({ enum: USER_ROLE, required: false })
+  @IsOptional()
+  @IsEnum(USER_ROLE)
+  role?: USER_ROLE;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  otpCodeHash?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsDate()
+  @IsOptional()
+  otpCodeExpiry?: Date | null;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isEmailVerified?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsDate()
+  @IsOptional()
+  passwordChangedAt?: Date | null;
 } 

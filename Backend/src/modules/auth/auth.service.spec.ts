@@ -298,6 +298,8 @@ describe('AuthService', () => {
       email: 'test@example.com',
       password: 'hashedPassword',
       role: USER_ROLE.CLIENT,
+      isEmailVerified: true,
+      isPhoneVerified: true
     };
 
     const mockTokens = {
@@ -338,6 +340,16 @@ describe('AuthService', () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
       const invalidDto = { ...loginDto, password: 'wrong_password' };
       await expect(service.login(invalidDto)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw BadRequestException if account is not verified', async () => {
+      const unverifiedUser = {
+        ...mockUser,
+        isEmailVerified: false,
+        isPhoneVerified: false
+      };
+      mockUserService.findByEmail.mockResolvedValue(unverifiedUser);
+      await expect(service.login(loginDto)).rejects.toThrow(BadRequestException);
     });
   });
 

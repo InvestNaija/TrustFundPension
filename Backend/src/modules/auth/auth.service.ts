@@ -190,6 +190,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.isEmailVerified && !user.isPhoneVerified) {
+      throw new BadRequestException('Please verify your account');
+    }
+
     const tokens = await this.generateJwtTokens({
       id: user.id,
       role: user.role,
@@ -319,7 +323,7 @@ export class AuthService {
       }
     }
 
-    if (user.isEmailVerified) {
+    if (user.isEmailVerified || user.isPhoneVerified) {
       throw new BadRequestException('Your account has already been verified');
     }
 

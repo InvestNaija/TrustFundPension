@@ -13,6 +13,9 @@ const saltLength = 16; // Standard length for salt
 
 export const encryptString = (plainText: string): string => {
   try {
+    if (!envConfig.ENCRYPTION_SECRET_KEY) {
+      throw new UnprocessableEntityException('Encryption secret key is not configured');
+    }
     // Generate a new random salt for each encryption
     const salt = randomBytes(saltLength);
 
@@ -45,6 +48,9 @@ export const encryptString = (plainText: string): string => {
 
 export const decryptString = (cipherText: string): string => {
   try {
+    if (!envConfig.ENCRYPTION_SECRET_KEY) {
+      throw new UnprocessableEntityException('Encryption secret key is not configured');
+    }
     // Split the cipherText into its components: salt, IV, encrypted text, and auth tag
     const [saltHex, ivHex, encrypted, authTagHex] = cipherText.split(':');
     const salt = Buffer.from(saltHex, 'hex');

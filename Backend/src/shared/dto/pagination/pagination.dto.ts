@@ -1,20 +1,21 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, Min } from 'class-validator';
+import { IsArray, IsInt, IsOptional, Min, Max, IsNumber } from 'class-validator';
 import { PageMetaDto } from './pagination-meta.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationDto {
+  @ApiProperty({ default: 1 })
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
+  @IsNumber()
   @Min(1)
-  page?: number = 1;
+  page: number = 1;
 
+  @ApiProperty({ default: 10 })
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
+  @IsNumber()
   @Min(1)
-  limit?: number = 20;
+  @Max(100)
+  limit: number = 10;
 
   get skip(): number {
     return (this.page - 1) * this.limit;

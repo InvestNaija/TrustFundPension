@@ -12,10 +12,13 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   JWT_TOKEN_TYPE.REFRESH_TOKEN,
 ) {
   constructor() {
+    if (!envConfig.JWT_REFRESH_TOKEN_SECRET) {
+      throw new Error('JWT_REFRESH_TOKEN_SECRET is not configured');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          let token = null;
+          let token: string | null = null;
 
           if (req && req.cookies) {
             token = req.cookies['refreshToken']; // Cookie extraction

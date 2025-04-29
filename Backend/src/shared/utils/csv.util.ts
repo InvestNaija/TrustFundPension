@@ -3,7 +3,7 @@ import * as csv from 'fast-csv';
 
 const logger = new Logger('CsvUtil');
 
-export const parseCsv = <T>(
+export const parseCsv = <T extends Record<string, any>>(
   buffer: Buffer,
   options: csv.ParserOptionsArgs = {},
   validateRowFn: ((row: T) => Promise<boolean> | boolean) | null = null,

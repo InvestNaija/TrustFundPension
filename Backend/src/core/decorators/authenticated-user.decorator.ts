@@ -1,5 +1,10 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { IDecodedJwtToken } from 'src/modules/auth/strategies';
+import { USER_ROLE } from '../constants';
+
+export interface IDecodedJwtToken {
+  id: string;
+  role: USER_ROLE;
+}
 
 export const AuthenticatedUser = createParamDecorator(
   (data: never, ctx: ExecutionContext) => {

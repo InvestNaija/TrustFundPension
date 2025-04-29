@@ -9,8 +9,8 @@ export class ResendEmailVerificationTokenDto {
   @Transform(({ value }) => value.toLowerCase().trim())
   email: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(USER_ROLE)
-  role: USER_ROLE;
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsEnum(USER_ROLE)
+  // role: USER_ROLE;
 }

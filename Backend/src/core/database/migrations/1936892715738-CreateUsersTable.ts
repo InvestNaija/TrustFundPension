@@ -147,6 +147,11 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               default: false,
             },
             {
+              name: 'isPhoneVerified',
+              type: 'boolean',
+              default: false,
+            },
+            {
               name: 'passwordChangedAt',
               type: 'timestamptz',
               isNullable: true,

@@ -8,17 +8,22 @@ import {
 } from '@nestjs/common';
 import {
   LoginDto,
-  ResendEmailVerificationTokenDto,
+  ResendVerificationTokenDto,
   ResetPasswordDto,
   SendPasswordResetTokenDto,
+  SendVerificationCodeDto,
   SignupUserDto,
   ValidateOtpDto,
+  VerifyAccountDto,
   VerifyEmailDto,
+  VerificationMethod,
+  VerificationPreferenceDto,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';
 import { USER_ROLE } from '../../core/constants';
 import { IApiResponse } from '../../core/types';
+import { TrustFundService } from '../third-party-services/trustfund';
 import {
   generateOtpCodeHash,
   generateOtpDetails,
@@ -27,6 +32,10 @@ import {
 } from '../../shared/utils';
 import { UserService } from '../user/services';
 import { IDecodedJwtToken } from '../../core/decorators/authenticated-user.decorator';
+import {
+  IEmailRequest,
+  ISmsRequest,
+} from '../third-party-services/trustfund/types';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +44,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly trustFundService: TrustFundService
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
@@ -50,33 +60,40 @@ export class AuthService {
     if (!hashedPassword) {
       throw new BadRequestException('Failed to hash password');
     }
-
-    const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
-
     const user = await this.userService.create({
       ...dto,
       password: hashedPassword,
-      otpCodeHash,
-      otpCodeExpiry,
     });
-
-    this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
 
     return {
       status: true,
-      message:
-        'Registration successful! Please check your email for a verification code to complete your account setup',
+      message: 'Registration successful! Please verify your account',
       data: user,
     };
   }
 
-  async verifyEmail(dto: VerifyEmailDto): Promise<IApiResponse> {
-    const { email, otpCode } = dto;
+  async verifyAccount(dto: VerifyAccountDto): Promise<IApiResponse> {
+    let user;
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) {
+        throw new BadRequestException('Email is required for email verification');
+      }
+      user = await this.userService.findByEmail(dto.email);
+      if (!user) {
+        throw new NotFoundException('User not found with this email');
+      }
+    } else {
+      if (!dto.phone) {
+        throw new BadRequestException('Phone number is required for SMS verification');
+      }
+      user = await this.userService.findByPhone(dto.phone);
+      if (!user) {
+        throw new NotFoundException('User not found with this phone number');
+      }
+    }
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new NotFoundException('User not found');
-
-    const otpCodeHash = generateOtpCodeHash(otpCode);
+    const otpCodeHash = generateOtpCodeHash(dto.otpCode);
     if (otpCodeHash !== user.otpCodeHash) {
       throw new BadRequestException('Invalid OTP');
     }
@@ -85,42 +102,79 @@ export class AuthService {
       throw new BadRequestException('OTP has expired');
     }
 
-    await this.userService.update(user.id, {
-      isEmailVerified: true,
+    const updateData: any = {
       otpCodeHash: null,
       otpCodeExpiry: null,
-    });
+    };
+
+    if (dto.method === VerificationMethod.EMAIL) {
+      updateData.isEmailVerified = true;
+      this.logger.log(`Email verification successful for user: ${user.email}`);
+    } else {
+      updateData.isPhoneVerified = true;
+      this.logger.log(`Phone verification successful for user: ${user.phone}`);
+    }
+
+    await this.userService.update(user.id, updateData);
 
     return {
       status: true,
-      message: 'Email verified successfully',
+      message: `Account verified successfully via ${dto.method}`,
       data: {},
     };
   }
 
-  async resendEmailVerificationToken(
-    dto: ResendEmailVerificationTokenDto,
+  async resendVerificationToken(
+    dto: ResendVerificationTokenDto,
   ): Promise<IApiResponse> {
-    const { email } = dto;
-
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new NotFoundException('User not found');
-
-    if (user.isEmailVerified) {
-      throw new BadRequestException('Your email has already been verified');
+    let user;
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) {
+        throw new BadRequestException('Email is required for email verification');
+      }
+      user = await this.userService.findByEmail(dto.email);
+      if (!user) {
+        throw new NotFoundException('User not found with this email');
+      }
+      if (user.isEmailVerified) {
+        throw new BadRequestException('Your email has already been verified');
+      }
+    } else {
+      if (!dto.phone) {
+        throw new BadRequestException('Phone number is required for SMS verification');
+      }
+      user = await this.userService.findByPhone(dto.phone);
+      if (!user) {
+        throw new NotFoundException('User not found with this phone number');
+      }
+      if (user.isPhoneVerified) {
+        throw new BadRequestException('Your phone number has already been verified');
+      }
     }
 
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
     await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
-    // Trigger event to send OTP verification email
-    this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
+    if (dto.method === VerificationMethod.EMAIL) {
+      this.sendEmailVerificationOTP({
+        to: user.email,
+        subject: 'Verify Your Account',
+        body: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+      });
+    } else {
+      this.sendSmsVerificationOTP({
+        msisdn: user.phone,
+        msg: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+      });
+    }
 
     return {
       status: true,
-      message: 'Email verification token sent successfully',
+      message: `Verification token sent successfully via ${dto.method}`,
       data: {
         email: user.email,
+        phone: user.phone,
       },
     };
   }
@@ -134,6 +188,10 @@ export class AuthService {
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.isEmailVerified && !user.isPhoneVerified) {
+      throw new BadRequestException('Please verify your account');
     }
 
     const tokens = await this.generateJwtTokens({
@@ -244,6 +302,57 @@ export class AuthService {
     };
   }
 
+  async sendVerificationCode(dto: SendVerificationCodeDto): Promise<IApiResponse> {
+    let user;
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) {
+        throw new BadRequestException('Email is required for email verification');
+      }
+      user = await this.userService.findByEmail(dto.email);
+      if (!user) {
+        throw new NotFoundException('User not found with this email');
+      }
+    } else {
+      if (!dto.phone) {
+        throw new BadRequestException('Phone number is required for SMS verification');
+      }
+      user = await this.userService.findByPhone(dto.phone);
+      if (!user) {
+        throw new NotFoundException('User not found with this phone number');
+      }
+    }
+
+    if (user.isEmailVerified || user.isPhoneVerified) {
+      throw new BadRequestException('Your account has already been verified');
+    }
+
+    const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
+    await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
+
+    if (dto.method === VerificationMethod.EMAIL) {
+      this.sendEmailVerificationOTP({
+        to: user.email,
+        subject: 'Verify Your Account',
+        body: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+      });
+    } else {
+      this.sendSmsVerificationOTP({
+        msisdn: user.phone,
+        msg: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+      });
+    }
+
+    return {
+      status: true,
+      message: `Verification code sent successfully via ${dto.method}`,
+      data: {
+        email: user.email,
+        phone: user.phone,
+      },
+    };
+  }
+
   private async generateJwtTokens(
     payload: { id: string; role: USER_ROLE },
   ): Promise<{ accessToken: string; refreshToken: string }> {
@@ -261,15 +370,26 @@ export class AuthService {
   }
 
   private sendEmailVerificationOTP(
-    name: string,
-    email: string,
-    otp: string,
+    dto: IEmailRequest
   ): void {
-    // this.eventPublisherService.publishSendEmail({
-    //   to: email,
-    //   subject: 'Verify Your Account',
-    //   template: EMAIL_TEMPLATE.EMAIL_VERIFICATION_OTP,
-    //   templateData: { name, otp },
-    // });
+    this.trustFundService.sendEmail(dto)
+      .then(() => {
+        this.logger.log(`Email verification OTP sent to ${dto.to}`);
+      })
+      .catch((error) => {
+        this.logger.error(`Failed to send email verification OTP: ${error.message}`);
+      });
+  }
+
+  private sendSmsVerificationOTP(
+   dto: ISmsRequest
+  ): void {
+    this.trustFundService.sendSms(dto)
+      .then(() => {
+        this.logger.log(`SMS verification OTP sent to ${dto.msisdn}`);
+      })
+      .catch((error) => {
+        this.logger.error(`Failed to send SMS verification OTP: ${error.message}`);
+      });
   }
 }

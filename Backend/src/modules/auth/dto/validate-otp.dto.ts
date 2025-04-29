@@ -1,5 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { USER_ROLE } from '../../../core/constants';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class ValidateOtpDto {
@@ -12,9 +11,4 @@ export class ValidateOtpDto {
   @IsNotEmpty()
   @IsString()
   otpCode: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(USER_ROLE)
-  role: USER_ROLE;
 }

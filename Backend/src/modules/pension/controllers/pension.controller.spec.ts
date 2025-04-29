@@ -11,10 +11,19 @@ import {
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
+import { USER_ROLE } from '../../../core/constants';
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 describe('PensionController', () => {
   let controller: PensionController;
   let service: PensionService;
+
+  const mockToken: IDecodedJwtToken = {
+    id: '123',
+    role: USER_ROLE.CLIENT
+  };
 
   const mockPensionService = {
     sendEmail: jest.fn(),
@@ -28,6 +37,14 @@ describe('PensionController', () => {
     generateWelcomeLetter: jest.fn(),
   };
 
+  const mockJwtService = {
+    verifyAsync: jest.fn().mockResolvedValue(mockToken),
+  };
+
+  const mockJwtAuthGuard = {
+    canActivate: jest.fn().mockImplementation(() => true),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PensionController],
@@ -35,6 +52,14 @@ describe('PensionController', () => {
         {
           provide: PensionService,
           useValue: mockPensionService,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+        {
+          provide: JwtAuthGuard,
+          useValue: mockJwtAuthGuard,
         },
       ],
     }).compile();
@@ -52,9 +77,7 @@ describe('PensionController', () => {
       const emailDto: EmailRequestDto = {
         to: 'test@example.com',
         subject: 'Test Subject',
-        body: 'Test Body',
-        from: 'from@example.com',
-        from_name: 'Test Sender',
+        body: 'Test Body'
       };
 
       const expectedResponse = {
@@ -74,11 +97,8 @@ describe('PensionController', () => {
   describe('sendSms', () => {
     it('should send SMS successfully', async () => {
       const smsDto: SmsRequestDto = {
-        username: 'testuser',
-        password: 'testpass',
         msisdn: '1234567890',
-        msg: 'Test Message',
-        sender: 'TestSender',
+        msg: 'Test Message'
       };
 
       const expectedResponse = {
@@ -113,9 +133,6 @@ describe('PensionController', () => {
 
   describe('getLastTenContributions', () => {
     it('should get last ten contributions successfully', async () => {
-      const pin = '12345';
-      const contributionDto: ContributionRequestDto = { pin };
-
       const expectedResponse = {
         status: true,
         message: 'Contributions retrieved successfully',
@@ -124,17 +141,14 @@ describe('PensionController', () => {
 
       mockPensionService.getLastTenContributions.mockResolvedValue(expectedResponse);
 
-      const result = await controller.getLastTenContributions(pin);
+      const result = await controller.getLastTenContributions(mockToken);
       expect(result).toEqual(expectedResponse);
-      expect(service.getLastTenContributions).toHaveBeenCalledWith(contributionDto);
+      expect(service.getLastTenContributions).toHaveBeenCalledWith(mockToken.id);
     });
   });
 
   describe('getAccountManager', () => {
     it('should get account manager details successfully', async () => {
-      const rsa_number = '12345';
-      const managerDto: AccountManagerRequestDto = { rsa_number };
-
       const expectedResponse = {
         status: true,
         message: 'Account manager details retrieved successfully',
@@ -143,17 +157,14 @@ describe('PensionController', () => {
 
       mockPensionService.getAccountManager.mockResolvedValue(expectedResponse);
 
-      const result = await controller.getAccountManager(rsa_number);
+      const result = await controller.getAccountManager(mockToken);
       expect(result).toEqual(expectedResponse);
-      expect(service.getAccountManager).toHaveBeenCalledWith(managerDto);
+      expect(service.getAccountManager).toHaveBeenCalledWith(mockToken.id);
     });
   });
 
   describe('getSummary', () => {
     it('should get summary successfully', async () => {
-      const pin = '12345';
-      const summaryDto: SummaryRequestDto = { pin };
-
       const expectedResponse = {
         status: true,
         message: 'Summary retrieved successfully',
@@ -162,9 +173,9 @@ describe('PensionController', () => {
 
       mockPensionService.getSummary.mockResolvedValue(expectedResponse);
 
-      const result = await controller.getSummary(pin);
+      const result = await controller.getSummary(mockToken);
       expect(result).toEqual(expectedResponse);
-      expect(service.getSummary).toHaveBeenCalledWith(summaryDto);
+      expect(service.getSummary).toHaveBeenCalledWith(mockToken.id);
     });
   });
 
@@ -178,10 +189,15 @@ describe('PensionController', () => {
         title: 'Mr',
         firstname: 'John',
         surname: 'Doe',
+        othernames: '',
+        maidenName: '',
         maritalStatusCode: 'S',
         placeOfBirth: 'Lagos',
         mobilePhone: '1234567890',
         permanentAddressLocation: 'Lagos',
+        permBox: '',
+        permanentAddress1: '',
+        permZip: '',
         nationalityCode: 'NGA',
         stateOfOrigin: 'Lagos',
         lgaCode: 'LGA123',
@@ -206,6 +222,8 @@ describe('PensionController', () => {
         employerBusiness: 'Technology',
         employerAddress1: '123 Business Street',
         employerAddress: '123 Business Street',
+        employerZip: '',
+        employerBox: '',
         employerPhone: '1234567890',
         nokTitle: 'Mrs',
         nokName: 'Jane',
@@ -217,12 +235,19 @@ describe('PensionController', () => {
         nokStatecode: 'LAG',
         nokLga: 'LGA123',
         nokCity: 'Lagos',
+        nokOthername: '',
         nokAddress1: '123 NOK Street',
         nokAddress: '123 NOK Street',
+        nokZip: '',
+        nokEmailaddress: '',
+        nokBox: '',
         nokMobilePhone: '1234567890',
+        pictureImage: '',
+        formImage: '',
+        signatureImage: '',
         stateOfPosting: 'Lagos',
         agentCode: 'AGT123',
-        dateOfBirth: '1990-01-01',
+        dateOfBirth: '1990-01-01'
       };
 
       const expectedResponse = {
@@ -255,9 +280,9 @@ describe('PensionController', () => {
       const mockBuffer = Buffer.from('test');
       mockPensionService.generateReport.mockResolvedValue(mockBuffer);
 
-      await controller.generateReport(query, mockResponse);
+      await controller.generateReport(query, mockToken, mockResponse);
 
-      expect(service.generateReport).toHaveBeenCalledWith(query);
+      expect(service.generateReport).toHaveBeenCalledWith(query, mockToken.id);
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=pension-report.pdf',
@@ -269,19 +294,17 @@ describe('PensionController', () => {
 
   describe('generateWelcomeLetter', () => {
     it('should generate welcome letter successfully', async () => {
-      const pin = '12345';
+      const mockBuffer = Buffer.from('test');
+      mockPensionService.generateWelcomeLetter.mockResolvedValue(mockBuffer);
 
       const mockResponse = {
         set: jest.fn(),
         end: jest.fn(),
       } as unknown as Response;
 
-      const mockBuffer = Buffer.from('test');
-      mockPensionService.generateWelcomeLetter.mockResolvedValue(mockBuffer);
+      await controller.generateWelcomeLetter(mockToken, mockResponse);
 
-      await controller.generateWelcomeLetter(pin, mockResponse);
-
-      expect(service.generateWelcomeLetter).toHaveBeenCalledWith({ pin });
+      expect(service.generateWelcomeLetter).toHaveBeenCalledWith(mockToken.id);
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=welcome-letter.pdf',

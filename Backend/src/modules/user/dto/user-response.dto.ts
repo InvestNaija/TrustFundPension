@@ -79,6 +79,9 @@ export class UserResponseDto {
   isEmailVerified: boolean;
 
   @ApiProperty()
+  isPhoneVerified: boolean;
+
+  @ApiProperty()
   passwordChangedAt: Date | null;
 
   @ApiProperty()

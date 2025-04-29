@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TrustFundService } from './trustfund.service';
 import { HttpRequestService } from '../../../shared/http-request';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { envConfig } from '../../../core/config';
 import {
   IEmailRequest,
   IEmailResponse,
@@ -52,8 +53,6 @@ describe('TrustFundService', () => {
       to: 'test@example.com',
       subject: 'Test Subject',
       body: '<h1>Test Body</h1>',
-      from: 'from@example.com',
-      from_name: 'Test Sender',
     };
 
     const successResponse: IEmailResponse = {
@@ -70,7 +69,11 @@ describe('TrustFundService', () => {
       expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'POST',
-          data: emailData,
+          data: {
+            ...emailData,
+            from: envConfig.TRUSTFUND_EMAIL_FROM,
+            from_name: envConfig.TRUSTFUND_EMAIL_FROM_NAME,
+          },
         }),
       );
     });
@@ -86,11 +89,8 @@ describe('TrustFundService', () => {
 
   describe('sendSms', () => {
     const smsData: ISmsRequest = {
-      username: 'testuser',
-      password: 'testpass',
       msisdn: '+1234567890',
       msg: 'Test message',
-      sender: 'TestSender',
     };
 
     const successResponse: ISmsResponse = {
@@ -117,7 +117,12 @@ describe('TrustFundService', () => {
       expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'POST',
-          data: smsData,
+          data: {
+            ...smsData,
+            username: envConfig.TRUSTFUND_SMS_USERNAME,
+            password: envConfig.TRUSTFUND_SMS_PASSWORD,
+            sender: envConfig.TRUSTFUND_SMS_SENDER,
+          },
         }),
       );
     });

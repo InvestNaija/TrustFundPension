@@ -39,13 +39,12 @@ export class UserService {
     return this.mapToResponseDto(user);
   }
 
-  async findByEmail(email: string): Promise<any | null> {
-    try {
-      return await this.userRepository.findOne({ where: { email } });
-    } catch (error) {
-      this.logger.error(`Error finding user by email: ${error.message}`);
-      throw error;
-    }
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async findByPhone(phone: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { phone } });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
@@ -97,6 +96,7 @@ export class UserService {
     userDto.two_factor_auth = user.two_factor_auth;
     userDto.role = user.role;
     userDto.isEmailVerified = user.isEmailVerified;
+    userDto.isPhoneVerified = user.isPhoneVerified;
     userDto.createdAt = user.createdAt;
     userDto.updatedAt = user.updatedAt;
     return userDto;

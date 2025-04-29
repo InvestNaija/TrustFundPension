@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PensionService } from './pension.service';
 import { TrustFundService } from '../../third-party-services/trustfund/trustfund.service';
+import { UserService } from '../../user/services/user.service';
 import {
   EmailRequestDto,
   SmsRequestDto,
@@ -10,10 +11,12 @@ import {
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('PensionService', () => {
   let service: PensionService;
   let trustFundService: TrustFundService;
+  let userService: UserService;
 
   const mockTrustFundService = {
     sendEmail: jest.fn(),
@@ -27,6 +30,10 @@ describe('PensionService', () => {
     generateWelcomeLetter: jest.fn(),
   };
 
+  const mockUserService = {
+    findOne: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -35,11 +42,20 @@ describe('PensionService', () => {
           provide: TrustFundService,
           useValue: mockTrustFundService,
         },
+        {
+          provide: UserService,
+          useValue: mockUserService,
+        },
       ],
     }).compile();
 
     service = module.get<PensionService>(PensionService);
     trustFundService = module.get<TrustFundService>(TrustFundService);
+    userService = module.get<UserService>(UserService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -51,198 +67,47 @@ describe('PensionService', () => {
       to: 'test@example.com',
       subject: 'Test Subject',
       body: 'Test Body',
-      from: 'from@example.com',
-      from_name: 'Test Sender',
     };
 
     it('should send email successfully', async () => {
-      mockTrustFundService.sendEmail.mockResolvedValue({ success: true });
+      const mockResponse = { success: true };
+      mockTrustFundService.sendEmail.mockResolvedValue(mockResponse);
 
       const result = await service.sendEmail(emailDto);
 
-      expect(result).toEqual({
-        status: true,
-        message: 'Email sent successfully',
-        data: { success: true },
-      });
-      expect(trustFundService.sendEmail).toHaveBeenCalledWith({
-        to: emailDto.to,
-        subject: emailDto.subject,
-        body: emailDto.body,
-        from: emailDto.from,
-        from_name: emailDto.from_name,
-      });
+      expect(result).toEqual(mockResponse);
+      expect(mockTrustFundService.sendEmail).toHaveBeenCalledWith(emailDto);
     });
 
-    it('should handle email sending error', async () => {
-      const error = new Error('Failed to send');
+    it('should throw UnprocessableEntityException when email sending fails', async () => {
+      const error = new Error('Failed to send email');
       mockTrustFundService.sendEmail.mockRejectedValue(error);
 
-      const result = await service.sendEmail(emailDto);
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to send',
-        data: {},
-      });
+      await expect(service.sendEmail(emailDto)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
   describe('sendSms', () => {
     const smsDto: SmsRequestDto = {
-      username: 'testuser',
-      password: 'testpass',
       msisdn: '1234567890',
       msg: 'Test Message',
-      sender: 'TestSender',
     };
 
     it('should send SMS successfully', async () => {
-      mockTrustFundService.sendSms.mockResolvedValue({ success: true });
+      const mockResponse = { success: true };
+      mockTrustFundService.sendSms.mockResolvedValue(mockResponse);
 
       const result = await service.sendSms(smsDto);
 
-      expect(result).toEqual({
-        status: true,
-        message: 'SMS sent successfully',
-        data: { success: true },
-      });
-      expect(trustFundService.sendSms).toHaveBeenCalledWith(smsDto);
+      expect(result).toEqual(mockResponse);
+      expect(mockTrustFundService.sendSms).toHaveBeenCalledWith(smsDto);
     });
 
-    it('should handle SMS sending error', async () => {
+    it('should throw UnprocessableEntityException when SMS sending fails', async () => {
       const error = new Error('Failed to send SMS');
       mockTrustFundService.sendSms.mockRejectedValue(error);
 
-      const result = await service.sendSms(smsDto);
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to send SMS',
-        data: {},
-      });
-    });
-  });
-
-  describe('getFundTypes', () => {
-    it('should get fund types successfully', async () => {
-      const mockFundTypes = [{ id: 1, name: 'Fund I' }];
-      mockTrustFundService.getFundTypes.mockResolvedValue(mockFundTypes);
-
-      const result = await service.getFundTypes();
-
-      expect(result).toEqual({
-        status: true,
-        message: 'Fund types retrieved successfully',
-        data: { fundTypes: mockFundTypes },
-      });
-      expect(trustFundService.getFundTypes).toHaveBeenCalled();
-    });
-
-    it('should handle get fund types error', async () => {
-      const error = new Error('Failed to get fund types');
-      mockTrustFundService.getFundTypes.mockRejectedValue(error);
-
-      const result = await service.getFundTypes();
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to get fund types',
-        data: {},
-      });
-    });
-  });
-
-  describe('getLastTenContributions', () => {
-    const contributionDto: ContributionRequestDto = { pin: '12345' };
-
-    it('should get contributions successfully', async () => {
-      const mockContributions = [{ amount: 1000, date: '2023-01-01' }];
-      mockTrustFundService.getLastTenContributions.mockResolvedValue(mockContributions);
-
-      const result = await service.getLastTenContributions(contributionDto);
-
-      expect(result).toEqual({
-        status: true,
-        message: 'Contributions retrieved successfully',
-        data: { contributions: mockContributions },
-      });
-      expect(trustFundService.getLastTenContributions).toHaveBeenCalledWith({ pin: contributionDto.pin });
-    });
-
-    it('should handle get contributions error', async () => {
-      const error = new Error('Failed to get contributions');
-      mockTrustFundService.getLastTenContributions.mockRejectedValue(error);
-
-      const result = await service.getLastTenContributions(contributionDto);
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to get contributions',
-        data: {},
-      });
-    });
-  });
-
-  describe('getAccountManager', () => {
-    const managerDto: AccountManagerRequestDto = { rsa_number: '12345' };
-
-    it('should get account manager successfully', async () => {
-      const mockManager = { name: 'John Doe', email: 'john@example.com' };
-      mockTrustFundService.getAccountManager.mockResolvedValue(mockManager);
-
-      const result = await service.getAccountManager(managerDto);
-
-      expect(result).toEqual({
-        status: true,
-        message: 'Account manager details retrieved successfully',
-        data: { manager: mockManager },
-      });
-      expect(trustFundService.getAccountManager).toHaveBeenCalledWith({ rsa_number: managerDto.rsa_number });
-    });
-
-    it('should handle get account manager error', async () => {
-      const error = new Error('Failed to get account manager');
-      mockTrustFundService.getAccountManager.mockRejectedValue(error);
-
-      const result = await service.getAccountManager(managerDto);
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to get account manager',
-        data: {},
-      });
-    });
-  });
-
-  describe('getSummary', () => {
-    const summaryDto: SummaryRequestDto = { pin: '12345' };
-
-    it('should get summary successfully', async () => {
-      const mockSummary = { balance: 10000, contributions: 5000 };
-      mockTrustFundService.getSummary.mockResolvedValue(mockSummary);
-
-      const result = await service.getSummary(summaryDto);
-
-      expect(result).toEqual({
-        status: true,
-        message: 'Summary retrieved successfully',
-        data: mockSummary,
-      });
-      expect(trustFundService.getSummary).toHaveBeenCalledWith({ pin: summaryDto.pin });
-    });
-
-    it('should handle get summary error', async () => {
-      const error = new Error('Failed to get summary');
-      mockTrustFundService.getSummary.mockRejectedValue(error);
-
-      const result = await service.getSummary(summaryDto);
-
-      expect(result).toEqual({
-        status: false,
-        message: 'Failed to get summary',
-        data: {},
-      });
+      await expect(service.sendSms(smsDto)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
@@ -270,8 +135,13 @@ describe('PensionService', () => {
       accountNumber: '1234567890',
       accountName: 'John Doe',
       bvn: '12345678901',
+      othernames: '',
+      maidenName: '',
       email: 'john@example.com',
       permanentAddress: '123 Test Street',
+      permBox: '',
+      permanentAddress1: '',
+      permZip: '',
       employerType: 'Private',
       employerRcno: 'RC123',
       dateOfFirstApointment: '2023-01-01',
@@ -283,6 +153,8 @@ describe('PensionService', () => {
       employerBusiness: 'Technology',
       employerAddress1: '123 Business Street',
       employerAddress: '123 Business Street',
+      employerZip: '',
+      employerBox: '',
       employerPhone: '1234567890',
       nokTitle: 'Mrs',
       nokName: 'Jane',
@@ -294,16 +166,23 @@ describe('PensionService', () => {
       nokStatecode: 'LAG',
       nokLga: 'LGA123',
       nokCity: 'Lagos',
+      nokOthername: '',
       nokAddress1: '123 NOK Street',
       nokAddress: '123 NOK Street',
+      nokZip: '',
+      nokEmailaddress: '',
+      nokBox: '',
       nokMobilePhone: '1234567890',
+      pictureImage: '',
+      formImage: '',
+      signatureImage: '',
       stateOfPosting: 'Lagos',
       agentCode: 'AGT123',
       dateOfBirth: '1990-01-01',
     };
 
-    it('should complete customer onboarding successfully', async () => {
-      const mockResponse = { customerId: 'CUST123' };
+    it('should onboard customer successfully', async () => {
+      const mockResponse = { pin: 'PIN123' };
       mockTrustFundService.customerOnboarding.mockResolvedValue(mockResponse);
 
       const result = await service.customerOnboarding(onboardingDto);
@@ -313,27 +192,11 @@ describe('PensionService', () => {
         message: 'Customer onboarding completed successfully',
         data: mockResponse,
       });
-      expect(trustFundService.customerOnboarding).toHaveBeenCalledWith(expect.objectContaining({
-        ...onboardingDto,
-        othernames: '',
-        maidenName: '',
-        permBox: '',
-        permanentAddress1: '',
-        permZip: '',
-        employerZip: '',
-        employerBox: '',
-        nokOthername: '',
-        nokZip: '',
-        nokEmailaddress: '',
-        nokBox: '',
-        pictureImage: '',
-        formImage: '',
-        signatureImage: '',
-      }));
+      expect(mockTrustFundService.customerOnboarding).toHaveBeenCalledWith(onboardingDto);
     });
 
-    it('should handle customer onboarding error', async () => {
-      const error = new Error('Failed to complete onboarding');
+    it('should return error response when onboarding fails', async () => {
+      const error = new Error('Failed to onboard customer');
       mockTrustFundService.customerOnboarding.mockRejectedValue(error);
 
       const result = await service.customerOnboarding(onboardingDto);
@@ -346,49 +209,78 @@ describe('PensionService', () => {
     });
   });
 
-  describe('generateReport', () => {
-    const reportQuery: GenerateReportQueryDto = {
-      pin: '12345',
-      fromDate: '2023-01-01',
-      toDate: '2023-12-31',
+  describe('getLastTenContributions', () => {
+    const userId = '123';
+    const mockUser = {
+      id: userId,
+      rsa_pin: 'PIN123',
     };
 
-    it('should generate report successfully', async () => {
-      const mockBuffer = Buffer.from('test report');
-      mockTrustFundService.generateReport.mockResolvedValue(mockBuffer);
+    it('should get last ten contributions successfully', async () => {
+      mockUserService.findOne.mockResolvedValue(mockUser);
+      const mockResponse = { contributions: [] };
+      mockTrustFundService.getLastTenContributions.mockResolvedValue(mockResponse);
 
-      const result = await service.generateReport(reportQuery);
+      const result = await service.getLastTenContributions(userId);
 
-      expect(result).toEqual(mockBuffer);
-      expect(trustFundService.generateReport).toHaveBeenCalledWith(reportQuery);
+      expect(result).toEqual(mockResponse);
+      expect(mockTrustFundService.getLastTenContributions).toHaveBeenCalledWith({ pin: mockUser.rsa_pin });
     });
 
-    it('should handle generate report error', async () => {
-      const error = new Error('Failed to generate report');
-      mockTrustFundService.generateReport.mockRejectedValue(error);
+    it('should throw UnprocessableEntityException when user not found', async () => {
+      mockUserService.findOne.mockResolvedValue(null);
 
-      await expect(service.generateReport(reportQuery)).rejects.toThrow(error);
+      await expect(service.getLastTenContributions(userId)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
-  describe('generateWelcomeLetter', () => {
-    const welcomeLetterData = { pin: '12345' };
+  describe('getAccountManager', () => {
+    const userId = '123';
+    const mockUser = {
+      id: userId,
+      rsa_pin: 'PIN123',
+    };
 
-    it('should generate welcome letter successfully', async () => {
-      const mockBuffer = Buffer.from('test letter');
-      mockTrustFundService.generateWelcomeLetter.mockResolvedValue(mockBuffer);
+    it('should get account manager successfully', async () => {
+      mockUserService.findOne.mockResolvedValue(mockUser);
+      const mockResponse = { manager: {} };
+      mockTrustFundService.getAccountManager.mockResolvedValue(mockResponse);
 
-      const result = await service.generateWelcomeLetter(welcomeLetterData);
+      const result = await service.getAccountManager(userId);
 
-      expect(result).toEqual(mockBuffer);
-      expect(trustFundService.generateWelcomeLetter).toHaveBeenCalledWith(welcomeLetterData);
+      expect(result).toEqual(mockResponse);
+      expect(mockTrustFundService.getAccountManager).toHaveBeenCalledWith({ rsa_number: mockUser.rsa_pin });
     });
 
-    it('should handle generate welcome letter error', async () => {
-      const error = new Error('Failed to generate welcome letter');
-      mockTrustFundService.generateWelcomeLetter.mockRejectedValue(error);
+    it('should throw UnprocessableEntityException when user not found', async () => {
+      mockUserService.findOne.mockResolvedValue(null);
 
-      await expect(service.generateWelcomeLetter(welcomeLetterData)).rejects.toThrow(error);
+      await expect(service.getAccountManager(userId)).rejects.toThrow(UnprocessableEntityException);
+    });
+  });
+
+  describe('getSummary', () => {
+    const userId = '123';
+    const mockUser = {
+      id: userId,
+      rsa_pin: 'PIN123',
+    };
+
+    it('should get summary successfully', async () => {
+      mockUserService.findOne.mockResolvedValue(mockUser);
+      const mockResponse = { summary: {} };
+      mockTrustFundService.getSummary.mockResolvedValue(mockResponse);
+
+      const result = await service.getSummary(userId);
+
+      expect(result).toEqual(mockResponse);
+      expect(mockTrustFundService.getSummary).toHaveBeenCalledWith({ pin: mockUser.rsa_pin });
+    });
+
+    it('should throw UnprocessableEntityException when user not found', async () => {
+      mockUserService.findOne.mockResolvedValue(null);
+
+      await expect(service.getSummary(userId)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 }); 

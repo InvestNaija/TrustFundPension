@@ -2,8 +2,6 @@ export interface IEmailRequest {
   to: string;
   subject: string;
   body: string;
-  from: string;
-  from_name: string;
 }
 
 export interface IEmailResponse {
@@ -12,11 +10,8 @@ export interface IEmailResponse {
 }
 
 export interface ISmsRequest {
-  username: string;
-  password: string;
   msisdn: string;
   msg: string;
-  sender: string;
 }
 
 export interface ISmsResponse {

@@ -113,7 +113,6 @@ export class AuthService {
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
     await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
-    // Trigger event to send OTP verification email
     this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
 
     return {
@@ -126,12 +125,22 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const { email, password } = dto;
+    dto.validateLoginMethod();
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    let user;
+    if (dto.email) {
+      user = await this.userService.findByEmail(dto.email);
+    } else if (dto.rsaPin) {
+      user = await this.userService.findByRsaPin(dto.rsaPin);
+    } else if (dto.phone) {
+      user = await this.userService.findByPhone(dto.phone);
+    }
 
-    const isValidPassword = await verifyPassword(password, user.password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isValidPassword = await verifyPassword(dto.password, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -176,12 +185,7 @@ export class AuthService {
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
     await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
-    // this.eventPublisherService.publishSendEmail({
-    //   to: user.email,
-    //   subject: 'Reset Your Password',
-    //   template: EMAIL_TEMPLATE.PASSWORD_RESET_OTP,
-    //   templateData: { name: user.first_name, otp: otpCode },
-    // });
+    this.sendEmailVerificationOTP(user.first_name, user.email, otpCode);
 
     return {
       status: true,
@@ -265,11 +269,6 @@ export class AuthService {
     email: string,
     otp: string,
   ): void {
-    // this.eventPublisherService.publishSendEmail({
-    //   to: email,
-    //   subject: 'Verify Your Account',
-    //   template: EMAIL_TEMPLATE.EMAIL_VERIFICATION_OTP,
-    //   templateData: { name, otp },
-    // });
+    this.logger.debug(`Email verification OTP for ${name} (${email}): ${otp}`);
   }
 }

@@ -1,21 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class UserRoleResponseDto {
   @ApiProperty()
-  id: number;
+  @Expose()
+  id: string;
 
   @ApiProperty()
-  user_id: number;
+  @Expose()
+  userId: string;
 
   @ApiProperty()
-  role_id: number;
+  @Expose()
+  roleId: string;
 
   @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()
+  @Expose()
   updatedAt: Date;
 
   @ApiProperty()
+  @Expose()
   deletedAt: Date;
 } 

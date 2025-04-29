@@ -2,10 +2,10 @@ import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
 import { User } from '.';
 import { AbstractEntity } from 'src/core/database';
 
-@Entity('employer')
+@Entity('employers')
 export class Employer extends AbstractEntity {
   @Column()
-  user_id: number;
+  userId: string;
 
   @Column()
   business: string;

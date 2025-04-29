@@ -3,9 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateEmployerDto {
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  user_id?: number;
+  userId?: string;
 
   @ApiProperty({ required: false })
   @IsString()

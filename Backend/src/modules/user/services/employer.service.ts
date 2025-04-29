@@ -23,8 +23,18 @@ export class EmployerService {
 
   async findAll(): Promise<EmployerResponseDto[]> {
     try {
-      const employers = await this.employerRepository.findMany({});
-      return employers.map(employer => this.mapToResponseDto(employer));
+      this.logger.debug('Fetching all employers from database...');
+      const employers = await this.employerRepository.find();
+      this.logger.debug(`Found ${employers.length} employers:`, employers);
+      
+      const mappedEmployers = employers.map(employer => {
+        const mapped = this.mapToResponseDto(employer);
+        this.logger.debug('Mapped employer:', mapped);
+        return mapped;
+      });
+      
+      this.logger.debug('Final response:', mappedEmployers);
+      return mappedEmployers;
     } catch (error) {
       this.logger.error(`Error finding all employers: ${error.message}`);
       throw error;
@@ -73,8 +83,10 @@ export class EmployerService {
   }
 
   private mapToResponseDto(employer: Employer): EmployerResponseDto {
-    return plainToClass(EmployerResponseDto, employer, {
+    const mapped = plainToClass(EmployerResponseDto, employer, {
       excludeExtraneousValues: true,
     });
+    this.logger.debug('Mapping employer to DTO:', { original: employer, mapped });
+    return mapped;
   }
 } 

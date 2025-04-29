@@ -1,14 +1,14 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserRoleDto {
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  user_id?: number;
+  userId?: string;
 
   @ApiProperty({ required: false })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  role_id?: number;
+  role_id?: string;
 } 

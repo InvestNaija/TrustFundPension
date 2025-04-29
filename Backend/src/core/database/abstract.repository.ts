@@ -50,9 +50,12 @@ import {
       return record;
     }
   
+    async find(options?: FindManyOptions<T>): Promise<T[]> {
+      return await this.repository.find(options);
+    }
+  
     async findMany(query: FindManyOptions<T>): Promise<T[]> {
       const records = await this.repository.find(query);
-  
       return records;
     }
   
@@ -85,7 +88,6 @@ import {
   
     async count(query?: FindManyOptions<T>): Promise<number> {
       const count = await this.repository.count(query);
-  
       return count;
     }
   
@@ -112,10 +114,7 @@ import {
       transactionQueryRunner?: QueryRunner,
     ): Promise<UpdateResult> {
       if (transactionQueryRunner) {
-        return await transactionQueryRunner.manager.softDelete(
-          this.entity,
-          options,
-        );
+        return await transactionQueryRunner.manager.softDelete(this.entity, options);
       }
   
       return await this.repository.softDelete(options);

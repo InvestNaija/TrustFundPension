@@ -14,5 +14,4 @@ export class EmployerRepository extends AbstractRepository<Employer> {
   ) {
     super(employerRepository, Employer);
   }
-
 } 

@@ -91,7 +91,7 @@ export interface IBioData {
   nok2Mobilephone: string;
   nok2Emailaddress: string;
   nok2Address: string;
-  fundId: number | null;
+  fundId: string | null;
   fundName: string | null;
 }
 
@@ -116,7 +116,7 @@ export interface ISummaryResponse {
   balanceVoluntary: number;
   growthVoluntary: number;
   schemeName: string;
-  fundId: number;
+  fundId: string;
   bioData: IBioData;
   contributions: any | null;
   priceList: any | null;

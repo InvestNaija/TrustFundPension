@@ -23,7 +23,7 @@ export class NokService {
 
   async findAll(): Promise<NokResponseDto[]> {
     try {
-      const noks = await this.nokRepository.findMany({});
+      const noks = await this.nokRepository.find();
       return noks.map(nok => this.mapToResponseDto(nok));
     } catch (error) {
       this.logger.error(`Error finding all next of kin: ${error.message}`);

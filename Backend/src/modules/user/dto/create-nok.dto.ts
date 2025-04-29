@@ -3,9 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateNokDto {
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  user_id: number;
+  userId: string;
 
   @ApiProperty()
   @IsString()

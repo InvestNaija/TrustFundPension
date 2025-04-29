@@ -1,24 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class BvnDataResponseDto {
   @ApiProperty()
-  id: number;
+  @Expose()
+  id: string;
 
   @ApiProperty()
-  user_id: number;
+  @Expose()
+  userId: string;
 
   @ApiProperty()
+  @Expose()
   bvn: string;
 
   @ApiProperty()
-  bvn_response: any;
+  @Expose()
+  bvnResponse: any;
 
   @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()
+  @Expose()
   updatedAt: Date;
 
   @ApiProperty()
+  @Expose()
   deletedAt: Date;
 } 

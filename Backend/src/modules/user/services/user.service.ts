@@ -31,11 +31,6 @@ export class UserService {
     return this.mapToResponseDto(savedUser);
   }
 
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.findMany({});
-    return users.map(user => this.mapToResponseDto(user));
-  }
-
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
@@ -44,10 +39,9 @@ export class UserService {
     return this.mapToResponseDto(user);
   }
 
-  async findByEmail(email: string): Promise<UserResponseDto | null> {
+  async findByEmail(email: string): Promise<any | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
-      return user ? this.mapToResponseDto(user) : null;
+      return await this.userRepository.findOne({ where: { email } });
     } catch (error) {
       this.logger.error(`Error finding user by email: ${error.message}`);
       throw error;
@@ -62,13 +56,6 @@ export class UserService {
     Object.assign(user, updateUserDto);
     const updatedUser = await this.userRepository.save(user);
     return this.mapToResponseDto(updatedUser);
-  }
-
-  async remove(id: string): Promise<void> {
-    const result = await this.userRepository.softDelete({ id });
-    if (result.affected === 0) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
   }
 
   async getClientDetails() {
@@ -86,8 +73,32 @@ export class UserService {
   }
 
   private mapToResponseDto(user: User): UserResponseDto {
-    return plainToClass(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+    const userDto = new UserResponseDto();
+    userDto.id = user.id;
+    userDto.bvn = user.bvn;
+    userDto.nin = user.nin;
+    userDto.rsa_pin = user.rsa_pin;
+    userDto.first_name = user.first_name;
+    userDto.middle_name = user.middle_name;
+    userDto.last_name = user.last_name;
+    userDto.email = user.email;
+    userDto.dob = user.dob;
+    userDto.gender = user.gender;
+    userDto.phone = user.phone;
+    userDto.uuid_token = user.uuid_token;
+    userDto.ref_code = user.ref_code;
+    userDto.referrer = user.referrer;
+    userDto.show_balance = user.show_balance;
+    userDto.state_of_posting = user.state_of_posting;
+    userDto.lga_of_posting = user.lga_of_posting;
+    userDto.is_enabled = user.is_enabled;
+    userDto.is_locked = user.is_locked;
+    userDto.first_login = user.first_login;
+    userDto.two_factor_auth = user.two_factor_auth;
+    userDto.role = user.role;
+    userDto.isEmailVerified = user.isEmailVerified;
+    userDto.createdAt = user.createdAt;
+    userDto.updatedAt = user.updatedAt;
+    return userDto;
   }
 }

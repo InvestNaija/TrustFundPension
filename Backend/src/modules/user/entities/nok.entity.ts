@@ -5,7 +5,7 @@ import { AbstractEntity } from 'src/core/database';
 @Entity('nok')
 export class Nok extends AbstractEntity {
   @Column()
-  user_id: number;
+  userId: string;
 
   @Column()
   title: string;

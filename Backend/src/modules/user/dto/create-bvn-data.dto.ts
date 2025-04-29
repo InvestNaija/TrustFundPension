@@ -3,9 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBvnDataDto {
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  user_id: number;
+  userId: string;
 
   @ApiProperty()
   @IsString()

@@ -1,36 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class NokResponseDto {
   @ApiProperty()
-  id: number;
+  @Expose()
+  id: string;
 
   @ApiProperty()
-  user_id: number;
+  @Expose()
+  userId: string;
 
   @ApiProperty()
+  @Expose()
   title: string;
 
   @ApiProperty()
-  first_name: string;
+  @Expose()
+  firstName: string;
 
   @ApiProperty()
-  other_name: string;
+  @Expose()
+  otherName: string;
 
   @ApiProperty()
+  @Expose()
   surname: string;
 
   @ApiProperty()
+  @Expose()
   gender: string;
 
   @ApiProperty()
+  @Expose()
   phone: string;
 
   @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()
+  @Expose()
   updatedAt: Date;
 
   @ApiProperty()
+  @Expose()
   deletedAt: Date;
 } 

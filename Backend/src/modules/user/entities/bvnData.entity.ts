@@ -6,7 +6,7 @@ import { AbstractEntity } from 'src/core/database';
 export class BVNData extends AbstractEntity{
 
   @Column()
-  user_id: number;
+  userId: string;
 
   @Column()
   bvn: string;

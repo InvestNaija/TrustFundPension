@@ -6,10 +6,10 @@ import { AbstractEntity } from 'src/core/database';
 export class UserRole extends AbstractEntity{
 
   @Column()
-  user_id: number;
+  userId: string;
 
   @Column()
-  role_id: number;
+  role_id: string;
 
   @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt: Date;

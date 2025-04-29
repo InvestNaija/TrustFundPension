@@ -27,8 +27,8 @@ export class UserRoleService {
 
   async findAll(): Promise<UserRoleResponseDto[]> {
     try {
-      const userRoles = await this.userRoleRepository.findMany({});
-      return userRoles.map(userRole => plainToClass(UserRoleResponseDto, userRole));
+      const userRoles = await this.userRoleRepository.find();
+      return userRoles.map(userRole => this.mapToResponseDto(userRole));
     } catch (error) {
       this.logger.error(`Error finding all user roles: ${error.message}`);
       throw error;

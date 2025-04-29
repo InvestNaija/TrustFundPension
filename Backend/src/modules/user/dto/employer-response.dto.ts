@@ -1,33 +1,44 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class EmployerResponseDto {
   @ApiProperty()
-  id: number;
+  @Expose()
+  id: string;
 
   @ApiProperty()
-  user_id: number;
+  @Expose()
+  userId: string;
 
   @ApiProperty()
+  @Expose()
   business: string;
 
   @ApiProperty()
+  @Expose()
   phone: string;
 
   @ApiProperty()
+  @Expose()
   type: string;
 
   @ApiProperty()
+  @Expose()
   rcno: string;
 
   @ApiProperty()
+  @Expose()
   first_appoint_date: string;
 
   @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()
+  @Expose()
   updatedAt: Date;
 
   @ApiProperty()
+  @Expose()
   deletedAt: Date;
 } 

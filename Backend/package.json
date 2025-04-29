@@ -23,9 +23,9 @@
     "test:db:view": "./scripts/setup-test-db.sh view",
     "test:with-db": "npm run test:db:up && npm run test && npm run test:e2e && npm run test:db:down",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migration:generate": "npm run typeorm migration:generate -- -d src/core/config/data-source.config.ts",
-    "migration:run": "npm run typeorm migration:run -- -d src/core/config/data-source.config.ts",
-    "migration:revert": "npm run typeorm migration:revert -- -d src/core/config/data-source.config.ts"
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:up": "npm run typeorm -- migration:run -d dist/core/config/database.config.js",
+    "migration:down": "npm run typeorm -- migration:revert -d dist/core/config/database.config.js"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
@@ -61,7 +61,7 @@
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "transformer": "^1.2.8",
-    "typeorm": "^0.3.21"
+    "typeorm": "^0.3.22"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

@@ -84,6 +84,9 @@ export class User extends AbstractEntity {
   @Column({ default: false })
   isEmailVerified: boolean;
 
+  @Column({ default: false })
+  isPhoneVerified: boolean;
+
   @Column({ type: 'timestamptz', nullable: true })
   passwordChangedAt: Date | null;
 

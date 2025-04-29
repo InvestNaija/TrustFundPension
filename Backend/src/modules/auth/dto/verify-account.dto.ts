@@ -1,10 +1,9 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { USER_ROLE } from '../../../core/constants';
-import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { VerificationMethod } from './verification-preference.dto';
 
-export class ResendVerificationTokenDto {
+export class VerifyAccountDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsEmail()
@@ -16,8 +15,13 @@ export class ResendVerificationTokenDto {
   @IsString()
   phone?: string;
 
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  otpCode: string;
+
   @ApiProperty({ enum: VerificationMethod })
   @IsEnum(VerificationMethod)
   @IsNotEmpty()
   method: VerificationMethod;
-}
+} 

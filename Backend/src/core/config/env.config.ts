@@ -28,6 +28,11 @@ export const envConfig = {
   TRUSTFUND_PASSWORD: process.env.TRUSTFUND_PASSWORD,
   TRUSTFUND_URL: process.env.TRUSTFUND_URL,
   ENCRYPTION_SECRET_KEY: process.env.ENCRYPTION_SECRET_KEY,
+  TRUSTFUND_EMAIL_FROM: process.env.TRUSTFUND_EMAIL_FROM,
+  TRUSTFUND_EMAIL_FROM_NAME: process.env.TRUSTFUND_EMAIL_FROM_NAME,
+  TRUSTFUND_SMS_USERNAME: process.env.TRUSTFUND_SMS_USERNAME,
+  TRUSTFUND_SMS_PASSWORD: process.env.TRUSTFUND_SMS_PASSWORD,
+  TRUSTFUND_SMS_SENDER: process.env.TRUSTFUND_SMS_SENDER,
 }
 
 export interface IEnvConfig {
@@ -59,7 +64,12 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_TOKEN_EXPIRY: Joi.string().required(),
   TRUSTFUND_USERNAME: Joi.string().required(),
   TRUSTFUND_PASSWORD: Joi.string().required(),
-  TRUSTFUND_URL: Joi.string().required()
+  TRUSTFUND_URL: Joi.string().required(),
+  TRUSTFUND_EMAIL_FROM: Joi.string().required(),
+  TRUSTFUND_EMAIL_FROM_NAME: Joi.string().required(),
+  TRUSTFUND_SMS_USERNAME: Joi.string().required(),
+  TRUSTFUND_SMS_PASSWORD: Joi.string().required(),
+  TRUSTFUND_SMS_SENDER: Joi.string().required(),
 });
 
 // import * as dotenv from 'dotenv';

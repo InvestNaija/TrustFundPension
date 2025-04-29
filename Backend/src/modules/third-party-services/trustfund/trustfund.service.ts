@@ -24,6 +24,15 @@ export class TrustFundService {
   private logger = new Logger(TrustFundService.name);
   private accessToken: string | null = null;
 
+  // Email credentials
+  private readonly EMAIL_FROM = envConfig.TRUSTFUND_EMAIL_FROM;
+  private readonly EMAIL_FROM_NAME = envConfig.TRUSTFUND_EMAIL_FROM_NAME;
+
+  // SMS credentials
+  private readonly SMS_USERNAME = envConfig.TRUSTFUND_SMS_USERNAME;
+  private readonly SMS_PASSWORD = envConfig.TRUSTFUND_SMS_PASSWORD;
+  private readonly SMS_SENDER = envConfig.TRUSTFUND_SMS_SENDER;
+
   constructor(private readonly httpRequest: HttpRequestService) {}
 
   private getRequestHeaders(withAuth = true) {
@@ -58,10 +67,15 @@ export class TrustFundService {
   async sendEmail(emailData: IEmailRequest): Promise<IEmailResponse> {
     try {
       const url = `${envConfig.TRUSTFUND_URL}/mobile/sendemail.php`;
+      const emailPayload = {
+        ...emailData,
+        from: this.EMAIL_FROM,
+        from_name: this.EMAIL_FROM_NAME,
+      };
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        data: emailData,
+        data: emailPayload,
         headers: this.getRequestHeaders(),
       });
     } catch (error) {
@@ -73,10 +87,16 @@ export class TrustFundService {
   async sendSms(smsData: ISmsRequest): Promise<ISmsResponse> {
     try {
       const url = `${envConfig.TRUSTFUND_URL}/mobile/sendsms.php`;
+      const smsPayload = {
+        ...smsData,
+        username: this.SMS_USERNAME,
+        password: this.SMS_PASSWORD,
+        sender: this.SMS_SENDER,
+      };
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        data: smsData,
+        data: smsPayload,
         headers: this.getRequestHeaders(),
       });
     } catch (error) {

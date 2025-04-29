@@ -15,17 +15,21 @@ import { IApiResponse } from './../../core/types/index';
 import { AuthService } from './auth.service';
 import {
   LoginDto,
-  ResendEmailVerificationTokenDto,
+  ResendVerificationTokenDto,
   ResetPasswordDto,
   SendPasswordResetTokenDto,
+  SendVerificationCodeDto,
   SignupUserDto,
   ValidateOtpDto,
+  VerifyAccountDto,
   VerifyEmailDto,
+  VerificationPreferenceDto,
 } from './dto';
 import { JwtAccessTokenGuard, JwtRefreshTokenGuard } from './guards';
 import { IJwtTokens } from './types';
 import { AuthenticatedUser } from '../../core/decorators';
 import { IDecodedJwtToken } from './strategies';
+import { VerificationMethod } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -40,15 +44,22 @@ export class AuthController {
   @Post('/verify-email')
   @HttpCode(HttpStatus.OK)
   verifyEmail(@Body() dto: VerifyEmailDto): Promise<IApiResponse> {
-    return this.authService.verifyEmail(dto);
+    return this.authService.verifyAccount({
+      email: dto.email,
+      otpCode: dto.otpCode,
+      method: VerificationMethod.EMAIL,
+    });
   }
 
   @Post('/resend-email-verification-token')
   @HttpCode(HttpStatus.OK)
   resendEmailVerificationToken(
-    @Body() dto: ResendEmailVerificationTokenDto,
+    @Body() dto: ResendVerificationTokenDto,
   ): Promise<IApiResponse> {
-    return this.authService.resendEmailVerificationToken(dto);
+    return this.authService.resendVerificationToken({
+      ...dto,
+      method: VerificationMethod.EMAIL,
+    });
   }
 
   @Post('/login')
@@ -126,6 +137,30 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   resetPassword(@Body() dto: ResetPasswordDto): Promise<IApiResponse> {
     return this.authService.resetPassword(dto);
+  }
+
+  @Post('/resend-verification-token')
+  @HttpCode(HttpStatus.OK)
+  resendVerificationToken(
+    @Body() dto: ResendVerificationTokenDto,
+  ): Promise<IApiResponse> {
+    return this.authService.resendVerificationToken(dto);
+  }
+
+  @Post('/send-verification-code')
+  @HttpCode(HttpStatus.OK)
+  sendVerificationCode(
+    @Body() dto: SendVerificationCodeDto,
+  ): Promise<IApiResponse> {
+    return this.authService.sendVerificationCode(dto);
+  }
+
+  @Post('/verify-account')
+  @HttpCode(HttpStatus.OK)
+  verifyAccount(
+    @Body() dto: VerifyAccountDto,
+  ): Promise<IApiResponse> {
+    return this.authService.verifyAccount(dto);
   }
 
   private setCookieOptions(req: Request): CookieOptions {

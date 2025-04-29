@@ -7,6 +7,19 @@ import { BadRequestException, ConflictException, NotFoundException, Unauthorized
 import { USER_ROLE } from '../../core/constants';
 import { VerificationMethod } from './dto';
 import { Logger } from '@nestjs/common';
+import { generateOtpCodeHash, verifyPassword, hashPassword, generateOtpDetails } from '../../shared/utils';
+
+// Mock the utils functions
+jest.mock('../../shared/utils', () => ({
+  generateOtpCodeHash: jest.fn().mockImplementation((otp) => `hashed_${otp}`),
+  verifyPassword: jest.fn().mockImplementation((password, hash) => password === 'password123'),
+  hashPassword: jest.fn().mockResolvedValue('hashedPassword'),
+  generateOtpDetails: jest.fn().mockReturnValue({
+    otpCode: '123456',
+    otpCodeHash: 'hashed_123456',
+    otpCodeExpiry: new Date(Date.now() + 3600000)
+  })
+}));
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -130,8 +143,8 @@ describe('AuthService', () => {
       id: '123',
       email: 'test@example.com',
       phone: '1234567890',
-      otpCodeHash: null,
-      otpCodeExpiry: null,
+      otpCodeHash: 'hashed_123456',
+      otpCodeExpiry: new Date(Date.now() + 3600000), // 1 hour from now
       isEmailVerified: false,
       isPhoneVerified: false,
     };
@@ -285,8 +298,6 @@ describe('AuthService', () => {
       email: 'test@example.com',
       password: 'hashedPassword',
       role: USER_ROLE.CLIENT,
-      otpCodeHash: null,
-      otpCodeExpiry: null,
     };
 
     const mockTokens = {
@@ -298,9 +309,14 @@ describe('AuthService', () => {
       profilePictureUrl: 'https://example.com/profile.jpg',
     };
 
+    beforeEach(() => {
+      mockJwtService.signAsync
+        .mockImplementationOnce(() => Promise.resolve(mockTokens.accessToken))
+        .mockImplementationOnce(() => Promise.resolve(mockTokens.refreshToken));
+    });
+
     it('should login successfully', async () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      mockJwtService.signAsync.mockResolvedValue(mockTokens.accessToken);
       mockUserService.generateSignedUrlsForUserFiles.mockResolvedValue(mockSignedUrls);
 
       const result = await service.login(loginDto);
@@ -342,9 +358,15 @@ describe('AuthService', () => {
       refreshToken: 'new_refresh_token',
     };
 
+    beforeEach(() => {
+      mockJwtService.signAsync.mockReset();
+      mockJwtService.signAsync
+        .mockImplementationOnce(() => Promise.resolve(mockTokens.accessToken))
+        .mockImplementationOnce(() => Promise.resolve(mockTokens.refreshToken));
+    });
+
     it('should refresh tokens successfully', async () => {
       mockUserService.findOne.mockResolvedValue(mockUser);
-      mockJwtService.signAsync.mockResolvedValue(mockTokens.accessToken);
 
       const result = await service.refreshUserToken(authenticatedUser);
 
@@ -403,8 +425,8 @@ describe('AuthService', () => {
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      otpCodeHash: null,
-      otpCodeExpiry: null,
+      otpCodeHash: 'hashed_123456',
+      otpCodeExpiry: new Date(Date.now() + 3600000), // 1 hour from now
     };
 
     it('should validate OTP successfully', async () => {
@@ -450,8 +472,8 @@ describe('AuthService', () => {
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      otpCodeHash: null,
-      otpCodeExpiry: null,
+      otpCodeHash: 'hashed_123456',
+      otpCodeExpiry: new Date(Date.now() + 3600000), // 1 hour from now
     };
 
     it('should reset password successfully', async () => {
@@ -574,6 +596,19 @@ describe('AuthService', () => {
   });
 
   describe('sendEmailVerificationOTP', () => {
+    let loggerSpy;
+    let errorSpy;
+
+    beforeEach(() => {
+      loggerSpy = jest.spyOn(Logger.prototype, 'log');
+      errorSpy = jest.spyOn(Logger.prototype, 'error');
+    });
+
+    afterEach(() => {
+      loggerSpy.mockRestore();
+      errorSpy.mockRestore();
+    });
+
     it('should log success when email is sent', async () => {
       const emailDto = {
         to: 'test@example.com',
@@ -583,11 +618,10 @@ describe('AuthService', () => {
 
       mockTrustFundService.sendEmail.mockResolvedValue({ success: true });
       
-      // Spy on the logger
-      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
-      
-      // Call the private method using any type assertion
       await (service as any).sendEmailVerificationOTP(emailDto);
+      
+      // Wait for the promise to resolve
+      await new Promise(resolve => setTimeout(resolve, 0));
       
       expect(mockTrustFundService.sendEmail).toHaveBeenCalledWith(emailDto);
       expect(loggerSpy).toHaveBeenCalledWith(`Email verification OTP sent to ${emailDto.to}`);
@@ -603,18 +637,30 @@ describe('AuthService', () => {
       const error = new Error('Failed to send email');
       mockTrustFundService.sendEmail.mockRejectedValue(error);
       
-      // Spy on the logger
-      const loggerSpy = jest.spyOn(Logger.prototype, 'error');
-      
-      // Call the private method using any type assertion
       await (service as any).sendEmailVerificationOTP(emailDto);
       
+      // Wait for the promise to resolve
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
       expect(mockTrustFundService.sendEmail).toHaveBeenCalledWith(emailDto);
-      expect(loggerSpy).toHaveBeenCalledWith(`Failed to send email verification OTP: ${error.message}`);
+      expect(errorSpy).toHaveBeenCalledWith(`Failed to send email verification OTP: ${error.message}`);
     });
   });
 
   describe('sendSmsVerificationOTP', () => {
+    let loggerSpy;
+    let errorSpy;
+
+    beforeEach(() => {
+      loggerSpy = jest.spyOn(Logger.prototype, 'log');
+      errorSpy = jest.spyOn(Logger.prototype, 'error');
+    });
+
+    afterEach(() => {
+      loggerSpy.mockRestore();
+      errorSpy.mockRestore();
+    });
+
     it('should log success when SMS is sent', async () => {
       const smsDto = {
         msisdn: '1234567890',
@@ -623,11 +669,10 @@ describe('AuthService', () => {
 
       mockTrustFundService.sendSms.mockResolvedValue({ success: true });
       
-      // Spy on the logger
-      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
-      
-      // Call the private method using any type assertion
       await (service as any).sendSmsVerificationOTP(smsDto);
+      
+      // Wait for the promise to resolve
+      await new Promise(resolve => setTimeout(resolve, 0));
       
       expect(mockTrustFundService.sendSms).toHaveBeenCalledWith(smsDto);
       expect(loggerSpy).toHaveBeenCalledWith(`SMS verification OTP sent to ${smsDto.msisdn}`);
@@ -642,14 +687,13 @@ describe('AuthService', () => {
       const error = new Error('Failed to send SMS');
       mockTrustFundService.sendSms.mockRejectedValue(error);
       
-      // Spy on the logger
-      const loggerSpy = jest.spyOn(Logger.prototype, 'error');
-      
-      // Call the private method using any type assertion
       await (service as any).sendSmsVerificationOTP(smsDto);
       
+      // Wait for the promise to resolve
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
       expect(mockTrustFundService.sendSms).toHaveBeenCalledWith(smsDto);
-      expect(loggerSpy).toHaveBeenCalledWith(`Failed to send SMS verification OTP: ${error.message}`);
+      expect(errorSpy).toHaveBeenCalledWith(`Failed to send SMS verification OTP: ${error.message}`);
     });
   });
 }); 

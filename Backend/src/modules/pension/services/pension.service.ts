@@ -85,6 +85,15 @@ export class PensionService {
     }
   }
 
+  async validateRsaPin(rsa_pin: string) {
+    try {
+      const data: SummaryRequestDto = { pin: rsa_pin };
+      return await this.trustFundService.getSummary(data);
+    } catch (error) {
+      throw new UnprocessableEntityException('Failed to get summary');
+    }
+  }
+
   async customerOnboarding(data: CustomerOnboardingRequestDto) {
     try {
       const onboardingData: ICustomerOnboardingRequest = {

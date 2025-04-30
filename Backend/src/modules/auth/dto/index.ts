@@ -5,3 +5,6 @@ export * from './send-password-reset-token.dto';
 export * from './signup-user.dto';
 export * from './validate-otp.dto';
 export * from './verify-email.dto';
+export * from './verification-preference.dto';
+export * from './send-verification-code.dto';
+export * from './verify-account.dto';

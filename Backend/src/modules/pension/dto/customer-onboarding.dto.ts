@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CustomerOnboardingRequestDto {
@@ -112,15 +112,15 @@ export class CustomerOnboardingRequestDto {
   @IsNotEmpty()
   bvn: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  othernames?: string;
+  othernames: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  maidenName?: string;
+  maidenName: string = '';
 
   @ApiProperty()
   @IsEmail()
@@ -132,20 +132,20 @@ export class CustomerOnboardingRequestDto {
   @IsNotEmpty()
   permanentAddress: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  permBox?: string;
+  permBox: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  permanentAddress1?: string;
+  permanentAddress1: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  permZip?: string;
+  permZip: string = '';
 
   @ApiProperty()
   @IsString()
@@ -158,7 +158,7 @@ export class CustomerOnboardingRequestDto {
   employerRcno: string;
 
   @ApiProperty()
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
   dateOfFirstApointment: string;
 
@@ -202,15 +202,15 @@ export class CustomerOnboardingRequestDto {
   @IsNotEmpty()
   employerAddress: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  employerZip?: string;
+  employerZip: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  employerBox?: string;
+  employerBox: string = '';
 
   @ApiProperty()
   @IsString()
@@ -267,10 +267,10 @@ export class CustomerOnboardingRequestDto {
   @IsNotEmpty()
   nokCity: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  nokOthername?: string;
+  nokOthername: string = '';
 
   @ApiProperty()
   @IsString()
@@ -282,40 +282,40 @@ export class CustomerOnboardingRequestDto {
   @IsNotEmpty()
   nokAddress: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  nokZip?: string;
+  nokZip: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  nokEmailaddress?: string;
+  nokEmailaddress: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  nokBox?: string;
+  nokBox: string = '';
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   nokMobilePhone: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  pictureImage?: string;
+  pictureImage: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  formImage?: string;
+  formImage: string = '';
 
-  @ApiProperty()
+  @ApiProperty({ required: false, default: '' })
   @IsString()
   @IsOptional()
-  signatureImage?: string;
+  signatureImage: string = '';
 
   @ApiProperty()
   @IsString()
@@ -328,7 +328,7 @@ export class CustomerOnboardingRequestDto {
   agentCode: string;
 
   @ApiProperty()
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
   dateOfBirth: string;
 } 

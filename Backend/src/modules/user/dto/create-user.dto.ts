@@ -107,4 +107,19 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   two_factor_auth?: boolean;
+
+  @ApiProperty({ default: false })
+  @IsBoolean()
+  @IsOptional()
+  isEmailVerified?: boolean;
+
+  @ApiProperty({ default: false })
+  @IsBoolean()
+  @IsOptional()
+  isPhoneVerified?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDate()
+  passwordChangedAt?: Date | null;
 } 

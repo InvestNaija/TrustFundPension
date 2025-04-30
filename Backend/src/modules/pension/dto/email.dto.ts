@@ -16,14 +16,4 @@ export class EmailRequestDto {
   @IsString()
   @IsNotEmpty()
   body: string;
-
-  @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  from: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  from_name: string;
 } 

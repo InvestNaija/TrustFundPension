@@ -119,6 +119,11 @@ export class UpdateUserDto {
   isEmailVerified?: boolean;
 
   @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isPhoneVerified?: boolean;
+
+  @ApiProperty({ required: false })
   @IsDate()
   @IsOptional()
   passwordChangedAt?: Date | null;

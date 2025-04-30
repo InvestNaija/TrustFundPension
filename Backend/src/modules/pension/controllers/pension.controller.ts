@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res, HttpStatus, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PensionService } from '../services';
@@ -11,9 +11,13 @@ import {
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AuthenticatedUser } from '../../../core/decorators';
+import { IDecodedJwtToken } from '../../../core/decorators';
 
 @ApiTags('Pension')
 @Controller('pension')
+@UseGuards(JwtAuthGuard)
 export class PensionController {
   constructor(private readonly pensionService: PensionService) {}
 
@@ -38,28 +42,32 @@ export class PensionController {
     return await this.pensionService.getFundTypes();
   }
 
-  @Get('contributions/:pin')
+  @Get('contributions')
   @ApiOperation({ summary: 'Get last 10 contributions' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Contributions retrieved successfully' })
-  async getLastTenContributions(@Param('pin') pin: string) {
-    const data: ContributionRequestDto = { pin };
-    return await this.pensionService.getLastTenContributions(data);
+  async getLastTenContributions(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return await this.pensionService.getLastTenContributions(authenticatedUser.id);
   }
 
-  @Get('account-manager/:rsa_number')
+  @Get('account-manager')
   @ApiOperation({ summary: 'Get account manager details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Account manager details retrieved successfully' })
-  async getAccountManager(@Param('rsa_number') rsa_number: string) {
-    const data: AccountManagerRequestDto = { rsa_number };
-    return await this.pensionService.getAccountManager(data);
+  async getAccountManager(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return await this.pensionService.getAccountManager(authenticatedUser.id);
   }
 
-  @Get('summary/:pin')
+  @Get('summary')
   @ApiOperation({ summary: 'Get pension account summary' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
-  async getSummary(@Param('pin') pin: string) {
-    const data: SummaryRequestDto = { pin };
-    return await this.pensionService.getSummary(data);
+  async getSummary(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return await this.pensionService.getSummary(authenticatedUser.id);
+  }
+
+  @Get('summary/:rsa_pin')
+  @ApiOperation({ summary: 'validate rsa pin' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
+  async validateRsaPin(@Param('rsa_pin') rsa_pin: string) {
+    return await this.pensionService.validateRsaPin(rsa_pin);
   }
 
   @Post('onboarding')
@@ -72,8 +80,8 @@ export class PensionController {
   @Get('generate-report')
   @ApiOperation({ summary: 'Generate pension report' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Report generated successfully' })
-  async generateReport(@Query() query: GenerateReportQueryDto, @Res() res: Response) {
-    const buffer = await this.pensionService.generateReport(query);
+  async generateReport(@Query() query: GenerateReportQueryDto, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
+    const buffer = await this.pensionService.generateReport(query, authenticatedUser.id);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=pension-report.pdf',
@@ -82,12 +90,11 @@ export class PensionController {
     res.end(buffer);
   }
 
-  @Get('welcome-letter/:pin')
+  @Get('welcome-letter')
   @ApiOperation({ summary: 'Generate welcome letter' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Welcome letter generated successfully' })
-  async generateWelcomeLetter(@Param('pin') pin: string, @Res() res: Response) {
-    const data = { pin };
-    const buffer = await this.pensionService.generateWelcomeLetter(data);
+  async generateWelcomeLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
+    const buffer = await this.pensionService.generateWelcomeLetter(authenticatedUser.id);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=welcome-letter.pdf',

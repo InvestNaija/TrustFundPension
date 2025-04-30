@@ -56,15 +56,6 @@ export class UserService {
     }
   }
 
-  async findByPhone(phone: string): Promise<any | null> {
-    try {
-      return await this.userRepository.findOne({ where: { phone } });
-    } catch (error) {
-      this.logger.error(`Error finding user by phone: ${error.message}`);
-      throw error;
-    }
-  }
-
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {

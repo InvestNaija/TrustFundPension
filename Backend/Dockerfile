@@ -11,4 +11,5 @@ COPY . .
 ENV TZ=Africa/Lagos
 EXPOSE 3000
 
-CMD ["npm", "start"]
+RUN npm run build
+CMD ["npm", "start:prod"]

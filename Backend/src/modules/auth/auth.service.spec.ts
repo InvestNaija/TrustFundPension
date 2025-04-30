@@ -4,10 +4,11 @@ import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TrustFundService } from '../third-party-services/trustfund/trustfund.service';
 import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { USER_ROLE } from '../../core/constants';
+import { USER_ROLE, ACCOUNT_TYPE } from '../../core/constants';
 import { VerificationMethod } from './dto';
 import { Logger } from '@nestjs/common';
 import { generateOtpCodeHash, verifyPassword, hashPassword, generateOtpDetails } from '../../shared/utils';
+import { LoginDto } from './dto';
 
 // Mock the utils functions
 jest.mock('../../shared/utils', () => ({
@@ -91,6 +92,7 @@ describe('AuthService', () => {
       rsa_pin: 'PIN123',
       dob: '1990-01-01',
       gender: 'M',
+      account_type: ACCOUNT_TYPE.RSA,
       role: USER_ROLE.CLIENT,
     };
 
@@ -288,18 +290,21 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    const loginDto = {
-      email: 'test@example.com',
-      password: 'password123',
-    };
+    const loginDto = new LoginDto();
+    loginDto.email = 'test@example.com';
+    loginDto.password = 'password123';
+    loginDto.validateLoginMethod = jest.fn();
 
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      password: 'hashedPassword',
-      role: USER_ROLE.CLIENT,
+      password: 'hashed_password123',
       isEmailVerified: true,
-      isPhoneVerified: true
+      isPhoneVerified: true,
+    };
+
+    const mockSignedUrls = {
+      profileImageUrl: 'signed_url',
     };
 
     const mockTokens = {
@@ -307,11 +312,8 @@ describe('AuthService', () => {
       refreshToken: 'refresh_token',
     };
 
-    const mockSignedUrls = {
-      profilePictureUrl: 'https://example.com/profile.jpg',
-    };
-
     beforeEach(() => {
+      mockJwtService.signAsync.mockReset();
       mockJwtService.signAsync
         .mockImplementationOnce(() => Promise.resolve(mockTokens.accessToken))
         .mockImplementationOnce(() => Promise.resolve(mockTokens.refreshToken));
@@ -338,7 +340,10 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if password is invalid', async () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      const invalidDto = { ...loginDto, password: 'wrong_password' };
+      const invalidDto = new LoginDto();
+      invalidDto.email = loginDto.email;
+      invalidDto.password = 'wrong_password';
+      invalidDto.validateLoginMethod = jest.fn();
       await expect(service.login(invalidDto)).rejects.toThrow(UnauthorizedException);
     });
 

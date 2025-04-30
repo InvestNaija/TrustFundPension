@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: https://trustfund.edugate.com.ng
+    - host: trustfund.edugate.com.ng
       http:
         paths:
           - pathType: Prefix

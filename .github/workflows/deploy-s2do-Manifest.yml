@@ -16,5 +16,5 @@ jobs:
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEN_ACCESS_TOKEN }}
-      - run: doctl kubernetes cluster kubeconfig save trustfund
+      - run: doctl kubernetes cluster kubeconfig save inv2
       - run: kubectl apply -f infra/k8s -n trustfund && kubectl apply -f infra/k8s-staging -n trustfund

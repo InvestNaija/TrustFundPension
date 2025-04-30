@@ -2,7 +2,7 @@ import { Column, DeleteDateColumn, Entity, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from '../../../core/database';
 import { Employer, UserRole, BVNData, Nok } from '.';
-import { USER_ROLE } from '../../../core/constants';
+import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
@@ -19,7 +19,7 @@ export class User extends AbstractEntity {
   @Column()
   first_name: string;
   
-  @Column()
+  @Column({ nullable: true })
   middle_name: string;
   
   @Column()
@@ -50,7 +50,7 @@ export class User extends AbstractEntity {
   @Column({ nullable: true })
   referrer: string;
 
-  @Column({ default: false })
+  @Column({ default: true })
   show_balance: boolean;
 
   @Column()
@@ -73,6 +73,13 @@ export class User extends AbstractEntity {
 
   @Column({ type: 'enum', enum: USER_ROLE })
   role: USER_ROLE;
+
+  @Column({
+    type: 'enum',
+    enum: ACCOUNT_TYPE,
+    nullable: false
+  })
+  accountType: ACCOUNT_TYPE;
 
   @Column({ nullable: true })
   @Exclude()

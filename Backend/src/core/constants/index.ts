@@ -28,6 +28,11 @@ export enum USER_ROLE {
   ADMIN = 'admin',
 }
 
+export enum ACCOUNT_TYPE {
+  RSA = 'RSA',
+  MICRO_PENSION = 'MICRO_PENSION'
+}
+
 export const PRESIGNED_URL_EXPIRY = 3600; // 1 hour
 
 export const INVITE_EXPIRY_DAYS = 3;

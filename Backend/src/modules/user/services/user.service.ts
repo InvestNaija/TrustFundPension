@@ -2,7 +2,8 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    UnauthorizedException
+    UnauthorizedException,
+    BadRequestException
   } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -10,7 +11,6 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { UserRepository } from '../repositories/user.repository';
-import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -114,6 +114,7 @@ export class UserService {
     userDto.first_login = user.first_login;
     userDto.two_factor_auth = user.two_factor_auth;
     userDto.role = user.role;
+    userDto.account_type = user.accountType;
     userDto.isEmailVerified = user.isEmailVerified;
     userDto.createdAt = user.createdAt;
     userDto.updatedAt = user.updatedAt;

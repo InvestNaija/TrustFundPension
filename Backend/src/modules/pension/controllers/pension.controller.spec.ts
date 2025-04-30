@@ -15,6 +15,7 @@ import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { USER_ROLE } from '../../../core/constants';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('PensionController', () => {
   let controller: PensionController;
@@ -35,6 +36,7 @@ describe('PensionController', () => {
     customerOnboarding: jest.fn(),
     generateReport: jest.fn(),
     generateWelcomeLetter: jest.fn(),
+    validateRsaPin: jest.fn(),
   };
 
   const mockJwtService = {
@@ -311,6 +313,36 @@ describe('PensionController', () => {
         'Content-Length': mockBuffer.length,
       });
       expect(mockResponse.end).toHaveBeenCalledWith(mockBuffer);
+    });
+  });
+
+  describe('validateRsaPin', () => {
+    const rsaPin = '12345678901';
+    const mockSummaryResponse = {
+      status: true,
+      message: 'Summary retrieved successfully',
+      data: {
+        name: 'John Doe',
+        pin: rsaPin,
+        // Add other summary data as needed
+      }
+    };
+
+    it('should validate RSA PIN successfully', async () => {
+      mockPensionService.validateRsaPin.mockResolvedValue(mockSummaryResponse);
+
+      const result = await controller.validateRsaPin(rsaPin);
+
+      expect(result).toEqual(mockSummaryResponse);
+      expect(mockPensionService.validateRsaPin).toHaveBeenCalledWith(rsaPin);
+    });
+
+    it('should handle validation failure', async () => {
+      const error = new UnprocessableEntityException('Failed to get summary');
+      mockPensionService.validateRsaPin.mockRejectedValue(error);
+
+      await expect(controller.validateRsaPin(rsaPin)).rejects.toThrow(UnprocessableEntityException);
+      expect(mockPensionService.validateRsaPin).toHaveBeenCalledWith(rsaPin);
     });
   });
 }); 

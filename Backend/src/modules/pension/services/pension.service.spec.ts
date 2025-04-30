@@ -283,4 +283,34 @@ describe('PensionService', () => {
       await expect(service.getSummary(userId)).rejects.toThrow(UnprocessableEntityException);
     });
   });
+
+  describe('validateRsaPin', () => {
+    const rsaPin = '12345678901';
+    const mockSummaryResponse = {
+      status: true,
+      message: 'Summary retrieved successfully',
+      data: {
+        name: 'John Doe',
+        pin: rsaPin,
+        // Add other summary data as needed
+      }
+    };
+
+    it('should validate RSA PIN successfully', async () => {
+      mockTrustFundService.getSummary.mockResolvedValue(mockSummaryResponse);
+
+      const result = await service.validateRsaPin(rsaPin);
+
+      expect(result).toEqual(mockSummaryResponse);
+      expect(mockTrustFundService.getSummary).toHaveBeenCalledWith({ pin: rsaPin });
+    });
+
+    it('should throw UnprocessableEntityException when validation fails', async () => {
+      const error = new Error('API Error');
+      mockTrustFundService.getSummary.mockRejectedValue(error);
+
+      await expect(service.validateRsaPin(rsaPin)).rejects.toThrow(UnprocessableEntityException);
+      expect(mockTrustFundService.getSummary).toHaveBeenCalledWith({ pin: rsaPin });
+    });
+  });
 }); 

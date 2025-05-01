@@ -4,10 +4,11 @@ import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TrustFundService } from '../third-party-services/trustfund/trustfund.service';
 import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { USER_ROLE } from '../../core/constants';
+import { USER_ROLE, ACCOUNT_TYPE } from '../../core/constants';
 import { VerificationMethod } from './dto';
 import { Logger } from '@nestjs/common';
 import { generateOtpCodeHash, verifyPassword, hashPassword, generateOtpDetails } from '../../shared/utils';
+import { LoginDto } from './dto';
 
 // Mock the utils functions
 jest.mock('../../shared/utils', () => ({
@@ -91,6 +92,7 @@ describe('AuthService', () => {
       rsa_pin: 'PIN123',
       dob: '1990-01-01',
       gender: 'M',
+      account_type: ACCOUNT_TYPE.RSA,
       role: USER_ROLE.CLIENT,
     };
 
@@ -288,18 +290,21 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    const loginDto = {
-      email: 'test@example.com',
-      password: 'password123',
-    };
+    const loginDto = new LoginDto();
+    loginDto.email = 'test@example.com';
+    loginDto.password = 'password123';
+    loginDto.validateLoginMethod = jest.fn();
 
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      password: 'hashedPassword',
-      role: USER_ROLE.CLIENT,
+      password: 'hashed_password123',
       isEmailVerified: true,
-      isPhoneVerified: true
+      isPhoneVerified: true,
+    };
+
+    const mockSignedUrls = {
+      profileImageUrl: 'signed_url',
     };
 
     const mockTokens = {
@@ -307,11 +312,8 @@ describe('AuthService', () => {
       refreshToken: 'refresh_token',
     };
 
-    const mockSignedUrls = {
-      profilePictureUrl: 'https://example.com/profile.jpg',
-    };
-
     beforeEach(() => {
+      mockJwtService.signAsync.mockReset();
       mockJwtService.signAsync
         .mockImplementationOnce(() => Promise.resolve(mockTokens.accessToken))
         .mockImplementationOnce(() => Promise.resolve(mockTokens.refreshToken));
@@ -338,7 +340,10 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if password is invalid', async () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      const invalidDto = { ...loginDto, password: 'wrong_password' };
+      const invalidDto = new LoginDto();
+      invalidDto.email = loginDto.email;
+      invalidDto.password = 'wrong_password';
+      invalidDto.validateLoginMethod = jest.fn();
       await expect(service.login(invalidDto)).rejects.toThrow(UnauthorizedException);
     });
 
@@ -396,17 +401,19 @@ describe('AuthService', () => {
   });
 
   describe('sendPasswordResetToken', () => {
-    const resetTokenDto = {
-      email: 'test@example.com',
-    };
-
     const mockUser = {
       id: '123',
       email: 'test@example.com',
+      phone: '+2341234567890',
       first_name: 'John',
     };
 
-    it('should send password reset token successfully', async () => {
+    it('should send password reset token via email successfully', async () => {
+      const resetTokenDto = {
+        email: 'test@example.com',
+        method: VerificationMethod.EMAIL,
+      };
+
       mockUserService.findByEmail.mockResolvedValue(mockUser);
       mockUserService.update.mockResolvedValue(mockUser);
 
@@ -417,14 +424,80 @@ describe('AuthService', () => {
         message: 'Password reset token sent successfully',
         data: {
           email: mockUser.email,
+          phone: mockUser.phone,
         },
       });
       expect(mockUserService.update).toHaveBeenCalled();
+      expect(mockTrustFundService.sendEmail).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException if user not found', async () => {
+    it('should send password reset token via SMS successfully', async () => {
+      const resetTokenDto = {
+        phone: '+2341234567890',
+        method: VerificationMethod.SMS,
+      };
+
+      mockUserService.findByPhone.mockResolvedValue(mockUser);
+      mockUserService.update.mockResolvedValue(mockUser);
+
+      const result = await service.sendPasswordResetToken(resetTokenDto);
+
+      expect(result).toEqual({
+        status: true,
+        message: 'Password reset token sent successfully',
+        data: {
+          email: mockUser.email,
+          phone: mockUser.phone,
+        },
+      });
+      expect(mockUserService.update).toHaveBeenCalled();
+      expect(mockTrustFundService.sendSms).toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException if email is missing for email verification', async () => {
+      const resetTokenDto = {
+        method: VerificationMethod.EMAIL,
+      };
+
+      await expect(service.sendPasswordResetToken(resetTokenDto)).rejects.toThrow(
+        'Email is required for email verification',
+      );
+    });
+
+    it('should throw BadRequestException if phone is missing for SMS verification', async () => {
+      const resetTokenDto = {
+        method: VerificationMethod.SMS,
+      };
+
+      await expect(service.sendPasswordResetToken(resetTokenDto)).rejects.toThrow(
+        'Phone number is required for SMS verification',
+      );
+    });
+
+    it('should throw NotFoundException if user not found by email', async () => {
+      const resetTokenDto = {
+        email: 'test@example.com',
+        method: VerificationMethod.EMAIL,
+      };
+
       mockUserService.findByEmail.mockResolvedValue(null);
-      await expect(service.sendPasswordResetToken(resetTokenDto)).rejects.toThrow(NotFoundException);
+
+      await expect(service.sendPasswordResetToken(resetTokenDto)).rejects.toThrow(
+        'User not found',
+      );
+    });
+
+    it('should throw NotFoundException if user not found by phone', async () => {
+      const resetTokenDto = {
+        phone: '+2341234567890',
+        method: VerificationMethod.SMS,
+      };
+
+      mockUserService.findByPhone.mockResolvedValue(null);
+
+      await expect(service.sendPasswordResetToken(resetTokenDto)).rejects.toThrow(
+        'User not found',
+      );
     });
   });
 

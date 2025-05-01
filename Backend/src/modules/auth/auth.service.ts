@@ -180,12 +180,22 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const { email, password } = dto;
+    dto.validateLoginMethod();
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    let user;
+    if (dto.email) {
+      user = await this.userService.findByEmail(dto.email);
+    } else if (dto.rsaPin) {
+      user = await this.userService.findByRsaPin(dto.rsaPin);
+    } else if (dto.phone) {
+      user = await this.userService.findByPhone(dto.phone);
+    }
 
-    const isValidPassword = await verifyPassword(password, user.password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isValidPassword = await verifyPassword(dto.password, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -226,26 +236,44 @@ export class AuthService {
   async sendPasswordResetToken(
     dto: SendPasswordResetTokenDto,
   ): Promise<IApiResponse> {
-    const { email } = dto;
+    let user;
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) {
+        throw new BadRequestException('Email is required for email verification');
+      }
+      user = await this.userService.findByEmail(dto.email);
+    } else {
+      if (!dto.phone) {
+        throw new BadRequestException('Phone number is required for SMS verification');
+      }
+      user = await this.userService.findByPhone(dto.phone);
+    }
 
-    const user = await this.userService.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
     await this.userService.update(user.id, { otpCodeHash, otpCodeExpiry });
 
-    // this.eventPublisherService.publishSendEmail({
-    //   to: user.email,
-    //   subject: 'Reset Your Password',
-    //   template: EMAIL_TEMPLATE.PASSWORD_RESET_OTP,
-    //   templateData: { name: user.first_name, otp: otpCode },
-    // });
+    if (dto.method === VerificationMethod.EMAIL) {
+      this.sendEmailVerificationOTP({
+        to: user.email,
+        subject: 'Password Reset',
+        body: `Hello ${user.first_name}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
+      });
+    } else {
+      this.sendSmsVerificationOTP({
+        msisdn: user.phone,
+        msg: `Hello ${user.first_name}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
+      });
+    }
 
     return {
       status: true,
       message: 'Password reset token sent successfully',
       data: {
         email: user.email,
+        phone: user.phone,
       },
     };
   }

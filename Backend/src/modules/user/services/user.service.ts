@@ -2,7 +2,8 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    UnauthorizedException
+    UnauthorizedException,
+    BadRequestException
   } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -10,7 +11,6 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { UserRepository } from '../repositories/user.repository';
-import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -45,6 +45,15 @@ export class UserService {
 
   async findByPhone(phone: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { phone } });
+  }
+
+  async findByRsaPin(rsaPin: string): Promise<any | null> {
+    try {
+      return await this.userRepository.findOne({ where: { rsa_pin: rsaPin } });
+    } catch (error) {
+      this.logger.error(`Error finding user by RSA PIN: ${error.message}`);
+      throw error;
+    }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
@@ -95,6 +104,7 @@ export class UserService {
     userDto.first_login = user.first_login;
     userDto.two_factor_auth = user.two_factor_auth;
     userDto.role = user.role;
+    userDto.account_type = user.accountType;
     userDto.isEmailVerified = user.isEmailVerified;
     userDto.isPhoneVerified = user.isPhoneVerified;
     userDto.createdAt = user.createdAt;

@@ -8,7 +8,7 @@ import {
   MinLength,
   IsDateString,
 } from 'class-validator';
-import { USER_ROLE } from '../../../core/constants';
+import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SignupUserDto {
@@ -81,4 +81,9 @@ export class SignupUserDto {
   @IsNotEmpty()
   @IsEnum(USER_ROLE)
   role: USER_ROLE;
+
+  @ApiProperty({ enum: ACCOUNT_TYPE })
+  @IsNotEmpty()
+  @IsEnum(ACCOUNT_TYPE)
+  account_type: ACCOUNT_TYPE;
 } 

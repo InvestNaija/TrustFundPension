@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { USER_ROLE } from '../../../core/constants';
+import { ACCOUNT_TYPE, USER_ROLE } from '../../../core/constants';
 
 export class UserResponseDto {
   @ApiProperty()
@@ -68,6 +68,9 @@ export class UserResponseDto {
 
   @ApiProperty({ enum: USER_ROLE })
   role: USER_ROLE;
+
+  @ApiProperty({ enum: ACCOUNT_TYPE })
+  account_type: ACCOUNT_TYPE;
 
   @ApiProperty()
   otpCodeHash: string | null;

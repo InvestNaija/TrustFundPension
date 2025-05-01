@@ -19,6 +19,13 @@ spec:
                 port:
                   number: 3001
           - pathType: Prefix
+            path: /docs/?(.*)
+            backend:
+              service:
+                name: backend-srv
+                port:
+                  number: 3001
+          - pathType: Prefix
             path: /?(.*)
             backend:
               service:

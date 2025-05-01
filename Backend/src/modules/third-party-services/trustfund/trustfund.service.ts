@@ -51,7 +51,7 @@ export class TrustFundService {
 
   async login(): Promise<void> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/auth/login`;
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`;
       const response = await this.httpRequest.makeRequest({
         method: 'POST',
         url,
@@ -154,7 +154,7 @@ export class TrustFundService {
       if (!this.accessToken) {
         await this.login();
       }
-      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/getsummary`;
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/getsummary`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
@@ -172,7 +172,7 @@ export class TrustFundService {
       if (!this.accessToken) {
         await this.login();
       }
-      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/regmodule-ecrs/onboarding`;
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/regmodule-ecrs/onboarding`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
@@ -190,7 +190,7 @@ export class TrustFundService {
       if (!this.accessToken) {
         await this.login();
       }
-      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
@@ -211,7 +211,7 @@ export class TrustFundService {
       if (!this.accessToken) {
         await this.login();
       }
-      const url = `${envConfig.TRUSTFUND_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,

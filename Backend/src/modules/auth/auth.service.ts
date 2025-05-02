@@ -316,7 +316,10 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(password);
-    await this.userService.update(user.id, {
+    if (!hashedPassword) {
+      throw new BadRequestException('Failed to hash password');
+    }
+    await this.userService.updatePassword(user.id, {
       password: hashedPassword,
       passwordChangedAt: new Date(),
       otpCodeHash: null,

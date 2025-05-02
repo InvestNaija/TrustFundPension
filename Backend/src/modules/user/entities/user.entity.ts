@@ -7,13 +7,13 @@ import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
   
-  @Column()
+  @Column({ nullable: true })
   bvn: string;
   
-  @Column()
+  @Column({ nullable: true })
   nin: string;
 
-  @Column()
+  @Column({ nullable: true })
   rsa_pin: string;
 
   @Column()

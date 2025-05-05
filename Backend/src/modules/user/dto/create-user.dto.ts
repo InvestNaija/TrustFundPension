@@ -3,20 +3,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  bvn: string;
+  @IsOptional()
+  bvn?: string;
   
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  nin: string;
+  @IsOptional()
+  nin?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  rsa_pin: string;
+  @IsOptional()
+  rsa_pin?: string;
 
   @ApiProperty()
   @IsString()

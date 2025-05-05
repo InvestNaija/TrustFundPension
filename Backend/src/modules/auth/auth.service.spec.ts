@@ -34,6 +34,7 @@ describe('AuthService', () => {
     findOne: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updatePassword: jest.fn(),
     generateSignedUrlsForUserFiles: jest.fn(),
   };
 
@@ -87,13 +88,17 @@ describe('AuthService', () => {
       last_name: 'Doe',
       middle_name: 'Middle',
       phone: '1234567890',
-      bvn: '12345678901',
-      nin: '12345678901',
-      rsa_pin: 'PIN123',
       dob: '1990-01-01',
       gender: 'M',
       account_type: ACCOUNT_TYPE.RSA,
       role: USER_ROLE.CLIENT,
+    };
+
+    const signupDtoWithOptionalFields = {
+      ...signupDto,
+      bvn: '12345678901',
+      nin: '12345678901',
+      rsa_pin: 'PIN123',
     };
 
     const mockUser = {
@@ -105,7 +110,7 @@ describe('AuthService', () => {
       otpCodeExpiry: null,
     };
 
-    it('should successfully register a new user', async () => {
+    it('should successfully register a new user without optional fields', async () => {
       mockUserService.findByEmail.mockResolvedValue(null);
       mockUserService.create.mockResolvedValue(mockUser);
 
@@ -117,6 +122,21 @@ describe('AuthService', () => {
         data: mockUser,
       });
       expect(mockUserService.findByEmail).toHaveBeenCalledWith(signupDto.email);
+      expect(mockUserService.create).toHaveBeenCalled();
+    });
+
+    it('should successfully register a new user with optional fields', async () => {
+      mockUserService.findByEmail.mockResolvedValue(null);
+      mockUserService.create.mockResolvedValue(mockUser);
+
+      const result = await service.signupUser(signupDtoWithOptionalFields);
+
+      expect(result).toEqual({
+        status: true,
+        message: 'Registration successful! Please verify your account',
+        data: mockUser,
+      });
+      expect(mockUserService.findByEmail).toHaveBeenCalledWith(signupDtoWithOptionalFields.email);
       expect(mockUserService.create).toHaveBeenCalled();
     });
 
@@ -563,7 +583,7 @@ describe('AuthService', () => {
 
     it('should reset password successfully', async () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      mockUserService.update.mockResolvedValue(mockUser);
+      mockUserService.updatePassword.mockResolvedValue(mockUser);
 
       const result = await service.resetPassword(resetPasswordDto);
 
@@ -572,7 +592,7 @@ describe('AuthService', () => {
         message: 'Password reset successfully',
         data: {},
       });
-      expect(mockUserService.update).toHaveBeenCalledWith(mockUser.id, {
+      expect(mockUserService.updatePassword).toHaveBeenCalledWith(mockUser.id, {
         password: expect.any(String),
         passwordChangedAt: expect.any(Date),
         otpCodeHash: null,

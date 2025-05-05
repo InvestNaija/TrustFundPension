@@ -80,6 +80,16 @@ export class UserService {
     };
   }
 
+  async updatePassword(id: string, updateData: { password: string; passwordChangedAt: Date; otpCodeHash: string | null; otpCodeExpiry: Date | null }): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    Object.assign(user, updateData);
+    const updatedUser = await this.userRepository.save(user);
+    return this.mapToResponseDto(updatedUser);
+  }
+
   private mapToResponseDto(user: User): UserResponseDto {
     const userDto = new UserResponseDto();
     userDto.id = user.id;

@@ -5,9 +5,6 @@ import { PensionService } from '../services';
 import {
   EmailRequestDto,
   SmsRequestDto,
-  ContributionRequestDto,
-  AccountManagerRequestDto,
-  SummaryRequestDto,
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
@@ -17,7 +14,6 @@ import { IDecodedJwtToken } from '../../../core/decorators';
 
 @ApiTags('Pension')
 @Controller('pension')
-@UseGuards(JwtAuthGuard)
 export class PensionController {
   constructor(private readonly pensionService: PensionService) {}
 
@@ -43,6 +39,7 @@ export class PensionController {
   }
 
   @Get('contributions')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get last 10 contributions' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Contributions retrieved successfully' })
   async getLastTenContributions(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
@@ -50,6 +47,7 @@ export class PensionController {
   }
 
   @Get('account-manager')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get account manager details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Account manager details retrieved successfully' })
   async getAccountManager(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
@@ -57,6 +55,7 @@ export class PensionController {
   }
 
   @Get('summary')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get pension account summary' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
   async getSummary(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
@@ -71,6 +70,7 @@ export class PensionController {
   }
 
   @Post('onboarding')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarded successfully' })
   async customerOnboarding(@Body() data: CustomerOnboardingRequestDto) {
@@ -78,6 +78,7 @@ export class PensionController {
   }
 
   @Get('generate-report')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate pension report' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Report generated successfully' })
   async generateReport(@Query() query: GenerateReportQueryDto, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
@@ -91,6 +92,7 @@ export class PensionController {
   }
 
   @Get('welcome-letter')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate welcome letter' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Welcome letter generated successfully' })
   async generateWelcomeLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {

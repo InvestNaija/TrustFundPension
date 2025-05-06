@@ -54,19 +54,19 @@ export class PensionController {
     return await this.pensionService.getAccountManager(authenticatedUser.id);
   }
 
+  @Get('summary/:rsa_pin')
+  @ApiOperation({ summary: 'validate rsa pin' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
+  async validateRsaPin(@Param('rsa_pin') rsa_pin: string) {
+    return await this.pensionService.validateRsaPin(rsa_pin);
+  }
+
   @Get('summary')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get pension account summary' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
   async getSummary(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return await this.pensionService.getSummary(authenticatedUser.id);
-  }
-
-  @Get('summary/:rsa_pin')
-  @ApiOperation({ summary: 'validate rsa pin' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
-  async validateRsaPin(@Param('rsa_pin') rsa_pin: string) {
-    return await this.pensionService.validateRsaPin(rsa_pin);
   }
 
   @Post('onboarding')

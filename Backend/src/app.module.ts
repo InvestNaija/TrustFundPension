@@ -12,7 +12,7 @@ import { ThirdPartyServicesModule } from './modules/third-party-services';
 import { AppService } from './app.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth';
-
+import { ReferralModule } from './modules/referral';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,8 +25,8 @@ import { AuthModule } from './modules/auth';
     UserModule,
     DatabaseModule,
     ThirdPartyServicesModule,
-    PensionModule
-
+    PensionModule,
+    ReferralModule
   ],
   controllers: [AppController],
   providers: [AppService],

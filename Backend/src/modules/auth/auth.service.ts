@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   LoginDto,
@@ -301,21 +302,37 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<IApiResponse> {
-    const { email, otpCode, password } = dto;
+    const { email, phone, otpCode, password } = dto;
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new NotFoundException('User not found');
+    if (!email && !phone) {
+      throw new UnprocessableEntityException('Either email or phone must be provided');
+    }
 
+    let user;
+    if (email) {
+      user = await this.userService.findByEmail(email);
+    } else if (phone) {
+      user = await this.userService.findByPhone(phone);
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verify OTP
     const otpCodeHash = generateOtpCodeHash(otpCode);
     if (otpCodeHash !== user.otpCodeHash) {
-      throw new BadRequestException('Invalid OTP');
+      throw new UnprocessableEntityException('Invalid OTP');
     }
 
     if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new BadRequestException('OTP has expired');
+      throw new UnprocessableEntityException('OTP has expired');
     }
 
+    // Hash new password
     const hashedPassword = await hashPassword(password);
+
+    // Update user password
     await this.userService.update(user.id, {
       password: hashedPassword,
       passwordChangedAt: new Date(),
@@ -325,7 +342,7 @@ export class AuthService {
 
     return {
       status: true,
-      message: 'Password reset successfully',
+      message: 'Password reset successful',
       data: {},
     };
   }

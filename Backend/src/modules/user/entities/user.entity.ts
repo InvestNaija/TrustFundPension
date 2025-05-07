@@ -8,13 +8,13 @@ import { Referral } from '../../referral/entities/referral.entity';
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
   
-  @Column()
+  @Column({ nullable: true })
   bvn: string;
   
-  @Column()
+  @Column({ nullable: true })
   nin: string;
 
-  @Column()
+  @Column({ nullable: true })
   rsa_pin: string;
 
   @Column()

@@ -16,9 +16,7 @@ import {
   SignupUserDto,
   ValidateOtpDto,
   VerifyAccountDto,
-  VerifyEmailDto,
   VerificationMethod,
-  VerificationPreferenceDto,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';

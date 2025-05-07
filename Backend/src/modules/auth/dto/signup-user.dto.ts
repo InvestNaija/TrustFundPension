@@ -7,25 +7,26 @@ import {
   Matches,
   MinLength,
   IsDateString,
+  IsOptional,
 } from 'class-validator';
 import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SignupUserDto {
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  bvn: string;
+  bvn?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  nin: string;
+  nin?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  rsa_pin: string;
+  rsa_pin?: string;
 
   @ApiProperty()
   @IsNotEmpty()

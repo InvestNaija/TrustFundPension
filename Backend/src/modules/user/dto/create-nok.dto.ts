@@ -15,12 +15,12 @@ export class CreateNokDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  first_name: string;
+  firstName: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  other_name?: string;
+  otherName?: string;
 
   @ApiProperty()
   @IsString()

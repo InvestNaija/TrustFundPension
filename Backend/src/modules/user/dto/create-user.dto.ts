@@ -16,22 +16,22 @@ export class CreateUserDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  rsa_pin?: string;
+  pen?: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  first_name: string;
+  firstName: string;
   
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  middle_name: string;
+  middleName: string;
   
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  last_name: string;
+  lastName: string;
   
   @ApiProperty()
   @IsEmail()
@@ -91,22 +91,22 @@ export class CreateUserDto {
   @ApiProperty({ default: true })
   @IsBoolean()
   @IsOptional()
-  is_enabled?: boolean;
+  isEnabled?: boolean;
 
   @ApiProperty({ default: false })
   @IsBoolean()
   @IsOptional()
-  is_locked?: boolean;
+  isLocked?: boolean;
 
   @ApiProperty({ default: true })
   @IsBoolean()
   @IsOptional()
-  first_login?: boolean;
+  firstLogin?: boolean;
   
   @ApiProperty({ default: false })
   @IsBoolean()
   @IsOptional()
-  two_factor_auth?: boolean;
+  twoFactorAuth?: boolean;
 
   @ApiProperty({ default: false })
   @IsBoolean()

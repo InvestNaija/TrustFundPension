@@ -4,7 +4,7 @@ import { AbstractEntity } from 'src/core/database';
 
 @Entity('employers')
 export class Employer extends AbstractEntity {
-  @Column()
+  @Column({ name: 'user_id' })
   userId: string;
 
   @Column()
@@ -19,10 +19,10 @@ export class Employer extends AbstractEntity {
   @Column()
   rcno: string;
 
-  @Column({ type: 'date' })
-  first_appoint_date: string;
+  @Column({ type: 'date', name: 'first_appoint_date' })
+  firstApointDate: string;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
   @ManyToOne(() => User, user => user.employers)

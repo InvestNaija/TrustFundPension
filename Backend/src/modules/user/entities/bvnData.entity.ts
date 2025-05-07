@@ -1,22 +1,22 @@
-import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, DeleteDateColumn, OneToOne } from 'typeorm';
 import { User } from '.';
 import { AbstractEntity } from 'src/core/database';
 
 @Entity('bvn_data')
 export class BVNData extends AbstractEntity{
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: string;
 
   @Column()
   bvn: string;
 
-  @Column({ type: 'json' })
-  bvn_response: any;
+  @Column({ type: 'json', name: 'bvn_response' })
+  bvnResponse: any;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
-  @ManyToOne(() => User, user => user.bvnData)
+  @OneToOne(() => User, user => user.bvnData)
   user: User;
 }

@@ -49,7 +49,7 @@ export class UserService {
 
   async findByRsaPin(rsaPin: string): Promise<any | null> {
     try {
-      return await this.userRepository.findOne({ where: { rsa_pin: rsaPin } });
+      return await this.userRepository.findOne({ where: { pen: rsaPin } });
     } catch (error) {
       this.logger.error(`Error finding user by RSA PIN: ${error.message}`);
       throw error;
@@ -90,31 +90,52 @@ export class UserService {
     return this.mapToResponseDto(updatedUser);
   }
 
+  async updateVerificationData(userId: string, data: { nin?: string; bvn?: string }) {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (data.nin) {
+        user.nin = data.nin;
+      }
+      if (data.bvn) {
+        user.bvn = data.bvn;
+      }
+
+      return this.userRepository.save(user);
+    } catch (error) {
+      this.logger.error('Error updating verification data:', error);
+      throw error;
+    }
+  }
+
   private mapToResponseDto(user: User): UserResponseDto {
     const userDto = new UserResponseDto();
     userDto.id = user.id;
     userDto.bvn = user.bvn;
     userDto.nin = user.nin;
-    userDto.rsa_pin = user.rsa_pin;
-    userDto.first_name = user.first_name;
-    userDto.middle_name = user.middle_name;
-    userDto.last_name = user.last_name;
+    userDto.pen = user.pen;
+    userDto.firstName = user.firstName;
+    userDto.middleName = user.middleName;
+    userDto.lastName = user.lastName;
     userDto.email = user.email;
     userDto.dob = user.dob;
     userDto.gender = user.gender;
     userDto.phone = user.phone;
-    userDto.uuid_token = user.uuid_token;
-    userDto.ref_code = user.ref_code;
+    userDto.uuidToken = user.uuidToken;
+    userDto.refCode = user.refCode;
     userDto.referrer = user.referrer;
-    userDto.show_balance = user.show_balance;
-    userDto.state_of_posting = user.state_of_posting;
-    userDto.lga_of_posting = user.lga_of_posting;
-    userDto.is_enabled = user.is_enabled;
-    userDto.is_locked = user.is_locked;
-    userDto.first_login = user.first_login;
-    userDto.two_factor_auth = user.two_factor_auth;
+    userDto.showBalance = user.showBalance;
+    userDto.stateOfPosting = user.stateOfPosting;
+    userDto.lgaOfPosting = user.lgaOfPosting;
+    userDto.isEnabled = user.isEnabled;
+    userDto.isLocked = user.isLocked;
+    userDto.firstLogin = user.firstLogin;
+    userDto.twoFactorAuth = user.twoFactorAuth;
     userDto.role = user.role;
-    userDto.account_type = user.accountType;
+    userDto.accountType = user.accountType;
     userDto.isEmailVerified = user.isEmailVerified;
     userDto.isPhoneVerified = user.isPhoneVerified;
     userDto.createdAt = user.createdAt;

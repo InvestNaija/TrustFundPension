@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User, UserRole, Nok, Employer, BVNData } from './entities';
 import { UserController, UserRoleController, NokController, EmployerController, BvnDataController } from './controllers';
-import { UserService, UserRoleService, NokService, EmployerService, BvnDataService } from './services';
+import { UserService, UserRoleService, NokService, EmployerService, BvnDataService, VerificationService } from './services';
 
 @Module({
   imports: [
@@ -21,6 +21,7 @@ import { UserService, UserRoleService, NokService, EmployerService, BvnDataServi
     NokService,
     EmployerService,
     BvnDataService,
+    VerificationService,
   ],
   exports: [
     UserService,
@@ -28,6 +29,7 @@ import { UserService, UserRoleService, NokService, EmployerService, BvnDataServi
     NokService,
     EmployerService,
     BvnDataService,
+    VerificationService,
   ],
 })
 export class UserModule {}

@@ -21,12 +21,33 @@ import {
   IWelcomeLetterRequest,
 } from './types';
 
+// Mock environment variables
+jest.mock('../../../core/config', () => ({
+  envConfig: {
+    TRUSTFUND_EMAIL_FROM: 'test@trustfund.com',
+    TRUSTFUND_EMAIL_FROM_NAME: 'TrustFund Test',
+    TRUSTFUND_SMS_USERNAME: 'test-sms-user',
+    TRUSTFUND_SMS_PASSWORD: 'test-sms-pass',
+    TRUSTFUND_SMS_SENDER: 'TrustFund',
+    TRUSTFUND_USERNAME: 'test-user',
+    TRUSTFUND_PASSWORD: 'test-pass',
+    TRUSTFUND_BASE_URL: 'https://api.trustfund.com',
+    TRUSTFUND_URL: 'https://api.trustfund.com',
+  },
+}));
+
 describe('TrustFundService', () => {
   let service: TrustFundService;
   let httpRequestService: HttpRequestService;
 
   const mockHttpRequestService = {
     makeRequest: jest.fn(),
+  };
+
+  const mockLoginResponse: ILoginResponse = {
+    access_token: 'test-token',
+    token_type: 'Bearer',
+    expires_in: 3600
   };
 
   beforeEach(async () => {
@@ -42,6 +63,17 @@ describe('TrustFundService', () => {
 
     service = module.get<TrustFundService>(TrustFundService);
     httpRequestService = module.get<HttpRequestService>(HttpRequestService);
+
+    // Reset all mocks
+    jest.clearAllMocks();
+    
+    // Mock successful login by default
+    mockHttpRequestService.makeRequest.mockImplementation(async (config) => {
+      if (config.url?.includes('/auth/login')) {
+        return mockLoginResponse;
+      }
+      throw new Error('Unmocked request');
+    });
   });
 
   afterEach(() => {
@@ -74,6 +106,9 @@ describe('TrustFundService', () => {
             from: envConfig.TRUSTFUND_EMAIL_FROM,
             from_name: envConfig.TRUSTFUND_EMAIL_FROM_NAME,
           },
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
         }),
       );
     });
@@ -205,7 +240,7 @@ describe('TrustFundService', () => {
 
   describe('getAccountManager', () => {
     const managerRequest: IAccountManagerRequest = {
-      rsa_number: 'PEN100048037525',
+      rsaNumber: 'PEN100048037525',
     };
 
     const successResponse: IAccountManager[] = [
@@ -239,23 +274,17 @@ describe('TrustFundService', () => {
   });
 
   describe('login', () => {
-    const successResponse: ILoginResponse = {
-      access_token: 'test-token',
-    };
-
     it('should login successfully', async () => {
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(successResponse);
-
       await service.login();
 
-      expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            Authorization: expect.any(String),
-          }),
+      expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith({
+        method: 'POST',
+        url: expect.stringContaining('/auth/login'),
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          Authorization: expect.stringContaining('Basic '),
         }),
-      );
+      });
     });
 
     it('should throw UnprocessableEntityException on error', async () => {
@@ -328,17 +357,32 @@ describe('TrustFundService', () => {
       price: 5.7533,
     };
 
-    it('should get summary successfully', async () => {
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce({ access_token: 'test-token' });
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(successResponse);
+    beforeEach(() => {
+      // Mock successful login and summary response
+      mockHttpRequestService.makeRequest.mockImplementation(async (config) => {
+        if (config.url?.includes('/auth/login')) {
+          return mockLoginResponse;
+        }
+        if (config.url?.includes('/getsummary')) {
+          return successResponse;
+        }
+        throw new Error('Unmocked request');
+      });
+    });
 
+    it('should get summary successfully', async () => {
       const result = await service.getSummary(summaryRequest);
 
       expect(result).toEqual(successResponse);
       expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'POST',
+          url: expect.stringContaining('/getsummary'),
           data: summaryRequest,
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+            Authorization: expect.stringContaining('Bearer test-token'),
+          }),
         }),
       );
     });

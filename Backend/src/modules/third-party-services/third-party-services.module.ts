@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TrustFundService } from './trustfund';
 import { HttpRequestModule } from '../../shared/http-request';
-import { NinModule } from './nin/nin.module';
-import { BvnModule } from './bvn/bvn.module';
+import { VerifyMeService } from './verifyme/verifyme.service';
+import { QoreIdService } from './qoreid/qoreid.service';
 
 @Module({
-  imports: [HttpRequestModule, NinModule, BvnModule],
-  providers: [TrustFundService],
-  exports: [TrustFundService, NinModule, BvnModule],
+  imports: [HttpRequestModule],
+  providers: [TrustFundService, VerifyMeService, QoreIdService],
+  exports: [TrustFundService, VerifyMeService, QoreIdService],
 })
 export class ThirdPartyServicesModule {}

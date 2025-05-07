@@ -12,8 +12,8 @@ dotenv.config();
 
 export const envConfig = {
   NODE_ENV: process.env.NODE_ENV,
-  BVN_API_KEY: process.env.BVN_API_KEY,
-  BVN_API_URL: process.env.BVN_API_URL,
+  VERIFYME_BASE_URL: process.env.VERIFYME_BASE_URL,
+  VERIFYME_SECRET_KEY: process.env.VERIFYME_SECRET_KEY,
   QOREID_BASE_URL: process.env.QOREID_BASE_URL,
   QOREID_CLIENT_ID: process.env.QOREID_CLIENT_ID,
   QOREID_SECRET: process.env.QOREID_SECRET,
@@ -56,8 +56,8 @@ export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid(...Object.values(Env))
     .required(),
-  BVN_API_KEY: Joi.string().required(),
-  BVN_API_URL: Joi.string().required(),
+  VERIFYME_BASE_URL: Joi.string().required(),
+  VERIFYME_SECRET_KEY: Joi.string().required(),
   QOREID_BASE_URL: Joi.string().required(),
   QOREID_CLIENT_ID: Joi.string().required(),
   QOREID_SECRET: Joi.string().required(),

@@ -84,13 +84,13 @@ describe('AuthService', () => {
     const signupDto = {
       email: 'test@example.com',
       password: 'password123',
-      first_name: 'John',
-      last_name: 'Doe',
-      middle_name: 'Middle',
+      firstName: 'John',
+      lastName: 'Doe',
+      middleName: 'Middle',
       phone: '1234567890',
       dob: '1990-01-01',
       gender: 'M',
-      account_type: ACCOUNT_TYPE.RSA,
+      accountType: ACCOUNT_TYPE.RSA,
       role: USER_ROLE.CLIENT,
     };
 
@@ -98,7 +98,7 @@ describe('AuthService', () => {
       ...signupDto,
       bvn: '12345678901',
       nin: '12345678901',
-      rsa_pin: 'PIN123',
+      pen: 'PIN123',
     };
 
     const mockUser = {
@@ -253,7 +253,7 @@ describe('AuthService', () => {
       id: '123',
       email: 'test@example.com',
       phone: '1234567890',
-      first_name: 'John',
+      firstName: 'John',
       isEmailVerified: false,
       isPhoneVerified: false,
     };

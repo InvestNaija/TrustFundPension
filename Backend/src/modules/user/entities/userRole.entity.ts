@@ -5,13 +5,13 @@ import { AbstractEntity } from 'src/core/database';
 @Entity('user_role')
 export class UserRole extends AbstractEntity{
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: string;
 
-  @Column()
-  role_id: string;
+  @Column({ name: 'role_id' })
+  roleId: string;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
   @ManyToOne(() => User, user => user.userRoles)

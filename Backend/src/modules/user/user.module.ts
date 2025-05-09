@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User, UserRole, Nok, Employer, BVNData } from './entities';
 import { UserController, UserRoleController, NokController, EmployerController, BvnDataController } from './controllers';
-import { UserService, UserRoleService, NokService, EmployerService, BvnDataService } from './services';
+import { UserService, UserRoleService, NokService, EmployerService, BvnDataService, VerificationService } from './services';
+import { ThirdPartyServicesModule } from '../third-party-services/third-party-services.module';
+import { VerificationController } from './controllers/verification.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, UserRole, Nok, Employer, BVNData]),
+    ThirdPartyServicesModule,
   ],
   controllers: [
     UserController,
@@ -14,6 +17,7 @@ import { UserService, UserRoleService, NokService, EmployerService, BvnDataServi
     NokController,
     EmployerController,
     BvnDataController,
+    VerificationController,
   ],
   providers: [
     UserService,
@@ -21,6 +25,7 @@ import { UserService, UserRoleService, NokService, EmployerService, BvnDataServi
     NokService,
     EmployerService,
     BvnDataService,
+    VerificationService,
   ],
   exports: [
     UserService,
@@ -28,6 +33,7 @@ import { UserService, UserRoleService, NokService, EmployerService, BvnDataServi
     NokService,
     EmployerService,
     BvnDataService,
+    VerificationService,
   ],
 })
 export class UserModule {}

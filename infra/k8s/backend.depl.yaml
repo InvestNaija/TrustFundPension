@@ -177,6 +177,31 @@ spec:
                 secretKeyRef:
                   name: backend.depl
                   key: TRUSTFUND_SMS_SENDER
+            - name: QOREID_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: QOREID_BASE_URL
+            - name: QOREID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: QOREID_CLIENT_ID
+            - name: QOREID_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: QOREID_SECRET
+            - name: VERIFYME_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: VERIFYME_BASE_URL
+            - name: VERIFYME_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: VERIFYME_SECRET_KEY
 ---
 apiVersion: v1
 kind: Service

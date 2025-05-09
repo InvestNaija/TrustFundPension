@@ -12,6 +12,11 @@ dotenv.config();
 
 export const envConfig = {
   NODE_ENV: process.env.NODE_ENV,
+  VERIFYME_BASE_URL: process.env.VERIFYME_BASE_URL,
+  VERIFYME_SECRET_KEY: process.env.VERIFYME_SECRET_KEY,
+  QOREID_BASE_URL: process.env.QOREID_BASE_URL,
+  QOREID_CLIENT_ID: process.env.QOREID_CLIENT_ID,
+  QOREID_SECRET: process.env.QOREID_SECRET,
   DB_USERNAME: process.env.DB_USERNAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_NAME: process.env.DB_NAME,
@@ -51,6 +56,11 @@ export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid(...Object.values(Env))
     .required(),
+  VERIFYME_BASE_URL: Joi.string().required(),
+  VERIFYME_SECRET_KEY: Joi.string().required(),
+  QOREID_BASE_URL: Joi.string().required(),
+  QOREID_CLIENT_ID: Joi.string().required(),
+  QOREID_SECRET: Joi.string().required(),
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
   DB_NAME: Joi.string().required(),

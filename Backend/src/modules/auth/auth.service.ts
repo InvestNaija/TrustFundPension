@@ -62,6 +62,7 @@ export class AuthService {
     const user = await this.userService.create({
       ...dto,
       password: hashedPassword,
+      account_type: dto.accountType,
     });
 
     return {

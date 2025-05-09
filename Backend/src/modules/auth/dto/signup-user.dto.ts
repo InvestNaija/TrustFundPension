@@ -26,22 +26,22 @@ export class SignupUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  rsa_pin?: string;
+  pen?: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  first_name: string;
+  firstName: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  middle_name: string;
+  middleName: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  last_name: string;
+  lastName: string;
 
   @ApiProperty()
   @IsString()
@@ -86,5 +86,5 @@ export class SignupUserDto {
   @ApiProperty({ enum: ACCOUNT_TYPE })
   @IsNotEmpty()
   @IsEnum(ACCOUNT_TYPE)
-  account_type: ACCOUNT_TYPE;
+  accountType: ACCOUNT_TYPE;
 } 

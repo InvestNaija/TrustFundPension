@@ -13,16 +13,16 @@ export class UserResponseDto {
   nin: string;
 
   @ApiProperty()
-  rsa_pin: string;
+  pen: string;
 
-  @ApiProperty()
-  first_name: string;
+  @ApiProperty({ name: 'first_name' })
+  firstName: string;
   
-  @ApiProperty()
-  middle_name: string;
+  @ApiProperty({ name: 'middle_name' })
+  middleName: string;
   
-  @ApiProperty()
-  last_name: string;
+  @ApiProperty({ name: 'last_name' })
+  lastName: string;
   
   @ApiProperty()
   email: string;
@@ -37,65 +37,65 @@ export class UserResponseDto {
   phone: string;
 
   @ApiProperty()
-  uuid_token: string;
+  uuidToken: string;
 
-  @ApiProperty()
-  ref_code: string;
+  @ApiProperty({ name: 'ref_code' })
+  refCode: string;
 
   @ApiProperty()
   referrer: string;
 
-  @ApiProperty()
-  show_balance: boolean;
+  @ApiProperty({ name: 'show_balance' })
+  showBalance: boolean;
 
-  @ApiProperty()
-  state_of_posting: string;
+  @ApiProperty({ name: 'state_of_posting' })
+  stateOfPosting: string;
 
-  @ApiProperty()
-  lga_of_posting: string;
+  @ApiProperty({ name: 'lga_of_posting' })
+  lgaOfPosting: string;
 
-  @ApiProperty()
-  is_enabled: boolean;
+  @ApiProperty({ name: 'is_enabled' })
+  isEnabled: boolean;
 
-  @ApiProperty()
-  is_locked: boolean;
+  @ApiProperty({ name: 'is_locked' })
+  isLocked: boolean;
 
-  @ApiProperty()
-  first_login: boolean;
+  @ApiProperty({ name: 'first_login' })
+  firstLogin: boolean;
   
-  @ApiProperty()
-  two_factor_auth: boolean;
+  @ApiProperty({ name: 'two_factor_auth' })
+  twoFactorAuth: boolean;
 
-  @ApiProperty({ enum: USER_ROLE })
+  @ApiProperty({ enum: USER_ROLE, name: 'role' })
   role: USER_ROLE;
 
-  @ApiProperty({ enum: ACCOUNT_TYPE })
-  account_type: ACCOUNT_TYPE;
+  @ApiProperty({ enum: ACCOUNT_TYPE, name: 'account_type' })
+  accountType: ACCOUNT_TYPE;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'otp_code_hash' })
   otpCodeHash: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'otp_code_expiry' })
   otpCodeExpiry: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'is_email_verified' })
   isEmailVerified: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'is_phone_verified' })
   isPhoneVerified: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'password_changed_at' })
   passwordChangedAt: Date | null;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'created_at' })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'updated_at' })
   updatedAt: Date;
 
   @Exclude()
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'deleted_at' })
   deletedAt: Date | null;
 } 

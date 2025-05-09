@@ -50,7 +50,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: ContributionRequestDto = { pin: user.rsa_pin };
+      const data: ContributionRequestDto = { pin: user.pen };
       return await this.trustFundService.getLastTenContributions(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get contributions');
@@ -64,7 +64,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: AccountManagerRequestDto = { rsa_number: user.rsa_pin };
+      const data: AccountManagerRequestDto = { rsaNumber: user.pen };
       return await this.trustFundService.getAccountManager(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get account manager');
@@ -78,7 +78,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: SummaryRequestDto = { pin: user.rsa_pin };
+      const data: SummaryRequestDto = { pin: user.pen };
       return await this.trustFundService.getSummary(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get summary');
@@ -123,7 +123,7 @@ export class PensionService {
       }
 
       const data = {
-        pin: user.rsa_pin,
+        pin: user.pen,
         fromDate: query.fromDate,
         toDate: query.toDate,
       };
@@ -140,7 +140,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data = { pin: user.rsa_pin };
+      const data = { pin: user.pen };
       return await this.trustFundService.generateWelcomeLetter(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate welcome letter');
@@ -154,13 +154,13 @@ export class PensionService {
     }
 
     const data: CustomerOnboardingRequestDto = {
-      formRefno: user.rsa_pin,
+      formRefno: user.pen,
       schemeId: 'DEFAULT_SCHEME',
-      ssn: user.rsa_pin,
+      ssn: user.pen,
       gender: 'M',
       title: 'Mr',
-      firstname: user.first_name,
-      surname: user.last_name,
+      firstname: user.firstName,
+      surname: user.lastName,
       maritalStatusCode: 'S',
       placeOfBirth: 'Unknown',
       mobilePhone: user.phone,
@@ -174,7 +174,7 @@ export class PensionService {
       permCity: 'Unknown',
       bankName: 'Unknown',
       accountNumber: 'Unknown',
-      accountName: `${user.first_name} ${user.last_name}`,
+      accountName: `${user.firstName} ${user.lastName}`,
       bvn: '',
       othernames: '',
       maidenName: '',
@@ -231,7 +231,7 @@ export class PensionService {
       throw new UnprocessableEntityException('User not found');
     }
 
-    const data = { pin: user.rsa_pin };
+    const data = { pin: user.pen };
     return await this.trustFundService.getSummary(data);
   }
 
@@ -241,7 +241,7 @@ export class PensionService {
       throw new UnprocessableEntityException('User not found');
     }
 
-    const data = { pin: user.rsa_pin };
+    const data = { pin: user.pen };
     return await this.trustFundService.getLastTenContributions(data);
   }
 
@@ -252,7 +252,7 @@ export class PensionService {
     }
 
     const data = {
-      pin: user.rsa_pin,
+      pin: user.pen,
       fromDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
       toDate: new Date().toISOString(),
     };

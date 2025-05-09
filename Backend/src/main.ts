@@ -15,21 +15,14 @@ import { GlobalExceptionFilter } from './core/filters';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(',') || [];
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.some((o) => origin.startsWith(o))) {
-        // Allow requests with no origin (like Postman or mobile apps) or from allowed origins
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
-    credentials: true, // Allow credentials such as cookies, authorization headers, etc.
+    origin: true, // Allow all origins for mobile app
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    credentials: true,
     preflightContinue: false,
-    optionsSuccessStatus: 200, // For legacy browser support
+    optionsSuccessStatus: 204,
   });
 
   app.use(cookieParser());

@@ -15,12 +15,12 @@ export class UpdateNokDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  first_name?: string;
+  firstName?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  other_name?: string;
+  otherName?: string;
 
   @ApiProperty({ required: false })
   @IsString()

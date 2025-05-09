@@ -30,5 +30,5 @@ export class CreateEmployerDto {
   @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
-  first_appoint_date: string;
+  firstAppointDate: string;
 } 

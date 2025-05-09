@@ -5,5 +5,5 @@ export class AccountManagerRequestDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  rsa_number: string;
+  rsaNumber: string;
 } 

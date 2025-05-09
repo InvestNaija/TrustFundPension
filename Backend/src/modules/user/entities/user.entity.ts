@@ -1,4 +1,4 @@
-import { Column, DeleteDateColumn, Entity, OneToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, OneToOne, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from '../../../core/database';
 import { Employer, UserRole, BVNData, Nok } from '.';
@@ -15,94 +15,95 @@ export class User extends AbstractEntity {
   nin: string;
 
   @Column({ nullable: true })
-  rsa_pin: string;
+  pen: string;
 
-  @Column()
-  first_name: string;
+  @Column({ name: 'first_name' })
+  firstName: string;
   
-  @Column({ nullable: true })
-  middle_name: string;
+  @Column({ name: 'middle_name', nullable: true })
+  middleName: string;
   
-  @Column()
-  last_name: string;
+  @Column({ name: 'last_name' })
+  lastName: string;
   
   @Column({ unique: true })
   email: string;
   
-  @Column()
+  @Column({ name: 'dob' })
   dob: string;
   
-  @Column()
+  @Column({ name: 'gender' })
   gender: string;
   
-  @Column()
+  @Column({ name: 'phone' })
   phone: string;
   
   @Column({ nullable: true })
   @Exclude()
   password: string;
 
-  @Column()
-  uuid_token: string;
+  @Column({ name: 'uuid_token', nullable: true })
+  uuidToken: string;
 
-  @Column()
-  ref_code: string;
+  @Column({ name: 'ref_code', nullable: true })
+  refCode: string;
 
   @Column({ nullable: true })
   referrer: string;
 
-  @Column({ default: true })
-  show_balance: boolean;
+  @Column({ default: true, name: 'show_balance' })
+  showBalance: boolean;
 
-  @Column()
-  state_of_posting: string;
+  @Column({ name: 'state_of_posting' })
+  stateOfPosting: string;
 
-  @Column()
-  lga_of_posting: string;
+  @Column({ name: 'lga_of_posting' })
+  lgaOfPosting: string;
 
-  @Column({ default: true })
-  is_enabled: boolean;
+  @Column({ name: 'is_enabled' })
+  isEnabled: boolean;
 
-  @Column({ default: false })
-  is_locked: boolean;
+  @Column({ name: 'is_locked' })
+  isLocked: boolean;
 
-  @Column({ default: true })
-  first_login: boolean;
+  @Column({ name: 'first_login' })
+  firstLogin: boolean;
   
-  @Column({ default: false })
-  two_factor_auth: boolean;
+  @Column({ name: 'two_factor_auth' })
+  twoFactorAuth: boolean;
 
   @Column({ type: 'enum', enum: USER_ROLE })
   role: USER_ROLE;
 
   @Column({
+    name: 'account_type',
     type: 'enum',
     enum: ACCOUNT_TYPE,
     nullable: false
   })
   accountType: ACCOUNT_TYPE;
 
-  @Column({ nullable: true })
+  @Column({ name: 'otp_code_hash', nullable: true })
   @Exclude()
   otpCodeHash: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
+  @Column({ name: 'otp_code_expiry', type: 'timestamptz', nullable: true })
   otpCodeExpiry: Date | null;
 
-  @Column({ default: false })
+  @Column({ name: 'is_email_verified', default: false })
   isEmailVerified: boolean;
 
-  @Column({ default: false })
+  @Column({ name: 'is_phone_verified', default: false })
   isPhoneVerified: boolean;
 
-  @Column({ type: 'timestamptz', nullable: true })
+  @Column({ name: 'password_changed_at', type: 'timestamptz', nullable: true })
   passwordChangedAt: Date | null;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
-  @OneToMany(() => BVNData, bvn => bvn.user)
-  bvnData: BVNData[];
+  @OneToOne(() => BVNData, bvn => bvn.user)
+  bvnData: BVNData;
 
   @OneToMany(() => Employer, employer => employer.user)
   employers: Employer[];

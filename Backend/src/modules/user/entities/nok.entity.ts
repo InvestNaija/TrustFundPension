@@ -10,11 +10,11 @@ export class Nok extends AbstractEntity {
   @Column()
   title: string;
 
-  @Column()
-  first_name: string;
+  @Column({ name: 'first_name' })
+  firstName: string;
 
-  @Column({ nullable: true })
-  other_name: string;
+  @Column({ nullable: true, name: 'other_name' })
+  otherName: string;
 
   @Column()
   surname: string;
@@ -25,7 +25,7 @@ export class Nok extends AbstractEntity {
   @Column()
   phone: string;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
   @ManyToOne(() => User, user => user.noks)

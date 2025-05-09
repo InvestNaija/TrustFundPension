@@ -5,23 +5,24 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  first_name?: string;
-  
+  firstName?: string;
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  middle_name?: string;
-  
+  middleName?: string;
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  last_name?: string;
-  
+  lastName?: string;
+
   @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
   @IsEmail()
-  @IsOptional()
   email?: string;
-  
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -40,12 +41,12 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  state_of_posting?: string;
+  stateOfPosting?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  lga_of_posting?: string;
+  lgaOfPosting?: string;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -63,7 +64,7 @@ export class UpdateUserDto {
   otpCodeHash?: string | null;
 
   @ApiProperty({ required: false })
-  @IsDate()
   @IsOptional()
+  @IsDate()
   otpCodeExpiry?: Date | null;
 } 

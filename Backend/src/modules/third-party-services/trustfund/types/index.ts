@@ -44,7 +44,7 @@ export interface IContributionRequest {
 }
 
 export interface IAccountManagerRequest {
-  rsa_number: string;
+  rsaNumber: string;
 }
 
 export interface IAccountManager {
@@ -54,6 +54,8 @@ export interface IAccountManager {
 
 export interface ILoginResponse {
   access_token: string;
+  token_type: string;
+  expires_in: number;
 }
 
 export interface ISummaryRequest {

@@ -3,7 +3,8 @@ import {
     Logger,
     NotFoundException,
     UnauthorizedException,
-    BadRequestException
+    BadRequestException,
+    UnprocessableEntityException
   } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -11,6 +12,11 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { UserRepository } from '../repositories/user.repository';
+import { VerifyMeService } from '../../third-party-services/verifyme/verifyme.service';
+import { QoreIdService } from '../../third-party-services/qoreid/qoreid.service';
+import { Repository } from 'typeorm';
+import { BVNData } from '../entities';
+import { BvnDataService } from './bvn-data.service';
 
 @Injectable()
 export class UserService {
@@ -18,7 +24,12 @@ export class UserService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(BVNData)
+    private readonly bvnDataRepository: Repository<BVNData>,
+    private readonly verifyMeService: VerifyMeService,
+    private readonly qoreIdService: QoreIdService,
+    private readonly bvnDataService: BvnDataService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -49,7 +60,7 @@ export class UserService {
 
   async findByRsaPin(rsaPin: string): Promise<any | null> {
     try {
-      return await this.userRepository.findOne({ where: { rsa_pin: rsaPin } });
+      return await this.userRepository.findOne({ where: { pen: rsaPin } });
     } catch (error) {
       this.logger.error(`Error finding user by RSA PIN: ${error.message}`);
       throw error;
@@ -90,31 +101,196 @@ export class UserService {
     return this.mapToResponseDto(updatedUser);
   }
 
+  async updateVerificationData(userId: string, data: { nin?: string; bvn?: string }) {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (data.nin) {
+        user.nin = data.nin;
+      }
+      if (data.bvn) {
+        user.bvn = data.bvn;
+      }
+
+      return this.userRepository.save(user);
+    } catch (error) {
+      this.logger.error('Error updating verification data:', error);
+      throw error;
+    }
+  }
+
+  async getBvnDetails(bvn: string, firstName: string, lastName: string, userId: string): Promise<any> {
+    try {
+      const existingBvnData = await this.bvnDataService.findOne(userId);
+      
+      if (existingBvnData) {
+        const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse);
+        return {
+          status: true,
+          message: 'BVN details retrieved from cache',
+          data: formattedData,
+        };
+      }
+
+      const bvnResponse = await this.verifyMeService.verifyBvn(bvn, firstName, lastName);
+
+      if (bvnResponse.data) {
+        const formattedData = this.formatBvnResponse(bvnResponse.data);
+        
+        await this.bvnDataService.create({
+          userId,
+          bvn,
+          bvnResponse: bvnResponse.data,
+        });
+
+        return {
+          status: true,
+          message: 'BVN details retrieved successfully',
+          data: formattedData,
+        };
+      }
+      
+      throw new UnprocessableEntityException('Could not retrieve BVN details');
+    } catch (error) {
+      this.logger.error('Error getting BVN details:', error);
+      throw new UnprocessableEntityException(error.response?.response?.data?.message || 'Could not retrieve BVN details');
+    }
+  }
+
+  async getNinDetails(nin: string): Promise<any> {
+    try {
+      const ninResponse = await this.qoreIdService.verifyNin(nin);
+      
+      if (ninResponse.nin) {
+        const formattedData = this.formatNinResponse(ninResponse.nin);
+        return {
+          status: true,
+          message: 'NIN details retrieved successfully',
+          data: formattedData,
+        };
+      }
+      throw new UnprocessableEntityException('Could not verify NIN');
+    } catch (error) {
+      this.logger.error('Error verifying NIN:', error);
+      throw new UnprocessableEntityException(error.response?.response?.data?.message || 'Could not verify NIN');
+    }
+  }
+
+  async verifyBvn(bvn: string, userId: string): Promise<void> {
+    try {
+      const existingBvnData = await this.bvnDataService.findOne(userId);
+      if (!existingBvnData) {
+        throw new UnprocessableEntityException('BVN data not found. Please get BVN details first.');
+      }
+
+      await this.userRepository.update(userId, {
+        bvn
+      });
+    } catch (error) {
+      throw new UnprocessableEntityException('Could not verify BVN');
+    }
+  }
+
+  async verifyNin(nin: string, userId: string): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      } 
+
+      await this.userRepository.update(userId, {
+        nin
+      });
+
+    } catch (error) {
+      throw new UnprocessableEntityException('Could not verify NIN');
+    }
+  }
+
+  private formatBvnResponse(data: any) {
+    const bvnData = data || {};
+    const response: any = {
+      bvn: bvnData.bvn,
+    };
+
+    const phones: string[] = [];
+    if (bvnData.phone) phones.push(bvnData.phone);
+    if (bvnData.phone1) phones.push(bvnData.phone1);
+    if (bvnData.phone2) phones.push(bvnData.phone2);
+    if (bvnData.phones && Array.isArray(bvnData.phones)) {
+      phones.push(...bvnData.phones);
+    }
+    if (phones.length > 0) {
+      response.phones = [...new Set(phones)];
+    }
+
+    const emails: string[] = [];
+    if (bvnData.email) emails.push(bvnData.email);
+    if (bvnData.email2) emails.push(bvnData.email2);
+    if (bvnData.emails && Array.isArray(bvnData.emails)) {
+      emails.push(...bvnData.emails);
+    }
+    if (emails.length > 0) {
+      response.emails = [...new Set(emails)];
+    }
+
+    return response;
+  }
+
+  private formatNinResponse(data: any) {
+    const ninData = data || {};
+    const response: any = {
+      nin: ninData.nin,
+      firstname: ninData.firstname,
+      lastname: ninData.lastname,
+    };
+
+    const phones: string[] = [];
+    if (ninData.phone) phones.push(ninData.phone);
+    if (phones.length > 0) {
+      response.phones = [...new Set(phones)];
+    }
+
+    const emails: string[] = [];
+    if (ninData.email) emails.push(ninData.email);
+    if (ninData.emails && Array.isArray(ninData.emails)) {
+      emails.push(...ninData.emails);
+    }
+    if (emails.length > 0) {
+      response.emails = [...new Set(emails)]; 
+    }
+
+    return response;
+  }
+
   private mapToResponseDto(user: User): UserResponseDto {
     const userDto = new UserResponseDto();
     userDto.id = user.id;
     userDto.bvn = user.bvn;
     userDto.nin = user.nin;
-    userDto.rsa_pin = user.rsa_pin;
-    userDto.first_name = user.first_name;
-    userDto.middle_name = user.middle_name;
-    userDto.last_name = user.last_name;
+    userDto.pen = user.pen;
+    userDto.firstName = user.firstName;
+    userDto.middleName = user.middleName;
+    userDto.lastName = user.lastName;
     userDto.email = user.email;
     userDto.dob = user.dob;
     userDto.gender = user.gender;
     userDto.phone = user.phone;
-    userDto.uuid_token = user.uuid_token;
-    userDto.ref_code = user.ref_code;
+    userDto.uuidToken = user.uuidToken;
+    userDto.refCode = user.refCode;
     userDto.referrer = user.referrer;
-    userDto.show_balance = user.show_balance;
-    userDto.state_of_posting = user.state_of_posting;
-    userDto.lga_of_posting = user.lga_of_posting;
-    userDto.is_enabled = user.is_enabled;
-    userDto.is_locked = user.is_locked;
-    userDto.first_login = user.first_login;
-    userDto.two_factor_auth = user.two_factor_auth;
+    userDto.showBalance = user.showBalance;
+    userDto.stateOfPosting = user.stateOfPosting;
+    userDto.lgaOfPosting = user.lgaOfPosting;
+    userDto.isEnabled = user.isEnabled;
+    userDto.isLocked = user.isLocked;
+    userDto.firstLogin = user.firstLogin;
+    userDto.twoFactorAuth = user.twoFactorAuth;
     userDto.role = user.role;
-    userDto.account_type = user.accountType;
+    userDto.accountType = user.accountType;
     userDto.isEmailVerified = user.isEmailVerified;
     userDto.isPhoneVerified = user.isPhoneVerified;
     userDto.createdAt = user.createdAt;

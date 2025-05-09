@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BvnDataService } from '../services';
 import { CreateBvnDataDto, UpdateBvnDataDto, BvnDataResponseDto } from '../dto';
@@ -29,7 +29,11 @@ export class BvnDataController {
   @ApiOperation({ summary: 'Get current user\'s BVN data' })
   @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
   async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<BvnDataResponseDto> {
-    return this.bvnDataService.findOne(authenticatedUser.id);
+    const bvnData = await this.bvnDataService.findOne(authenticatedUser.id);
+    if (!bvnData) {
+      throw new NotFoundException('BVN data not found');
+    }
+    return bvnData;
   }
 
 } 

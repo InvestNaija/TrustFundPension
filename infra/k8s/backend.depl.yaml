@@ -67,36 +67,116 @@ spec:
                 secretKeyRef:
                   name: backend.depl
                   key: PORT
-            - name: DB_PG_HOST
+            - name: CORS_ALLOWED_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: CORS_ALLOWED_ORIGINS
+            - name: DB_HOST
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_HOST
-            - name: DB_PG_DB_NAME
+                  key: DB_HOST
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_DB_NAME
-            - name: DB_PG_PASSWORD
+                  key: DB_NAME
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_PASSWORD
-            - name: DB_PG_USERNAME
+                  key: DB_PASSWORD
+            - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_USERNAME
-            - name: DB_PG_PORT
+                  key: DB_USERNAME
+            - name: DB_PORT
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_PORT
-            - name: DB_PG_TIMEZONE
+                  key: DB_PORT
+            - name: DB_DIALECT
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PG_TIMEZONE
+                  key: DB_DIALECT
+            - name: DB_SCHEMA_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: DB_SCHEMA_NAME
+            - name: DB_TIMEZONE
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: DB_TIMEZONE
+            - name: JWT_ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: JWT_ACCESS_TOKEN_SECRET
+            - name: JWT_REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: JWT_REFRESH_TOKEN_SECRET
+            - name: JWT_ACCESS_TOKEN_EXPIRY
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: JWT_ACCESS_TOKEN_EXPIRY
+            - name: JWT_REFRESH_TOKEN_EXPIRY
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: JWT_REFRESH_TOKEN_EXPIRY
+            - name: TRUSTFUND_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_USERNAME
+            - name: TRUSTFUND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_PASSWORD
+            - name: TRUSTFUND_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_BASE_URL
+            - name: TRUSTFUND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_URL
+            - name: TRUSTFUND_EMAIL_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_EMAIL_FROM
+            - name: TRUSTFUND_EMAIL_FROM_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_EMAIL_FROM_NAME
+            - name: TRUSTFUND_SMS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_SMS_USERNAME
+            - name: TRUSTFUND_SMS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_SMS_PASSWORD
+            - name: TRUSTFUND_SMS_SENDER
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_SMS_SENDER
 ---
 apiVersion: v1
 kind: Service

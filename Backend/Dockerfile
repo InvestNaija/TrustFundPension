@@ -5,10 +5,11 @@ ENV WDS_SOCKET_PORT=0
 
 WORKDIR /app
 COPY package.json ./
-RUN npm install --omit=dev
+RUN npm install
 COPY . . 
 
+RUN npm run build
 ENV TZ=Africa/Lagos
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:prod"]

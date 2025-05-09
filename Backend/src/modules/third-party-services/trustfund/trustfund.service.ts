@@ -43,7 +43,7 @@ export class TrustFundService {
     if (!withAuth) {
       headers.Authorization = `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`;
     } else if (this.accessToken) {
-      headers.Authorization = `Bearer ${this.accessToken}`;
+      headers.Authorization = `${this.accessToken}`;
     }
 
     return headers;
@@ -52,12 +52,13 @@ export class TrustFundService {
   async login(): Promise<void> {
     try {
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`;
+      const headers = this.getRequestHeaders(false);  
       const response = await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        headers: this.getRequestHeaders(false),
+        headers,
       });
-      this.accessToken = response.access_token;
+      this.accessToken = response.authorization;
     } catch (error) {
       this.logger.error('Error during login:', error);
       throw new UnprocessableEntityException('Could not authenticate');

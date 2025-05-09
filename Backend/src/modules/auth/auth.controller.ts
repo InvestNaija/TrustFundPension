@@ -23,7 +23,6 @@ import {
   ValidateOtpDto,
   VerifyAccountDto,
   VerifyEmailDto,
-  VerificationPreferenceDto,
 } from './dto';
 import { JwtAccessTokenGuard, JwtRefreshTokenGuard } from './guards';
 import { IJwtTokens } from './types';

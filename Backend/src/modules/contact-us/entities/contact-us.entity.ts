@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { AbstractEntity } from '../../../core/database';
 import { User } from 'src/modules/user/entities';
 
@@ -6,6 +6,7 @@ import { User } from 'src/modules/user/entities';
 export class ContactUs extends AbstractEntity{
 
   @ManyToOne(() => User, user => user.contactUs, { eager: true })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ nullable: true })

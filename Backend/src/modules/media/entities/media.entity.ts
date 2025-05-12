@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { AbstractEntity } from 'src/core/database';
 import { User } from 'src/modules/user/entities';
 import { UPLOAD_TYPE } from 'src/core/constants';
@@ -8,13 +8,14 @@ import { UPLOAD_TYPE } from 'src/core/constants';
 export class Media extends AbstractEntity {
 
   @ManyToOne(() => User, user => user.media, { eager: true })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ nullable: true })
   title: string;
 
   @Column({
-    name: 'upload_type',
+    name: 'uploadType',
     type: 'enum',
     enum: UPLOAD_TYPE,
     nullable: false

@@ -23,13 +23,14 @@ import {
   ValidateOtpDto,
   VerifyAccountDto,
   VerifyEmailDto,
-  VerificationPreferenceDto,
 } from './dto';
 import { JwtAccessTokenGuard, JwtRefreshTokenGuard } from './guards';
 import { IJwtTokens } from './types';
 import { AuthenticatedUser } from '../../core/decorators';
 import { IDecodedJwtToken } from './strategies';
 import { VerificationMethod } from './dto';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { OtpAuthGuard } from 'src/core/auth/guards/otp.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -134,6 +135,7 @@ export class AuthController {
   }
 
   @Post('/reset-password')
+  @UseGuards(OtpAuthGuard)
   @HttpCode(HttpStatus.OK)
   resetPassword(@Body() dto: ResetPasswordDto): Promise<IApiResponse> {
     return this.authService.resetPassword(dto);
@@ -156,6 +158,7 @@ export class AuthController {
   }
 
   @Post('/verify-account')
+  @UseGuards(OtpAuthGuard)
   @HttpCode(HttpStatus.OK)
   verifyAccount(
     @Body() dto: VerifyAccountDto,

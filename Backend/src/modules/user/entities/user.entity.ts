@@ -3,6 +3,9 @@ import { Exclude } from 'class-transformer';
 import { AbstractEntity } from '../../../core/database';
 import { Employer, UserRole, BVNData, Nok } from '.';
 import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
+import { Referral } from '../../referral/entities';
+import { ContactUs } from '../../contact-us/entities';
+import { Media } from '../../media/entities';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
@@ -107,9 +110,21 @@ export class User extends AbstractEntity {
   @OneToMany(() => Employer, employer => employer.user)
   employers: Employer[];
 
+  @OneToMany(() => ContactUs, contactUs => contactUs.user)
+  contactUs: ContactUs[];
+
+  @OneToMany(() => Media, media => media.user)
+  media: Media[];
+
   @OneToMany(() => Nok, nok => nok.user)
   noks: Nok[];
 
   @OneToMany(() => UserRole, ur => ur.user)
   userRoles: UserRole[];
+
+  @OneToMany(() => Referral, referral => referral.owner)
+  referrals: Referral[];
+
+  @OneToMany(() => Referral, referral => referral.referrer)
+  referred: Referral[];
 }

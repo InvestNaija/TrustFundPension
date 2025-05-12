@@ -51,7 +51,17 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  otpCodeHash?: string;
+  password?: string;
+
+  @ApiProperty({ required: false })
+  @IsDate()
+  @IsOptional()
+  passwordChangedAt?: Date;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  otpCodeHash?: string | null;
 
   @ApiProperty({ required: false })
   @IsOptional()

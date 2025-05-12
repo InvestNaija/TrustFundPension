@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   LoginDto,
@@ -15,9 +16,7 @@ import {
   SignupUserDto,
   ValidateOtpDto,
   VerifyAccountDto,
-  VerifyEmailDto,
   VerificationMethod,
-  VerificationPreferenceDto,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';
@@ -94,19 +93,7 @@ export class AuthService {
       }
     }
 
-    const otpCodeHash = generateOtpCodeHash(dto.otpCode);
-    if (otpCodeHash !== user.otpCodeHash) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
-    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new BadRequestException('OTP has expired');
-    }
-
-    const updateData: any = {
-      otpCodeHash: null,
-      otpCodeExpiry: null,
-    };
+    const updateData: any = {};
 
     if (dto.method === VerificationMethod.EMAIL) {
       updateData.isEmailVerified = true;
@@ -302,34 +289,34 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<IApiResponse> {
-    const { email, otpCode, password } = dto;
+    const { email, phone, password } = dto;
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new NotFoundException('User not found');
-
-    const otpCodeHash = generateOtpCodeHash(otpCode);
-    if (otpCodeHash !== user.otpCodeHash) {
-      throw new BadRequestException('Invalid OTP');
+    if (!email && !phone) {
+      throw new UnprocessableEntityException('Either email or phone must be provided');
     }
 
-    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new BadRequestException('OTP has expired');
+    let user;
+    if (email) {
+      user = await this.userService.findByEmail(email);
+    } else if (phone) {
+      user = await this.userService.findByPhone(phone);
     }
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    // Hash new password
     const hashedPassword = await hashPassword(password);
-    if (!hashedPassword) {
-      throw new BadRequestException('Failed to hash password');
-    }
-    await this.userService.updatePassword(user.id, {
+
+    // Update user password
+    await this.userService.update(user.id, {
       password: hashedPassword,
-      passwordChangedAt: new Date(),
-      otpCodeHash: null,
-      otpCodeExpiry: null,
+      passwordChangedAt: new Date()
     });
 
     return {
       status: true,
-      message: 'Password reset successfully',
+      message: 'Password reset successful',
       data: {},
     };
   }

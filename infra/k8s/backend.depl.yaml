@@ -72,6 +72,26 @@ spec:
                 secretKeyRef:
                   name: common.depl
                   key: CORS_ALLOWED_ORIGINS
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: CLOUDINARY_API_KEY
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: CLOUDINARY_API_SECRET
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: CLOUDINARY_CLOUD_NAME
+            - name: CLOUDINARY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: CLOUDINARY_URL
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:

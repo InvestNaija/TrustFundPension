@@ -6,7 +6,6 @@ import { ReferralController } from './controllers';
 import { UserModule } from '../user';
 import { ReferralRepository } from './repositories';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([Referral]), UserModule],
   providers: [ReferralService, ReferralRepository],

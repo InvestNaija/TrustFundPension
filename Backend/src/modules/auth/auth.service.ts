@@ -93,19 +93,7 @@ export class AuthService {
       }
     }
 
-    const otpCodeHash = generateOtpCodeHash(dto.otpCode);
-    if (otpCodeHash !== user.otpCodeHash) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
-    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new BadRequestException('OTP has expired');
-    }
-
-    const updateData: any = {
-      otpCodeHash: null,
-      otpCodeExpiry: null,
-    };
+    const updateData: any = {};
 
     if (dto.method === VerificationMethod.EMAIL) {
       updateData.isEmailVerified = true;
@@ -301,7 +289,7 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<IApiResponse> {
-    const { email, phone, otpCode, password } = dto;
+    const { email, phone, password } = dto;
 
     if (!email && !phone) {
       throw new UnprocessableEntityException('Either email or phone must be provided');
@@ -317,26 +305,13 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    // Verify OTP
-    const otpCodeHash = generateOtpCodeHash(otpCode);
-    if (otpCodeHash !== user.otpCodeHash) {
-      throw new UnprocessableEntityException('Invalid OTP');
-    }
-
-    if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new UnprocessableEntityException('OTP has expired');
-    }
-
     // Hash new password
     const hashedPassword = await hashPassword(password);
 
     // Update user password
     await this.userService.update(user.id, {
       password: hashedPassword,
-      passwordChangedAt: new Date(),
-      otpCodeHash: null,
-      otpCodeExpiry: null,
+      passwordChangedAt: new Date()
     });
 
     return {

@@ -17,14 +17,19 @@ export class HttpRequestService {
 
   async makeRequest({ method, data, url, headers, responseType }: IHttpRequest) {
     try {
+      const requestConfig: any = {
+        url,
+        method,
+        data,
+        headers,
+      };
+
+      if (responseType) {
+        requestConfig.responseType = responseType;
+      }
+
       const response = await firstValueFrom(
-        this.httpService.request({
-          url,
-          method,
-          data,
-          headers,
-          responseType,
-        }),
+        this.httpService.request(requestConfig),
       );
       this.logger.log({ url, status: response.status });
 

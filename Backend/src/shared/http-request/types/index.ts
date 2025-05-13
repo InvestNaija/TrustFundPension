@@ -6,4 +6,5 @@ export interface IHttpRequest {
   headers?: any;
   url?: string;
   type?: string;
+  responseType?: 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream';
 }

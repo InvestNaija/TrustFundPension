@@ -192,15 +192,14 @@ export class TrustFundService {
         await this.login();
       }
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
-      return await this.httpRequest.makeRequest({
+      const response = await this.httpRequest.makeRequest({
         method: 'POST',
         url,
         data,
-        headers: {
-          ...this.getRequestHeaders(),
-          responseType: 'arraybuffer'
-        }
+        headers: this.getRequestHeaders(),
+        responseType: 'arraybuffer'
       });
+      return Buffer.from(response);
     } catch (error) {
       this.logger.error('Error generating report:', error);
       throw new UnprocessableEntityException('Could not generate report');
@@ -213,15 +212,14 @@ export class TrustFundService {
         await this.login();
       }
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
-      return await this.httpRequest.makeRequest({
+      const response = await this.httpRequest.makeRequest({
         method: 'POST',
         url,
         data,
-        headers: {
-          ...this.getRequestHeaders(),
-          responseType: 'arraybuffer'
-        }
+        headers: this.getRequestHeaders(),
+        responseType: 'arraybuffer'
       });
+      return Buffer.from(response);
     } catch (error) {
       this.logger.error('Error generating welcome letter:', error);
       throw new UnprocessableEntityException('Could not generate welcome letter');

@@ -44,7 +44,7 @@ export interface IContributionRequest {
 }
 
 export interface IAccountManagerRequest {
-  rsaNumber: string;
+  rsa_number: string;
 }
 
 export interface IAccountManager {

@@ -152,9 +152,7 @@ export class TrustFundService {
 
   async getSummary(data: ISummaryRequest): Promise<ISummaryResponse> {
     try {
-      if (!this.accessToken) {
-        await this.login();
-      }
+      await this.login();
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/getsummary`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
@@ -170,9 +168,7 @@ export class TrustFundService {
 
   async customerOnboarding(data: ICustomerOnboardingRequest): Promise<any> {
     try {
-      if (!this.accessToken) {
-        await this.login();
-      }
+      await this.login();
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/regmodule-ecrs/onboarding`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
@@ -188,9 +184,7 @@ export class TrustFundService {
 
   async generateReport(data: IGenerateReportRequest): Promise<Buffer> {
     try {
-      if (!this.accessToken) {
-        await this.login();
-      }
+      await this.login();
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
       const response = await this.httpRequest.makeRequest({
         method: 'POST',
@@ -208,9 +202,7 @@ export class TrustFundService {
 
   async generateWelcomeLetter(data: IWelcomeLetterRequest): Promise<Buffer> {
     try {
-      if (!this.accessToken) {
-        await this.login();
-      }
+      await this.login();
       const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
       const response = await this.httpRequest.makeRequest({
         method: 'POST',

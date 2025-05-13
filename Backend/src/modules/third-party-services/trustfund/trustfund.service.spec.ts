@@ -240,7 +240,7 @@ describe('TrustFundService', () => {
 
   describe('getAccountManager', () => {
     const managerRequest: IAccountManagerRequest = {
-      rsaNumber: 'PEN100048037525',
+      rsa_number: 'PEN100048037525',
     };
 
     const successResponse: IAccountManager[] = [

@@ -23,7 +23,13 @@ describe('PensionController', () => {
 
   const mockToken: IDecodedJwtToken = {
     id: '123',
-    role: USER_ROLE.CLIENT
+    userRoles: [
+      {
+        id: '1',
+        userId: '123',
+        roleId: USER_ROLE.CLIENT
+      }
+    ]
   };
 
   const mockPensionService = {

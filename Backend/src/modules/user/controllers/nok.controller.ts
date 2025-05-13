@@ -4,7 +4,7 @@ import { NokService } from '../services';
 import { CreateNokDto, UpdateNokDto, NokResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../core/decorators';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('Next of Kin')
 @Controller('noks')

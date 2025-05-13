@@ -2,7 +2,7 @@ import { Column, DeleteDateColumn, Entity, OneToOne, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from '../../../core/database';
 import { Employer, UserRole, BVNData, Nok } from '.';
-import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
+import { ACCOUNT_TYPE } from '../../../core/constants';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
@@ -70,9 +70,6 @@ export class User extends AbstractEntity {
   
   @Column({ name: 'two_factor_auth' })
   twoFactorAuth: boolean;
-
-  @Column({ type: 'enum', enum: USER_ROLE })
-  role: USER_ROLE;
 
   @Column({
     name: 'account_type',

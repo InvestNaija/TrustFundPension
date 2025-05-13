@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { ACCOUNT_TYPE, USER_ROLE } from '../../../core/constants';
+import { ACCOUNT_TYPE } from '../../../core/constants';
+import { UserRoleResponseDto } from './user-role-response.dto';
 
 export class UserResponseDto {
   @ApiProperty()
@@ -66,8 +67,8 @@ export class UserResponseDto {
   @ApiProperty({ name: 'two_factor_auth' })
   twoFactorAuth: boolean;
 
-  @ApiProperty({ enum: USER_ROLE, name: 'role' })
-  role: USER_ROLE;
+  @ApiProperty({ type: [UserRoleResponseDto], name: 'user_roles' })
+  userRoles: UserRoleResponseDto[];
 
   @ApiProperty({ enum: ACCOUNT_TYPE, name: 'account_type' })
   accountType: ACCOUNT_TYPE;

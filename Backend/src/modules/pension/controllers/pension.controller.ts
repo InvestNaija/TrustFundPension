@@ -13,7 +13,7 @@ import {
 } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../core/decorators';
+import {  IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('Pension')
 @Controller('pension')

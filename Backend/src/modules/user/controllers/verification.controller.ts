@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../core/decorators';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { UserService } from '../services/user.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 

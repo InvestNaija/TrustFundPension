@@ -15,8 +15,9 @@ import { UserRepository } from '../repositories/user.repository';
 import { VerifyMeService } from '../../third-party-services/verifyme/verifyme.service';
 import { QoreIdService } from '../../third-party-services/qoreid/qoreid.service';
 import { Repository } from 'typeorm';
-import { BVNData } from '../entities';
+import { BVNData, UserRole } from '../entities';
 import { BvnDataService } from './bvn-data.service';
+import { UserRoleService } from './user-role.service';
 
 @Injectable()
 export class UserService {
@@ -30,15 +31,25 @@ export class UserService {
     private readonly verifyMeService: VerifyMeService,
     private readonly qoreIdService: QoreIdService,
     private readonly bvnDataService: BvnDataService,
+    private readonly userRoleService: UserRoleService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    const { roleId, ...userData } = createUserDto;
+    
     const user = new User();
     Object.assign(user, {
-      ...createUserDto,
+      ...userData,
       otpCodeHash: createUserDto.otpCodeHash || undefined,
     });
+    
     const savedUser = await this.userRepository.save(user);
+    
+    await this.userRoleService.create({
+      userId: savedUser.id,
+      roleId: roleId
+    });
+    
     return this.mapToResponseDto(savedUser);
   }
 
@@ -268,33 +279,39 @@ export class UserService {
 
   private mapToResponseDto(user: User): UserResponseDto {
     const userDto = new UserResponseDto();
-    userDto.id = user.id;
-    userDto.bvn = user.bvn;
-    userDto.nin = user.nin;
-    userDto.pen = user.pen;
-    userDto.firstName = user.firstName;
-    userDto.middleName = user.middleName;
-    userDto.lastName = user.lastName;
-    userDto.email = user.email;
-    userDto.dob = user.dob;
-    userDto.gender = user.gender;
-    userDto.phone = user.phone;
-    userDto.uuidToken = user.uuidToken;
-    userDto.refCode = user.refCode;
-    userDto.referrer = user.referrer;
-    userDto.showBalance = user.showBalance;
-    userDto.stateOfPosting = user.stateOfPosting;
-    userDto.lgaOfPosting = user.lgaOfPosting;
-    userDto.isEnabled = user.isEnabled;
-    userDto.isLocked = user.isLocked;
-    userDto.firstLogin = user.firstLogin;
-    userDto.twoFactorAuth = user.twoFactorAuth;
-    userDto.role = user.role;
-    userDto.accountType = user.accountType;
-    userDto.isEmailVerified = user.isEmailVerified;
-    userDto.isPhoneVerified = user.isPhoneVerified;
-    userDto.createdAt = user.createdAt;
-    userDto.updatedAt = user.updatedAt;
+    Object.assign(userDto, {
+      id: user.id,
+      bvn: user.bvn,
+      nin: user.nin,
+      pen: user.pen,
+      firstName: user.firstName,
+      middleName: user.middleName,
+      lastName: user.lastName,
+      email: user.email,
+      dob: user.dob,
+      gender: user.gender,
+      phone: user.phone,
+      uuidToken: user.uuidToken,
+      refCode: user.refCode,
+      referrer: user.referrer,
+      showBalance: user.showBalance,
+      stateOfPosting: user.stateOfPosting,
+      lgaOfPosting: user.lgaOfPosting,
+      isEnabled: user.isEnabled,
+      isLocked: user.isLocked,
+      firstLogin: user.firstLogin,
+      twoFactorAuth: user.twoFactorAuth,
+      userRoles: user.userRoles,
+      accountType: user.accountType,
+      otpCodeHash: user.otpCodeHash,
+      otpCodeExpiry: user.otpCodeExpiry,
+      isEmailVerified: user.isEmailVerified,
+      isPhoneVerified: user.isPhoneVerified,
+      passwordChangedAt: user.passwordChangedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      deletedAt: user.deletedAt,
+    });
     return userDto;
   }
 }

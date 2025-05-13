@@ -12,6 +12,9 @@ import { ThirdPartyServicesModule } from './modules/third-party-services';
 import { AppService } from './app.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth';
+import { ReferralModule } from './modules/referral';
+import { ContactUsModule } from './modules/contact-us';
+import { MediaModule } from './modules/media';
 
 @Module({
   imports: [
@@ -25,8 +28,10 @@ import { AuthModule } from './modules/auth';
     UserModule,
     DatabaseModule,
     ThirdPartyServicesModule,
-    PensionModule
-
+    PensionModule,
+    ReferralModule,
+    ContactUsModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

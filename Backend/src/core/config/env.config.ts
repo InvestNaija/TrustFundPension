@@ -38,7 +38,11 @@ export const envConfig = {
   TRUSTFUND_SMS_USERNAME: process.env.TRUSTFUND_SMS_USERNAME,
   TRUSTFUND_SMS_PASSWORD: process.env.TRUSTFUND_SMS_PASSWORD,
   TRUSTFUND_SMS_SENDER: process.env.TRUSTFUND_SMS_SENDER,
-  TRUSTFUND_BASE_URL: process.env.TRUSTFUND_BASE_URL
+  TRUSTFUND_BASE_URL: process.env.TRUSTFUND_BASE_URL,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  CLOUDINARY_URL: process.env.CLOUDINARY_URL,
 }
 
 export interface IEnvConfig {
@@ -82,6 +86,10 @@ export const envValidationSchema = Joi.object({
   TRUSTFUND_SMS_PASSWORD: Joi.string().required(),
   TRUSTFUND_SMS_SENDER: Joi.string().required(),
   TRUSTFUND_BASE_URL: Joi.string().required(),
+  CLOUDINARY_CLOUD_NAME: Joi.string().required(),
+  CLOUDINARY_API_KEY: Joi.string().required(),
+  CLOUDINARY_API_SECRET: Joi.string().required(),
+  CLOUDINARY_URL: Joi.string().required(),
 });
 
 // import * as dotenv from 'dotenv';

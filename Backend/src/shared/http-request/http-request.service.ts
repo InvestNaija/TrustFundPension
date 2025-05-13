@@ -4,6 +4,7 @@ import {
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { envConfig } from '../../core/config';
 import { firstValueFrom } from 'rxjs';
 import { IHttpRequest } from './types';
 
@@ -12,6 +13,7 @@ export class HttpRequestService {
   protected logger = new Logger(HttpRequestService.name);
 
   constructor(private readonly httpService: HttpService) {}
+  private url_pen = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`
 
   async makeRequest({ method, data, url, headers }: IHttpRequest) {
     try {
@@ -25,6 +27,9 @@ export class HttpRequestService {
       );
       this.logger.log({ url, status: response.status });
 
+      if (url === this.url_pen) {
+        return response.headers;
+      }
       return response.data;
     } catch (error) {
       this.logger.error(error.response.data);

@@ -2,20 +2,19 @@ import { IsString, IsNotEmpty, IsOptional, IsEmail, IsUUID } from 'class-validat
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateContactUsDto {
-  @ApiProperty({ description: 'User ID who submitted the contact form' })
   @IsUUID()
-  @IsNotEmpty()
-  user: string;
+  @IsOptional()
+  user?: string;
 
   @ApiProperty({ description: 'Name of the contact person' })
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @ApiProperty({ description: 'Email address of the contact person' })
   @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({ description: 'Phone number of the contact person', required: false })
   @IsString()

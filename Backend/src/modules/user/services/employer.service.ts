@@ -26,12 +26,17 @@ export class EmployerService {
     
     // Create and save the address
     if (createEmployerDto.address) {
-      const addressData = {
+      const newAddress = new Address();
+      Object.assign(newAddress, {
         ...createEmployerDto.address,
         commonId: savedEmployer.id,
-        commonType: 'Employer'
-      };
-      await this.addressRepository.save(addressData);
+        commonType: 'Employer',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      const savedAddress = await this.addressRepository.save(newAddress);
+      // Explicitly associate the saved address with the employer
+      savedEmployer.addresses = [savedAddress];
     }
     
     // Fetch the employer with addresses

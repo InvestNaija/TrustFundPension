@@ -20,8 +20,8 @@ export class NokController {
     @Body() createNokDto: CreateNokDto
   ): Promise<NokResponseDto> {
     return this.nokService.create({
-      ...createNokDto,
-      userId: authenticatedUser.id
+      userId: authenticatedUser.id,
+      ...createNokDto
     });
   }
 
@@ -39,7 +39,10 @@ export class NokController {
     @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
     @Body() updateNokDto: UpdateNokDto
   ): Promise<NokResponseDto> {
-    return this.nokService.update(authenticatedUser.id, updateNokDto);
+    return this.nokService.update(authenticatedUser.id, {
+      userId: authenticatedUser.id,
+      ...updateNokDto
+    });
   }
 
   @Delete('')

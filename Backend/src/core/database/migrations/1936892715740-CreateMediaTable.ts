@@ -29,23 +29,23 @@ export class CreateMediaTable1936892715740 implements MigrationInterface {
               isNullable: true,
             },
             {
-              name: 'uploadType',
+              name: 'upload_type',
               type: 'enum',
               enum: ['PROFILE_PICTURE', 'DOCUMENT', 'OTHER'],
               isNullable: false,
             },
             {
-              name: 'fileUrl',
+              name: 'file_url',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'fileType',
+              name: 'file_type',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'fileSize',
+              name: 'file_size',
               type: 'integer',
               isNullable: true,
             },
@@ -55,18 +55,18 @@ export class CreateMediaTable1936892715740 implements MigrationInterface {
               isNullable: true,
             },
             {
-              name: 'createdAt',
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },
@@ -78,7 +78,7 @@ export class CreateMediaTable1936892715740 implements MigrationInterface {
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',

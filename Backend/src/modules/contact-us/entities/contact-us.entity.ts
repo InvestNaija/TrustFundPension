@@ -6,7 +6,7 @@ import { User } from 'src/modules/user/entities';
 export class ContactUs extends AbstractEntity{
 
   @ManyToOne(() => User, user => user.contactUs, { eager: true })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ nullable: true })

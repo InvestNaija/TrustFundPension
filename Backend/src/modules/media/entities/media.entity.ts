@@ -8,28 +8,28 @@ import { UPLOAD_TYPE } from 'src/core/constants';
 export class Media extends AbstractEntity {
 
   @ManyToOne(() => User, user => user.media, { eager: true })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ nullable: true })
   title: string;
 
   @Column({
-    name: 'uploadType',
+    name: 'upload_type',
     type: 'enum',
     enum: UPLOAD_TYPE,
     nullable: false
   })
-  uploadType: UPLOAD_TYPE;
+  upload_type: UPLOAD_TYPE;
 
   @Column()
-  fileUrl: string;
+  file_url: string;
 
   @Column()
-  fileType: string;
+  file_type: string;
 
   @Column({ nullable: true })
-  fileSize: number;
+  file_size: number;
 
   @Column({ nullable: true })
   tags: string;

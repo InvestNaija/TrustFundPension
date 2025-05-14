@@ -129,36 +129,28 @@ export class TrustFundService {
     }
   }
 
-  async login(): Promise<ILoginResponse> {
+  async getSummary(data: ISummaryRequest): Promise<ISummaryResponse> {
     try {
       const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`;
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
-      };
-      return await this.httpRequest.makeRequest({
+      };    
+      return this.httpRequest.makeRequest({
         method: 'POST',
         url: loginUrl,
         headers,
-      });
-    } catch (error) {
-      this.logger.error('Error during login:', error);
-      throw new UnprocessableEntityException('Could not login');
-    }
-  }
-
-  async getSummary(data: ISummaryRequest): Promise<ISummaryResponse> {
-    try {
-      const response = await this.login();
-      const summaryUrl = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/getsummary`;
-      return this.httpRequest.makeRequest({
-        method: 'POST',
-        url: summaryUrl,
-        data,
-        headers:{
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${response.access_token}`
-        },
+      }).then(response => {
+        const summaryUrl = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/getsummary`;
+        return this.httpRequest.makeRequest({
+          method: 'POST',
+          url: summaryUrl,
+          data,
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': response.authorization
+          },
+        });
       });
     } catch (error) {
       this.logger.error('Error getting summary:', error);

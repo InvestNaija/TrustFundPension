@@ -19,7 +19,7 @@ export class CreateContactUsTable1936892715741 implements MigrationInterface {
               default: 'gen_random_uuid()',
             },
             {
-              name: 'userId',
+              name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
@@ -54,18 +54,18 @@ export class CreateContactUsTable1936892715741 implements MigrationInterface {
               isNullable: true,
             },
             {
-              name: 'createdAt',
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },
@@ -77,7 +77,7 @@ export class CreateContactUsTable1936892715741 implements MigrationInterface {
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',

@@ -58,7 +58,7 @@ export class MediaService {
   async findByUploadType(uploadType: UPLOAD_TYPE, userId: string): Promise<Media[]> {
     try {
       return await this.mediaRepository.find({
-        where: { uploadType, user: { id: userId } },
+        where: { upload_type: uploadType, user: { id: userId } },
         relations: ['user'],
         order: { createdAt: 'DESC' }
       });

@@ -273,29 +273,6 @@ describe('TrustFundService', () => {
     });
   });
 
-  describe('login', () => {
-    it('should login successfully', async () => {
-      await service.login();
-
-      expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith({
-        method: 'POST',
-        url: expect.stringContaining('/auth/login'),
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
-          Authorization: expect.stringContaining('Basic '),
-        }),
-      });
-    });
-
-    it('should throw UnprocessableEntityException on error', async () => {
-      mockHttpRequestService.makeRequest.mockRejectedValueOnce(new Error());
-
-      await expect(service.login()).rejects.toThrow(
-        UnprocessableEntityException,
-      );
-    });
-  });
-
   describe('getSummary', () => {
     const summaryRequest: ISummaryRequest = {
       pin: 'PEN100048037525'

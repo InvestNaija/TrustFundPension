@@ -64,7 +64,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: AccountManagerRequestDto = { rsaNumber: user.pen };
+      const data: AccountManagerRequestDto = { rsa_number: user.pen };
       return await this.trustFundService.getAccountManager(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get account manager');

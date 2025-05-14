@@ -275,7 +275,6 @@ describe('PensionController', () => {
   describe('generateReport', () => {
     it('should generate report successfully', async () => {
       const query: GenerateReportQueryDto = {
-        pin: '12345',
         fromDate: '2023-01-01',
         toDate: '2023-12-31',
       };

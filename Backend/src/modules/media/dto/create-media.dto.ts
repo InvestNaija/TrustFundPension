@@ -3,10 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UPLOAD_TYPE } from 'src/core/constants';
 
 export class CreateMediaDto {
-  @ApiProperty({ description: 'User ID who owns the media' })
   @IsUUID()
-  @IsNotEmpty()
-  user: string;
+  @IsOptional()
+  user?: string;
 
   @ApiProperty({ description: 'Title of the media', required: false })
   @IsString()
@@ -20,13 +19,13 @@ export class CreateMediaDto {
 
   @ApiProperty({ description: 'URL of the uploaded file' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   fileUrl: string;
 
   @ApiProperty({ description: 'Type of the file (e.g., image/jpeg, video/mp4)' })
   @IsString()
-  @IsNotEmpty()
-  fileType: string;
+  @IsOptional()
+  fileType?: string;
 
   @ApiProperty({ description: 'Size of the file in bytes', required: false })
   @IsNumber()

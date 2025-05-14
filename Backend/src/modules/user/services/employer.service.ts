@@ -1,7 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmployerRepository } from '../repositories';
+import { EmployerRepository, AddressRepository } from '../repositories';
 import { Employer } from '../entities';
+import { Address } from '../entities/address.entity';
 import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto } from '../dto';
 import { plainToClass } from 'class-transformer';
 
@@ -12,19 +13,46 @@ export class EmployerService {
   constructor(
     @InjectRepository(Employer)
     private readonly employerRepository: EmployerRepository,
+    @InjectRepository(Address)
+    private readonly addressRepository: AddressRepository,
   ) {}
 
   async create(createEmployerDto: CreateEmployerDto): Promise<EmployerResponseDto> {
     const employer = new Employer();
     Object.assign(employer, createEmployerDto);
+    
+    // Create and save the employer first
     const savedEmployer = await this.employerRepository.save(employer);
-    return this.mapToResponseDto(savedEmployer);
+    
+    // Create and save the address
+    if (createEmployerDto.address) {
+      const addressData = {
+        ...createEmployerDto.address,
+        commonId: savedEmployer.id,
+        commonType: 'Employer'
+      };
+      await this.addressRepository.save(addressData);
+    }
+    
+    // Fetch the employer with addresses
+    const employerWithAddresses = await this.employerRepository.findOne({
+      where: { id: savedEmployer.id },
+      relations: ['addresses']
+    });
+
+    if (!employerWithAddresses) {
+      throw new NotFoundException('Employer not found after creation');
+    }
+    
+    return this.mapToResponseDto(employerWithAddresses);
   }
 
   async findAll(): Promise<EmployerResponseDto[]> {
     try {
       this.logger.debug('Fetching all employers from database...');
-      const employers = await this.employerRepository.find();
+      const employers = await this.employerRepository.find({
+        relations: ['addresses']
+      });
       this.logger.debug(`Found ${employers.length} employers:`, employers);
       
       const mappedEmployers = employers.map(employer => {
@@ -43,7 +71,10 @@ export class EmployerService {
 
   async findOne(id: string): Promise<EmployerResponseDto> {
     try {
-      const employer = await this.employerRepository.findOne({ where: { id } });
+      const employer = await this.employerRepository.findOne({ 
+        where: { id },
+        relations: ['addresses']
+      });
       if (!employer) {
         throw new NotFoundException(`Employer with ID ${id} not found`);
       }
@@ -56,14 +87,28 @@ export class EmployerService {
 
   async update(id: string, updateEmployerDto: UpdateEmployerDto): Promise<EmployerResponseDto> {
     try {
-      const employer = await this.employerRepository.findOne({ where: { id } });
+      const employer = await this.employerRepository.findOne({ 
+        where: { id },
+        relations: ['addresses']
+      });
       if (!employer) {
         throw new NotFoundException(`Employer with ID ${id} not found`);
       }
 
       Object.assign(employer, updateEmployerDto);
       const updatedEmployer = await this.employerRepository.save(employer);
-      return this.mapToResponseDto(updatedEmployer);
+      
+      // Fetch the updated employer with addresses
+      const employerWithAddresses = await this.employerRepository.findOne({
+        where: { id: updatedEmployer.id },
+        relations: ['addresses']
+      });
+
+      if (!employerWithAddresses) {
+        throw new NotFoundException('Employer not found after update');
+      }
+      
+      return this.mapToResponseDto(employerWithAddresses);
     } catch (error) {
       this.logger.error(`Error updating employer: ${error.message}`);
       throw error;

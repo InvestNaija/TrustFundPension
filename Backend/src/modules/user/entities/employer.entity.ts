@@ -1,30 +1,38 @@
-import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
-import { User } from '.';
+import { Entity, Column, DeleteDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { AbstractEntity } from 'src/core/database';
+import { Address } from './address.entity';
+import { User } from './user.entity';
 
 @Entity('employers')
 export class Employer extends AbstractEntity {
-  @Column({ name: 'user_id' })
+  @Column()
+  name: string;
+
+  @Column({ type: 'uuid', name: 'user_id' })
   userId: string;
 
-  @Column()
-  business: string;
+  @Column({ name: 'rc_number' })
+  rcNumber: string;
 
-  @Column()
-  phone: string;
+  @Column({ name: 'phone_number' })
+  phoneNumber: string;
 
-  @Column()
-  type: string;
+  @Column({ name: 'initial_date' })
+  initialDate: Date;
 
-  @Column()
-  rcno: string;
+  @Column({ name: 'current_date' })
+  currentDate: Date;
 
-  @Column({ type: 'date', name: 'first_appoint_date' })
-  firstApointDate: string;
+  @Column({ name: 'nature_of_business' })
+  natureOfBusiness: string;
+
+  @OneToMany(() => Address, address => address.commonId)
+  addresses: Address[];
 
   @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
   deletedAt: Date;
 
   @ManyToOne(() => User, user => user.employers)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

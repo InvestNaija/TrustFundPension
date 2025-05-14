@@ -3,7 +3,7 @@ import { ReferralService } from '../services';
 import { CreateReferralDto, UpdateReferralDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../core/decorators';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Referral } from '../entities/referral.entity';
 

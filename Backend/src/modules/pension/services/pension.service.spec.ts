@@ -261,7 +261,7 @@ describe('PensionService', () => {
       const result = await service.getAccountManager(userId);
 
       expect(result).toEqual(mockResponse);
-      expect(mockTrustFundService.getAccountManager).toHaveBeenCalledWith({ rsaNumber: mockUser.pen });
+      expect(mockTrustFundService.getAccountManager).toHaveBeenCalledWith({ rsa_number: mockUser.pen });
     });
 
     it('should throw UnprocessableEntityException when user not found', async () => {

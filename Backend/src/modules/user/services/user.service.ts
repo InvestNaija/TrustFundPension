@@ -25,7 +25,7 @@ export class UserService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
     @InjectRepository(BVNData)
     private readonly bvnDataRepository: Repository<BVNData>,
     private readonly verifyMeService: VerifyMeService,
@@ -197,7 +197,7 @@ export class UserService {
         throw new UnprocessableEntityException('BVN data not found. Please get BVN details first.');
       }
 
-      await this.userRepository.update(userId, {
+      await this.userRepository.update({ id: userId }, {
         bvn
       });
     } catch (error) {
@@ -212,7 +212,7 @@ export class UserService {
         throw new NotFoundException('User not found');
       } 
 
-      await this.userRepository.update(userId, {
+      await this.userRepository.update({ id: userId }, {
         nin
       });
 

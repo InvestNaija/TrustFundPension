@@ -3,7 +3,7 @@ import { AbstractEntity } from 'src/core/database';
 import { Address } from './address.entity';
 import { User } from './user.entity';
 
-@Entity('employers')
+@Entity({ name: 'employers' })
 export class Employer extends AbstractEntity {
   @Column()
   name: string;
@@ -26,7 +26,7 @@ export class Employer extends AbstractEntity {
   @Column({ name: 'nature_of_business' })
   natureOfBusiness: string;
 
-  @OneToMany(() => Address, address => address.commonId)
+  @OneToMany(() => Address, address => address.employer, { eager: true })
   addresses: Address[];
 
   @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })

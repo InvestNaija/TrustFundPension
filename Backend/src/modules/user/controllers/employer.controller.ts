@@ -4,7 +4,7 @@ import { EmployerService } from '../services';
 import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../core/decorators';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('Employers')
 @Controller('employers')

@@ -30,7 +30,7 @@ import {
   verifyPassword,
 } from '../../shared/utils';
 import { UserService } from '../user/services';
-import { IDecodedJwtToken } from '../../core/decorators/authenticated-user.decorator';
+import { IDecodedJwtToken } from './strategies/types';
 import {
   IEmailRequest,
   ISmsRequest,
@@ -194,7 +194,7 @@ export class AuthService {
 
     const tokens = await this.generateJwtTokens({
       id: user.id,
-      role: user.role,
+      userRoles: user.userRoles,
     });
 
     const signedUrls = await this.userService.generateSignedUrlsForUserFiles(user);
@@ -212,7 +212,7 @@ export class AuthService {
 
     const tokens = await this.generateJwtTokens({
       id: user.id,
-      role: user.role,
+      userRoles: user.userRoles,
     });
 
     return {
@@ -373,19 +373,23 @@ export class AuthService {
   }
 
   private async generateJwtTokens(
-    payload: { id: string; role: USER_ROLE },
+    payload: { id: string; userRoles: any[] },
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_ACCESS_TOKEN_SECRET,
-      expiresIn: envConfig.JWT_ACCESS_TOKEN_EXPIRY,
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: envConfig.JWT_ACCESS_TOKEN_SECRET,
+        expiresIn: envConfig.JWT_ACCESS_TOKEN_EXPIRY,
+      }),
+      this.jwtService.signAsync(payload, {
+        secret: envConfig.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: envConfig.JWT_REFRESH_TOKEN_EXPIRY,
+      }),
+    ]);
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_REFRESH_TOKEN_SECRET,
-      expiresIn: envConfig.JWT_REFRESH_TOKEN_EXPIRY,
-    });
-
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   private sendEmailVerificationOTP(

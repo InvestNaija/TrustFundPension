@@ -9,6 +9,7 @@ import { VerificationMethod } from './dto';
 import { Logger } from '@nestjs/common';
 import { generateOtpCodeHash, verifyPassword, hashPassword, generateOtpDetails } from '../../shared/utils';
 import { LoginDto } from './dto';
+import { IDecodedJwtToken } from './strategies/types';
 
 // Mock the utils functions
 jest.mock('../../shared/utils', () => ({
@@ -91,7 +92,7 @@ describe('AuthService', () => {
       dob: '1990-01-01',
       gender: 'M',
       accountType: ACCOUNT_TYPE.RSA,
-      role: USER_ROLE.CLIENT,
+      roleId: '1',
     };
 
     const signupDtoWithOptionalFields = {
@@ -105,7 +106,13 @@ describe('AuthService', () => {
       id: '123',
       email: 'test@example.com',
       password: 'hashedPassword',
-      role: USER_ROLE.CLIENT,
+      userRoles: [
+        {
+          id: '1',
+          userId: '123',
+          roleId: USER_ROLE.CLIENT
+        }
+      ],
       otpCodeHash: null,
       otpCodeExpiry: null,
     };
@@ -379,9 +386,15 @@ describe('AuthService', () => {
   });
 
   describe('refreshUserToken', () => {
-    const authenticatedUser = {
+    const authenticatedUser: IDecodedJwtToken = {
       id: '123',
-      role: USER_ROLE.CLIENT,
+      userRoles: [
+        {
+          id: '1',
+          userId: '123',
+          roleId: USER_ROLE.CLIENT
+        }
+      ]
     };
 
     const mockUser = {

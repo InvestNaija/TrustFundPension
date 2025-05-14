@@ -1,6 +1,6 @@
-import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional, IsDate, IsEnum } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional, IsDate, IsEnum, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { USER_ROLE, ACCOUNT_TYPE } from '../../../core/constants';
+import { ACCOUNT_TYPE } from '../../../core/constants';
 
 export class CreateUserDto {
   @ApiProperty({ required: false })
@@ -68,10 +68,10 @@ export class CreateUserDto {
   @IsOptional()
   show_balance?: boolean;
 
-  @ApiProperty({ enum: USER_ROLE })
-  @IsEnum(USER_ROLE)
+  @ApiProperty()
+  @IsUUID()
   @IsNotEmpty()
-  role: USER_ROLE;
+  roleId: string;
 
   @ApiProperty({ enum: ACCOUNT_TYPE })
   @IsEnum(ACCOUNT_TYPE)

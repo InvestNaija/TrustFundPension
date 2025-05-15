@@ -48,7 +48,7 @@ export class PensionController {
     return await this.pensionService.getLastTenContributions(authenticatedUser.id);
   }
 
-  @Get('employers')
+  @Post('employers')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get employers details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Employers details retrieved successfully' })

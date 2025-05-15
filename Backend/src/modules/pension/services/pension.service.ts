@@ -11,6 +11,7 @@ import {
   GenerateReportQueryDto,
 } from '../dto';
 import { ICustomerOnboardingRequest } from '../../third-party-services/trustfund/types';
+import { IApiResponse } from 'src/core/types';
 
 @Injectable()
 export class PensionService {
@@ -35,15 +36,33 @@ export class PensionService {
     }
   }
 
-  async getFundTypes() {
+  async getFundTypes(): Promise<IApiResponse> {
     try {
-      return await this.trustFundService.getFundTypes();
+      const fundTypes = await this.trustFundService.getFundTypes();
+      return {
+        status: true,
+        message: 'Fund types retrieved successfully',
+        data: fundTypes
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get fund types');
     }
   }
 
-  async getLastTenContributions(userId: string) {
+  async getEmployerDetails(): Promise<IApiResponse> {
+    try {
+      const employers = await this.trustFundService.getEmployers();
+      return {
+        status: true,
+        message: 'Employers types retrieved successfully',
+        data: employers
+      };
+    } catch (error) {
+      throw new UnprocessableEntityException('Failed to get fund types');
+    }
+  }
+
+  async getLastTenContributions(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -51,13 +70,18 @@ export class PensionService {
       }
 
       const data: ContributionRequestDto = { pin: user.pen };
-      return await this.trustFundService.getLastTenContributions(data);
+      const contributions = await this.trustFundService.getLastTenContributions(data);
+      return {
+        status: true,
+        message: 'Contributions retrieved successfully',
+        data: contributions
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get contributions');
     }
   }
 
-  async getAccountManager(userId: string) {
+  async getAccountManager(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -65,13 +89,18 @@ export class PensionService {
       }
 
       const data: AccountManagerRequestDto = { rsa_number: user.pen };
-      return await this.trustFundService.getAccountManager(data);
+      const manager = await this.trustFundService.getAccountManager(data);
+      return {
+        status: true,
+        message: 'Account manager retrieved successfully',
+        data: manager
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get account manager');
     }
   }
 
-  async getSummary(userId: string) {
+  async getSummary(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -79,22 +108,32 @@ export class PensionService {
       }
 
       const data: SummaryRequestDto = { pin: user.pen };
-      return await this.trustFundService.getSummary(data);
+      const summary = await this.trustFundService.getSummary(data);
+      return {
+        status: true,
+        message: 'Summary retrieved successfully',
+        data: summary
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get summary');
     }
   }
 
-  async validateRsaPin(rsa_pin: string) {
+  async validateRsaPin(rsa_pin: string): Promise<IApiResponse> {
     try {
       const data: SummaryRequestDto = { pin: rsa_pin };
-      return await this.trustFundService.getSummary(data);
+      const summary = await this.trustFundService.getSummary(data);
+      return {
+        status: true,
+        message: 'RSA PIN validated successfully',
+        data: summary
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get summary');
     }
   }
 
-  async customerOnboarding(data: CustomerOnboardingRequestDto) {
+  async customerOnboarding(data: CustomerOnboardingRequestDto):Promise<IApiResponse> {
     try {
       const onboardingData: ICustomerOnboardingRequest = {
         ...data

@@ -2,7 +2,8 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Request } from 'express';
 import { generateOtpCodeHash } from '../../../shared/utils';
 import { UserService } from '../../../modules/user/services/user.service';
-import { User } from '../../../modules/user/entities';
+import { UserResponseDto } from '../../../modules/user/dto';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @Injectable()
 export class OtpAuthGuard implements CanActivate {
@@ -18,16 +19,17 @@ export class OtpAuthGuard implements CanActivate {
       throw new UnauthorizedException('No OTP provided');
     }
 
-    if (!email && !phone) {
-      throw new UnauthorizedException('Email or phone number is required');
-    }
+    let user: UserResponseDto | null = null;
 
-    // Find user by email or phone
-    let user: User | null = null;
-    if (email) {
-      user = await this.userService.findByEmail(email);
-    } else if (phone) {
-      user = await this.userService.findByPhone(phone);
+    const authenticatedUser = request.user as IDecodedJwtToken;
+    if (authenticatedUser?.id) {
+      user = await this.userService.findOne(authenticatedUser.id);
+    } else if (email || phone) {
+      if (email) {
+        user = await this.userService.findByEmail(email);
+      } else if (phone) {
+        user = await this.userService.findByPhone(phone);
+      }
     }
 
     if (!user) {
@@ -42,12 +44,12 @@ export class OtpAuthGuard implements CanActivate {
     if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
       throw new UnauthorizedException('OTP has expired');
     }
-    // Update user password
+
     await this.userService.update(user.id, {
-        otpCodeHash: null,
-        otpCodeExpiry: null,
-      });
+      otpCodeHash: null,
+      otpCodeExpiry: null,
+    });
 
     return true;
   }
-} 
+}

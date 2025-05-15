@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { IApiResponse } from '../../../core/types';
+import { IEmployerRequest } from 'src/modules/third-party-services/trustfund/types';
 
 @ApiTags('Pension')
 @Controller('pension')
@@ -47,12 +48,12 @@ export class PensionController {
     return await this.pensionService.getLastTenContributions(authenticatedUser.id);
   }
 
-  @Get('employers')
+  @Post('employers')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get employers details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Employers details retrieved successfully' })
-  async getEmployerDetails() : Promise<IApiResponse>{
-    return await this.pensionService.getEmployerDetails();
+  async getEmployerDetails(@Body() data: IEmployerRequest) : Promise<IApiResponse>{
+    return await this.pensionService.getEmployerDetails(data);
   }
 
   

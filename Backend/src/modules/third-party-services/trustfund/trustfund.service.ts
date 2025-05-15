@@ -12,7 +12,7 @@ import {
   IContributionRequest,
   IAccountManagerRequest,
   IAccountManager,
-  ILoginResponse,
+  IEmployerRequest,
   ISummaryRequest,
   ISummaryResponse,
   ICustomerOnboardingRequest,
@@ -97,12 +97,13 @@ export class TrustFundService {
   }
 
 
-  async getEmployers() {
+  async getEmployers(data: IEmployerRequest ) {
     try {
       const url = `${envConfig.TRUSTFUND_URL}api/get_employer_details.php`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
+        data,
         headers: {
           'Content-Type': 'application/json'
         },

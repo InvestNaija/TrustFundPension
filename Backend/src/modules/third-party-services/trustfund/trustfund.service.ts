@@ -270,11 +270,17 @@ export class TrustFundService {
 
   async generateEmbassyLetterUrl(data: { surname: string; mobile: string; dateOfBirth: string }): Promise<Buffer> {
     try {
-      const url = `${envConfig.TRUSTFUND_SERVICE_URL}request_letter`;
+      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_URL}request_letter`;
+      const queryParams = new URLSearchParams({
+        Surname: data.surname,
+        Mobile: data.mobile,
+        DateOfBirth: data.dateOfBirth
+      });
+      
+      const url = `${baseUrl}?${queryParams.toString()}`;
       return await this.httpRequest.makeRequest({
-        method: 'POST',
+        method: 'GET',
         url,
-        data: data,
         headers: {
           'Content-Type': 'application/json'
         },

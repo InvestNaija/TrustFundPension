@@ -17,6 +17,7 @@ import {
   LoginDto,
   ResendVerificationTokenDto,
   ResetPasswordDto,
+  SendCodeDto,
   SendPasswordResetTokenDto,
   SendVerificationCodeDto,
   SignupUserDto,
@@ -155,6 +156,16 @@ export class AuthController {
     @Body() dto: SendVerificationCodeDto,
   ): Promise<IApiResponse> {
     return this.authService.sendVerificationCode(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/send-code')
+  @HttpCode(HttpStatus.OK)
+  sendCode(
+    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
+    @Body() dto: SendCodeDto,
+  ): Promise<IApiResponse> {
+    return this.authService.sendCode(authenticatedUser.id, dto);
   }
 
   @Post('/verify-account')

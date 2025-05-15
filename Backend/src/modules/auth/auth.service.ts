@@ -17,6 +17,7 @@ import {
   ValidateOtpDto,
   VerifyAccountDto,
   VerificationMethod,
+  SendCodeDto,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';
@@ -394,6 +395,44 @@ export class AuthService {
       data: {
         email: user.email,
         phone: user.phone,
+      },
+    };
+  }
+
+  async sendCode(userId: string, dto: SendCodeDto): Promise<IApiResponse> {
+    const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
+
+    await this.userService.update(userId, { otpCodeHash, otpCodeExpiry });
+    
+    let message: string;
+    if (dto.context === 'bvn') {
+      message = `Your BVN verification code is: ${otpCode}`;
+    } else {
+      message = `Your NIN verification code is: ${otpCode}`;
+    }
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) throw new BadRequestException('Email is required');
+      await this.trustFundService.sendEmail({
+        to: dto.email,
+        subject: 'Verification Code',
+        body: message,
+      });
+    } else {
+      if (!dto.phone) throw new BadRequestException('Phone is required');
+      await this.trustFundService.sendSms({
+        msisdn: dto.phone,
+        msg: message,
+      });
+    }
+
+    return {
+      status: true,
+      message: `Verification code sent successfully via ${dto.method}`,
+      data: {
+        email: dto.email,
+        phone: dto.phone,
+        context: dto.context,
       },
     };
   }

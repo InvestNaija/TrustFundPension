@@ -10,7 +10,8 @@ import {
 } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import {  IDecodedJwtToken } from '../../../modules/auth/strategies/types';
+import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
+import { IApiResponse } from '../../../core/types';
 
 @ApiTags('Pension')
 @Controller('pension')
@@ -34,7 +35,7 @@ export class PensionController {
   @Get('fund-types')
   @ApiOperation({ summary: 'Get all fund types' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Fund types retrieved successfully' })
-  async getFundTypes() {
+  async getFundTypes(): Promise<IApiResponse> {
     return await this.pensionService.getFundTypes();
   }
 
@@ -42,7 +43,7 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get last 10 contributions' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Contributions retrieved successfully' })
-  async getLastTenContributions(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+  async getLastTenContributions(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) : Promise<IApiResponse>{
     return await this.pensionService.getLastTenContributions(authenticatedUser.id);
   }
 
@@ -50,7 +51,7 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get employers details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Employers details retrieved successfully' })
-  async getEmployerDetails() {
+  async getEmployerDetails() : Promise<IApiResponse>{
     return await this.pensionService.getEmployerDetails();
   }
 
@@ -59,14 +60,14 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get account manager details' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Account manager details retrieved successfully' })
-  async getAccountManager(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+  async getAccountManager(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse>{
     return await this.pensionService.getAccountManager(authenticatedUser.id);
   }
 
   @Get('summary/:rsa_pin')
   @ApiOperation({ summary: 'validate rsa pin' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
-  async validateRsaPin(@Param('rsa_pin') rsa_pin: string) {
+  async validateRsaPin(@Param('rsa_pin') rsa_pin: string):Promise<IApiResponse> {
     return await this.pensionService.validateRsaPin(rsa_pin);
   }
 
@@ -74,7 +75,7 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get pension account summary' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
-  async getSummary(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+  async getSummary(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
     return await this.pensionService.getSummary(authenticatedUser.id);
   }
 
@@ -82,7 +83,7 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarded successfully' })
-  async customerOnboarding(@Body() data: CustomerOnboardingRequestDto) {
+  async customerOnboarding(@Body() data: CustomerOnboardingRequestDto): Promise<IApiResponse> {
     return await this.pensionService.customerOnboarding(data);
   }
 
@@ -109,6 +110,22 @@ export class PensionController {
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=welcome-letter.pdf',
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Post('embassy-letter')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Generate embassy letter PDF' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
+  async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
+    const buffer = await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=embassy-letter.pdf',
       'Content-Length': buffer.length,
     });
     res.end(buffer);

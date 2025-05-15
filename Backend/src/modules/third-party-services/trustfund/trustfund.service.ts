@@ -1,6 +1,7 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
+import { IApiResponse } from 'src/core/types';
 import {
   IEmailRequest,
   IEmailResponse,
@@ -264,6 +265,24 @@ export class TrustFundService {
     } catch (error) {
       this.logger.error('Error generating welcome letter:', error);
       throw new UnprocessableEntityException('Could not generate welcome letter');
+    }
+  }
+
+  async generateEmbassyLetterUrl(data: { surname: string; mobile: string; dateOfBirth: string }): Promise<Buffer> {
+    try {
+      const url = `${envConfig.TRUSTFUND_SERVICE_URL}request_letter`;
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data: data,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer'
+      });
+    } catch (error) {
+      this.logger.error('Error generating embassy letter:', error);
+      throw new UnprocessableEntityException('Could not generate embassy letter');
     }
   }
 }

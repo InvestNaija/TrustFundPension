@@ -4,6 +4,8 @@ import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { UserService } from '../services/user.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { OtpAuthGuard } from '../../../core/auth/guards/otp.guard';
+import { VerifyBvnDto, VerifyNinDto } from '../dto';
 
 @ApiTags('Verification')
 @Controller('verification')
@@ -22,13 +24,14 @@ export class VerificationController {
   }
 
   @Post('bvn/verify')
+  @UseGuards(OtpAuthGuard)
   @ApiOperation({ summary: 'Verify BVN' })
   @ApiResponse({ status: 200, description: 'BVN verified successfully' })
   async verifyBvn(
-    @Body() body: { bvn: string },
+    @Body() dto: VerifyBvnDto,
     @AuthenticatedUser() user: IDecodedJwtToken
   ) {
-    await this.userService.verifyBvn(body.bvn, user.id);
+    await this.userService.verifyBvn(dto.bvn, user.id);
     return { status: true, message: 'BVN verified successfully' };
   }
 
@@ -40,13 +43,14 @@ export class VerificationController {
   }
 
   @Post('nin/verify')
+  @UseGuards(OtpAuthGuard)
   @ApiOperation({ summary: 'Verify NIN' })
   @ApiResponse({ status: 200, description: 'NIN verified successfully' })
   async verifyNin(
-    @Body() body: { nin: string },
+    @Body() dto: VerifyNinDto,
     @AuthenticatedUser() user: IDecodedJwtToken
   ) {
-    await this.userService.verifyNin(body.nin, user.id);
+    await this.userService.verifyNin(dto.nin, user.id);
     return { status: true, message: 'NIN verified successfully' };
   }
 } 

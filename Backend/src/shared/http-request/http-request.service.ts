@@ -13,7 +13,7 @@ export class HttpRequestService {
   protected logger = new Logger(HttpRequestService.name);
 
   constructor(private readonly httpService: HttpService) {}
-  private url_pen = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`
+  private url_pen = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`
 
   async makeRequest({ method, data, url, headers, responseType }: IHttpRequest) {
     try {

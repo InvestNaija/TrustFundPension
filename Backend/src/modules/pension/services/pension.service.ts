@@ -58,7 +58,7 @@ export class PensionService {
         data: employers
       };
     } catch (error) {
-      throw new UnprocessableEntityException('Failed to get fund types');
+      throw new UnprocessableEntityException('Failed to get Employer details');
     }
   }
 

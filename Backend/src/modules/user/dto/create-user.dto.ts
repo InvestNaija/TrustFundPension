@@ -68,15 +68,10 @@ export class CreateUserDto {
   @IsOptional()
   show_balance?: boolean;
 
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  roleId: string;
-
-  @ApiProperty({ enum: ACCOUNT_TYPE })
+  @ApiProperty({ enum: ACCOUNT_TYPE, required: false })
   @IsEnum(ACCOUNT_TYPE)
-  @IsNotEmpty()
-  account_type: ACCOUNT_TYPE;
+  @IsOptional()
+  account_type?: ACCOUNT_TYPE;
 
   @ApiProperty({ required: false })
   @IsOptional()

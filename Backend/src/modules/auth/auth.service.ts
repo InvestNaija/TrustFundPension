@@ -60,10 +60,11 @@ export class AuthService {
     if (!hashedPassword) {
       throw new BadRequestException('Failed to hash password');
     }
+    const { ...userData } = dto;
     const user = await this.userService.create({
-      ...dto,
+      ...userData,
       password: hashedPassword,
-      account_type: dto.accountType,
+      account_type: dto.accountType || undefined,
     });
 
     return {

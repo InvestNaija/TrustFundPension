@@ -21,10 +21,8 @@ export class EmployerService {
     const employer = new Employer();
     Object.assign(employer, createEmployerDto);
     
-    // Create and save the employer first
     const savedEmployer = await this.employerRepository.save(employer);
     
-    // Create and save the address
     if (createEmployerDto.address) {
       const newAddress = new Address();
       Object.assign(newAddress, {
@@ -35,11 +33,9 @@ export class EmployerService {
         updatedAt: new Date()
       });
       const savedAddress = await this.addressRepository.save(newAddress);
-      // Explicitly associate the saved address with the employer
       savedEmployer.addresses = [savedAddress];
     }
     
-    // Fetch the employer with addresses
     const employerWithAddresses = await this.employerRepository.findOne({
       where: { id: savedEmployer.id },
       relations: ['addresses']
@@ -74,7 +70,23 @@ export class EmployerService {
     }
   }
 
-  async findOne(id: string): Promise<EmployerResponseDto> {
+  async findOne(userId: string): Promise<EmployerResponseDto> {
+    try {
+      const employer = await this.employerRepository.findOne({ 
+        where: { userId },
+        relations: ['addresses']
+      });
+      if (!employer) {
+        throw new NotFoundException(`Employer for user ID ${userId} not found`);
+      }
+      return this.mapToResponseDto(employer);
+    } catch (error) {
+      this.logger.error(`Error finding employer: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async findById(id: string): Promise<EmployerResponseDto> {
     try {
       const employer = await this.employerRepository.findOne({ 
         where: { id },
@@ -135,6 +147,7 @@ export class EmployerService {
   private mapToResponseDto(employer: Employer): EmployerResponseDto {
     const mapped = plainToClass(EmployerResponseDto, employer, {
       excludeExtraneousValues: true,
+      enableImplicitConversion: true
     });
     this.logger.debug('Mapping employer to DTO:', { original: employer, mapped });
     return mapped;

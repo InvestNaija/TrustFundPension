@@ -182,6 +182,11 @@ spec:
                 secretKeyRef:
                   name: backend.depl
                   key: TRUSTFUND_EMAIL_FROM_NAME
+            - name: TRUSTFUND_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: TRUSTFUND_SERVICE_URL
             - name: TRUSTFUND_SMS_USERNAME
               valueFrom:
                 secretKeyRef:

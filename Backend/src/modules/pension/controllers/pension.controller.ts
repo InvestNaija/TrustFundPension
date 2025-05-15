@@ -46,6 +46,15 @@ export class PensionController {
     return await this.pensionService.getLastTenContributions(authenticatedUser.id);
   }
 
+  @Get('employers')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get employers details' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Employers details retrieved successfully' })
+  async getEmployerDetails() {
+    return await this.pensionService.getEmployerDetails();
+  }
+
+  
   @Get('account-manager')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get account manager details' })

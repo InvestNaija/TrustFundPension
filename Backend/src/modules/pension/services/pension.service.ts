@@ -298,7 +298,7 @@ export class PensionService {
     return await this.trustFundService.generateReport(data);
   }
 
-  async getEmbassyLetterUrl(userId: string): Promise<Buffer> {
+  async getEmbassyLetterUrl(userId: string){
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -306,12 +306,12 @@ export class PensionService {
       }
 
       // Format date as DD-MMM-YYYY (e.g., 05-may-1981)
-      const dob = new Date(user.dob);
+      const dob = new Date(user?.dob);
       const formattedDob = `${String(dob.getDate()).padStart(2, '0')}-${dob.toLocaleString('en-US', { month: 'short' }).toLowerCase()}-${dob.getFullYear()}`;
 
       return await this.trustFundService.generateEmbassyLetterUrl({
-        surname: user.lastName,
-        mobile: user.phone,
+        surname: user?.lastName,
+        mobile: user?.phone,
         dateOfBirth: formattedDob
       });
     } catch (error) {

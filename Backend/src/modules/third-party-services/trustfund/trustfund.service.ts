@@ -268,7 +268,7 @@ export class TrustFundService {
     }
   }
 
-  async generateEmbassyLetterUrl(data: { surname: string; mobile: string; dateOfBirth: string }): Promise<Buffer> {
+  async generateEmbassyLetterUrl(data: { surname: string; mobile: string; dateOfBirth: string }){
     try {
       const baseUrl = `${envConfig.TRUSTFUND_SERVICE_URL}request_letter`;
       const queryParams = new URLSearchParams({
@@ -284,7 +284,6 @@ export class TrustFundService {
         headers: {
           'Content-Type': 'application/json'
         },
-        responseType: 'arraybuffer'
       });
     } catch (error) {
       this.logger.error('Error generating embassy letter:', error);

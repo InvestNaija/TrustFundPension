@@ -115,19 +115,13 @@ export class PensionController {
     res.end(buffer);
   }
 
-  @Post('embassy-letter')
+  @Get('embassy-letter')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate embassy letter PDF' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
-  async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
-    const buffer = await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename=embassy-letter.pdf',
-      'Content-Length': buffer.length,
-    });
-    res.end(buffer);
+  async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+   return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
   }
 } 

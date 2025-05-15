@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   LoginDto,
@@ -15,9 +16,8 @@ import {
   SignupUserDto,
   ValidateOtpDto,
   VerifyAccountDto,
-  VerifyEmailDto,
   VerificationMethod,
-  VerificationPreferenceDto,
+  SendCodeDto,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../core/config';
@@ -31,7 +31,7 @@ import {
   verifyPassword,
 } from '../../shared/utils';
 import { UserService } from '../user/services';
-import { IDecodedJwtToken } from '../../core/decorators/authenticated-user.decorator';
+import { IDecodedJwtToken } from './strategies/types';
 import {
   IEmailRequest,
   ISmsRequest,
@@ -60,9 +60,11 @@ export class AuthService {
     if (!hashedPassword) {
       throw new BadRequestException('Failed to hash password');
     }
+    const { ...userData } = dto;
     const user = await this.userService.create({
-      ...dto,
+      ...userData,
       password: hashedPassword,
+      account_type: dto.accountType || undefined,
     });
 
     return {
@@ -93,6 +95,7 @@ export class AuthService {
       }
     }
 
+    // Validate OTP
     const otpCodeHash = generateOtpCodeHash(dto.otpCode);
     if (otpCodeHash !== user.otpCodeHash) {
       throw new BadRequestException('Invalid OTP');
@@ -104,7 +107,7 @@ export class AuthService {
 
     const updateData: any = {
       otpCodeHash: null,
-      otpCodeExpiry: null,
+      otpCodeExpiry: null
     };
 
     if (dto.method === VerificationMethod.EMAIL) {
@@ -180,12 +183,22 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const { email, password } = dto;
+    dto.validateLoginMethod();
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    let user;
+    if (dto.email) {
+      user = await this.userService.findByEmail(dto.email);
+    } else if (dto.rsaPin) {
+      user = await this.userService.findByRsaPin(dto.rsaPin);
+    } else if (dto.phone) {
+      user = await this.userService.findByPhone(dto.phone);
+    }
 
-    const isValidPassword = await verifyPassword(password, user.password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isValidPassword = await verifyPassword(dto.password, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -196,7 +209,7 @@ export class AuthService {
 
     const tokens = await this.generateJwtTokens({
       id: user.id,
-      role: user.role,
+      userRoles: user.userRoles,
     });
 
     const signedUrls = await this.userService.generateSignedUrlsForUserFiles(user);
@@ -214,7 +227,7 @@ export class AuthService {
 
     const tokens = await this.generateJwtTokens({
       id: user.id,
-      role: user.role,
+      userRoles: user.userRoles,
     });
 
     return {
@@ -291,31 +304,47 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<IApiResponse> {
-    const { email, otpCode, password } = dto;
+    const { email, phone, password, otpCode } = dto;
 
-    const user = await this.userService.findByEmail(email);
-    if (!user) throw new NotFoundException('User not found');
+    if (!email && !phone) {
+      throw new UnprocessableEntityException('Either email or phone must be provided');
+    }
 
+    let user;
+    if (email) {
+      user = await this.userService.findByEmail(email);
+    } else if (phone) {
+      user = await this.userService.findByPhone(phone);
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Validate OTP
     const otpCodeHash = generateOtpCodeHash(otpCode);
     if (otpCodeHash !== user.otpCodeHash) {
-      throw new BadRequestException('Invalid OTP');
+      throw new UnprocessableEntityException('Invalid OTP');
     }
 
     if (!user.otpCodeExpiry || new Date() > user.otpCodeExpiry) {
-      throw new BadRequestException('OTP has expired');
+      throw new UnprocessableEntityException('OTP has expired');
     }
 
+    // Hash new password
     const hashedPassword = await hashPassword(password);
+
+    // Update user password and clear OTP
     await this.userService.update(user.id, {
       password: hashedPassword,
       passwordChangedAt: new Date(),
       otpCodeHash: null,
-      otpCodeExpiry: null,
+      otpCodeExpiry: null
     });
 
     return {
       status: true,
-      message: 'Password reset successfully',
+      message: 'Password reset successful',
       data: {},
     };
   }
@@ -371,20 +400,62 @@ export class AuthService {
     };
   }
 
+  async sendCode(userId: string, dto: SendCodeDto): Promise<IApiResponse> {
+    const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
+
+    await this.userService.update(userId, { otpCodeHash, otpCodeExpiry });
+    
+    let message: string;
+    if (dto.context === 'bvn') {
+      message = `Your BVN verification code is: ${otpCode}`;
+    } else {
+      message = `Your NIN verification code is: ${otpCode}`;
+    }
+    
+    if (dto.method === VerificationMethod.EMAIL) {
+      if (!dto.email) throw new BadRequestException('Email is required');
+      await this.trustFundService.sendEmail({
+        to: dto.email,
+        subject: 'Verification Code',
+        body: message,
+      });
+    } else {
+      if (!dto.phone) throw new BadRequestException('Phone is required');
+      await this.trustFundService.sendSms({
+        msisdn: dto.phone,
+        msg: message,
+      });
+    }
+
+    return {
+      status: true,
+      message: `Verification code sent successfully via ${dto.method}`,
+      data: {
+        email: dto.email,
+        phone: dto.phone,
+        context: dto.context,
+      },
+    };
+  }
+
   private async generateJwtTokens(
-    payload: { id: string; role: USER_ROLE },
+    payload: { id: string; userRoles: any[] },
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_ACCESS_TOKEN_SECRET,
-      expiresIn: envConfig.JWT_ACCESS_TOKEN_EXPIRY,
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: envConfig.JWT_ACCESS_TOKEN_SECRET,
+        expiresIn: envConfig.JWT_ACCESS_TOKEN_EXPIRY,
+      }),
+      this.jwtService.signAsync(payload, {
+        secret: envConfig.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: envConfig.JWT_REFRESH_TOKEN_EXPIRY,
+      }),
+    ]);
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_REFRESH_TOKEN_SECRET,
-      expiresIn: envConfig.JWT_REFRESH_TOKEN_EXPIRY,
-    });
-
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   private sendEmailVerificationOTP(

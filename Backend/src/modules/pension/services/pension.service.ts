@@ -10,7 +10,8 @@ import {
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
-import { ICustomerOnboardingRequest } from '../../third-party-services/trustfund/types';
+import { ICustomerOnboardingRequest, IEmployerRequest } from '../../third-party-services/trustfund/types';
+import { IApiResponse } from 'src/core/types';
 
 @Injectable()
 export class PensionService {
@@ -35,66 +36,104 @@ export class PensionService {
     }
   }
 
-  async getFundTypes() {
+  async getFundTypes(): Promise<IApiResponse> {
     try {
-      return await this.trustFundService.getFundTypes();
+      const fundTypes = await this.trustFundService.getFundTypes();
+      return {
+        status: true,
+        message: 'Fund types retrieved successfully',
+        data: fundTypes
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get fund types');
     }
   }
 
-  async getLastTenContributions(userId: string) {
+  async getEmployerDetails(data: IEmployerRequest): Promise<IApiResponse> {
+    try {
+      const employers = await this.trustFundService.getEmployers(data);
+      return {
+        status: true,
+        message: 'Employers types retrieved successfully',
+        data: employers
+      };
+    } catch (error) {
+      throw new UnprocessableEntityException('Failed to get Employer details');
+    }
+  }
+
+  async getLastTenContributions(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: ContributionRequestDto = { pin: user.rsa_pin };
-      return await this.trustFundService.getLastTenContributions(data);
+      const data: ContributionRequestDto = { pin: user.pen };
+      const contributions = await this.trustFundService.getLastTenContributions(data);
+      return {
+        status: true,
+        message: 'Contributions retrieved successfully',
+        data: contributions
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get contributions');
     }
   }
 
-  async getAccountManager(userId: string) {
+  async getAccountManager(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: AccountManagerRequestDto = { rsa_number: user.rsa_pin };
-      return await this.trustFundService.getAccountManager(data);
+      const data: AccountManagerRequestDto = { rsa_number: user.pen };
+      const manager = await this.trustFundService.getAccountManager(data);
+      return {
+        status: true,
+        message: 'Account manager retrieved successfully',
+        data: manager
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get account manager');
     }
   }
 
-  async getSummary(userId: string) {
+  async getSummary(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data: SummaryRequestDto = { pin: user.rsa_pin };
-      return await this.trustFundService.getSummary(data);
+      const data: SummaryRequestDto = { pin: user.pen };
+      const summary = await this.trustFundService.getSummary(data);
+      return {
+        status: true,
+        message: 'Summary retrieved successfully',
+        data: summary
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get summary');
     }
   }
 
-  async validateRsaPin(rsa_pin: string) {
+  async validateRsaPin(rsa_pin: string): Promise<IApiResponse> {
     try {
       const data: SummaryRequestDto = { pin: rsa_pin };
-      return await this.trustFundService.getSummary(data);
+      const summary = await this.trustFundService.getSummary(data);
+      return {
+        status: true,
+        message: 'RSA PIN validated successfully',
+        data: summary
+      };
     } catch (error) {
       throw new UnprocessableEntityException('Failed to get summary');
     }
   }
 
-  async customerOnboarding(data: CustomerOnboardingRequestDto) {
+  async customerOnboarding(data: CustomerOnboardingRequestDto):Promise<IApiResponse> {
     try {
       const onboardingData: ICustomerOnboardingRequest = {
         ...data
@@ -123,7 +162,7 @@ export class PensionService {
       }
 
       const data = {
-        pin: user.rsa_pin,
+        pin: user.pen,
         fromDate: query.fromDate,
         toDate: query.toDate,
       };
@@ -140,7 +179,7 @@ export class PensionService {
         throw new UnprocessableEntityException('User not found');
       }
 
-      const data = { pin: user.rsa_pin };
+      const data = { pin: user.pen };
       return await this.trustFundService.generateWelcomeLetter(data);
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate welcome letter');
@@ -154,13 +193,13 @@ export class PensionService {
     }
 
     const data: CustomerOnboardingRequestDto = {
-      formRefno: user.rsa_pin,
+      formRefno: user.pen,
       schemeId: 'DEFAULT_SCHEME',
-      ssn: user.rsa_pin,
+      ssn: user.pen,
       gender: 'M',
       title: 'Mr',
-      firstname: user.first_name,
-      surname: user.last_name,
+      firstname: user.firstName,
+      surname: user.lastName,
       maritalStatusCode: 'S',
       placeOfBirth: 'Unknown',
       mobilePhone: user.phone,
@@ -174,7 +213,7 @@ export class PensionService {
       permCity: 'Unknown',
       bankName: 'Unknown',
       accountNumber: 'Unknown',
-      accountName: `${user.first_name} ${user.last_name}`,
+      accountName: `${user.firstName} ${user.lastName}`,
       bvn: '',
       othernames: '',
       maidenName: '',
@@ -231,7 +270,7 @@ export class PensionService {
       throw new UnprocessableEntityException('User not found');
     }
 
-    const data = { pin: user.rsa_pin };
+    const data = { pin: user.pen };
     return await this.trustFundService.getSummary(data);
   }
 
@@ -241,7 +280,7 @@ export class PensionService {
       throw new UnprocessableEntityException('User not found');
     }
 
-    const data = { pin: user.rsa_pin };
+    const data = { pin: user.pen };
     return await this.trustFundService.getLastTenContributions(data);
   }
 
@@ -252,10 +291,31 @@ export class PensionService {
     }
 
     const data = {
-      pin: user.rsa_pin,
+      pin: user.pen,
       fromDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
       toDate: new Date().toISOString(),
     };
     return await this.trustFundService.generateReport(data);
+  }
+
+  async getEmbassyLetterUrl(userId: string){
+    try {
+      const user = await this.userService.findOne(userId);
+      if (!user) {
+        throw new UnprocessableEntityException('User not found');
+      }
+
+      // Format date as DD-MMM-YYYY (e.g., 05-may-1981)
+      const dob = new Date(user?.dob);
+      const formattedDob = `${String(dob.getDate()).padStart(2, '0')}-${dob.toLocaleString('en-US', { month: 'short' }).toLowerCase()}-${dob.getFullYear()}`;
+
+      return await this.trustFundService.generateEmbassyLetterUrl({
+        surname: user?.lastName,
+        mobile: user?.phone,
+        dateOfBirth: formattedDob
+      });
+    } catch (error) {
+      throw new UnprocessableEntityException('Failed to generate embassy letter');
+    }
   }
 } 

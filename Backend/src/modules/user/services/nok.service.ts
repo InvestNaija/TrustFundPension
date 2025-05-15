@@ -1,8 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { NokRepository } from '../repositories';
 import { Nok } from '../entities';
 import { CreateNokDto, UpdateNokDto, NokResponseDto } from '../dto';
+import { Address } from '../entities/address.entity';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -12,13 +14,30 @@ export class NokService {
   constructor(
     @InjectRepository(Nok)
     private readonly nokRepository: NokRepository,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
   ) {}
 
-  async create(createNokDto: CreateNokDto): Promise<NokResponseDto> {
-    const nok = new Nok();
-    Object.assign(nok, createNokDto);
-    const savedNok = await this.nokRepository.save(nok);
-    return this.mapToResponseDto(savedNok);
+  async create(createNokDto: CreateNokDto & { userId: string }): Promise<NokResponseDto> {
+    const { address, ...nokData } = createNokDto;
+    const nok = await this.nokRepository.save(nokData);
+
+    if (address) {
+      const newAddress = this.addressRepository.create({
+        ...address,
+        commonId: nok.id,
+        commonType: 'nok',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      console.log('Before save:', newAddress);
+      const savedAddress = await this.addressRepository.save(newAddress);
+      console.log('After save:', savedAddress);
+
+      nok.addresses = [savedAddress];
+    }
+
+    return this.mapToResponseDto(nok);
   }
 
   async findAll(): Promise<NokResponseDto[]> {
@@ -33,9 +52,12 @@ export class NokService {
 
   async findOne(id: string): Promise<NokResponseDto> {
     try {
-      const nok = await this.nokRepository.findOne({ where: { id } });
+      const nok = await this.nokRepository.findOne({ 
+        where: { userId: id },
+        relations: ['addresses']
+      });
       if (!nok) {
-        throw new NotFoundException(`Next of kin with ID ${id} not found`);
+        throw new NotFoundException(`Next of kin not found`);
       }
       return this.mapToResponseDto(nok);
     } catch (error) {
@@ -45,19 +67,38 @@ export class NokService {
   }
 
   async update(id: string, updateNokDto: UpdateNokDto): Promise<NokResponseDto> {
-    try {
-      const nok = await this.nokRepository.findOne({ where: { id } });
-      if (!nok) {
-        throw new NotFoundException(`Next of kin with ID ${id} not found`);
-      }
-
-      Object.assign(nok, updateNokDto);
-      const updatedNok = await this.nokRepository.save(nok);
-      return this.mapToResponseDto(updatedNok);
-    } catch (error) {
-      this.logger.error(`Error updating next of kin: ${error.message}`);
-      throw error;
+    const nok = await this.nokRepository.findOne({ 
+      where: { userId: id }
+    });
+    
+    if (!nok) {
+      throw new NotFoundException('Next of kin not found');
     }
+
+    const { address, ...nokData } = updateNokDto;
+    Object.assign(nok, nokData);
+
+    if (address) {
+      const existingAddress = await this.addressRepository.findOne({
+        where: { commonId: nok.id, commonType: 'nok' },
+      });
+
+      if (existingAddress) {
+        Object.assign(existingAddress, address);
+        await this.addressRepository.save(existingAddress);
+      } else {
+        const newAddress = new Address();
+        Object.assign(newAddress, {
+          ...address,
+          commonId: nok.id,
+          commonType: 'nok',
+        });
+        await this.addressRepository.save(newAddress);
+      }
+    }
+
+    const savedNok = await this.nokRepository.save(nok);
+    return this.mapToResponseDto(savedNok);
   }
 
   async remove(id: string): Promise<void> {
@@ -73,8 +114,14 @@ export class NokService {
   }
 
   private mapToResponseDto(nok: Nok): NokResponseDto {
-    return plainToClass(NokResponseDto, nok, {
+    const dto = plainToClass(NokResponseDto, nok, {
       excludeExtraneousValues: true,
     });
+    
+    if (nok.addresses && nok.addresses.length > 0) {
+      dto.address = nok.addresses[0];
+    }
+    
+    return dto;
   }
 } 

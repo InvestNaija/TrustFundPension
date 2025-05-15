@@ -1,5 +1,7 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { CreateAddressDto } from './create-employer.dto';
 
 export class UpdateNokDto {
   @ApiProperty({ required: false })
@@ -15,12 +17,12 @@ export class UpdateNokDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  first_name?: string;
+  firstName?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  other_name?: string;
+  otherName?: string;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -36,4 +38,20 @@ export class UpdateNokDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  relationship?: string;
+
+  @ApiProperty({ required: false })
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => CreateAddressDto)
+  address?: CreateAddressDto;
 } 

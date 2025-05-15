@@ -23,7 +23,13 @@ describe('PensionController', () => {
 
   const mockToken: IDecodedJwtToken = {
     id: '123',
-    role: USER_ROLE.CLIENT
+    userRoles: [
+      {
+        id: '1',
+        userId: '123',
+        roleId: USER_ROLE.CLIENT
+      }
+    ]
   };
 
   const mockPensionService = {
@@ -269,7 +275,6 @@ describe('PensionController', () => {
   describe('generateReport', () => {
     it('should generate report successfully', async () => {
       const query: GenerateReportQueryDto = {
-        pin: '12345',
         fromDate: '2023-01-01',
         toDate: '2023-12-31',
       };

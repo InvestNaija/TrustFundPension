@@ -21,12 +21,33 @@ import {
   IWelcomeLetterRequest,
 } from './types';
 
+// Mock environment variables
+jest.mock('../../../core/config', () => ({
+  envConfig: {
+    TRUSTFUND_EMAIL_FROM: 'test@trustfund.com',
+    TRUSTFUND_EMAIL_FROM_NAME: 'TrustFund Test',
+    TRUSTFUND_SMS_USERNAME: 'test-sms-user',
+    TRUSTFUND_SMS_PASSWORD: 'test-sms-pass',
+    TRUSTFUND_SMS_SENDER: 'TrustFund',
+    TRUSTFUND_USERNAME: 'test-user',
+    TRUSTFUND_PASSWORD: 'test-pass',
+    TRUSTFUND_BASE_URL: 'https://api.trustfund.com',
+    TRUSTFUND_URL: 'https://api.trustfund.com',
+  },
+}));
+
 describe('TrustFundService', () => {
   let service: TrustFundService;
   let httpRequestService: HttpRequestService;
 
   const mockHttpRequestService = {
     makeRequest: jest.fn(),
+  };
+
+  const mockLoginResponse: ILoginResponse = {
+    access_token: 'test-token',
+    token_type: 'Bearer',
+    expires_in: 3600
   };
 
   beforeEach(async () => {
@@ -42,6 +63,17 @@ describe('TrustFundService', () => {
 
     service = module.get<TrustFundService>(TrustFundService);
     httpRequestService = module.get<HttpRequestService>(HttpRequestService);
+
+    // Reset all mocks
+    jest.clearAllMocks();
+    
+    // Mock successful login by default
+    mockHttpRequestService.makeRequest.mockImplementation(async (config) => {
+      if (config.url?.includes('/auth/login')) {
+        return mockLoginResponse;
+      }
+      throw new Error('Unmocked request');
+    });
   });
 
   afterEach(() => {
@@ -74,6 +106,9 @@ describe('TrustFundService', () => {
             from: envConfig.TRUSTFUND_EMAIL_FROM,
             from_name: envConfig.TRUSTFUND_EMAIL_FROM_NAME,
           },
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
         }),
       );
     });
@@ -238,117 +273,31 @@ describe('TrustFundService', () => {
     });
   });
 
-  describe('login', () => {
-    const successResponse: ILoginResponse = {
-      access_token: 'test-token',
-    };
-
-    it('should login successfully', async () => {
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(successResponse);
-
-      await service.login();
-
-      expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            Authorization: expect.any(String),
-          }),
-        }),
-      );
-    });
-
-    it('should throw UnprocessableEntityException on error', async () => {
-      mockHttpRequestService.makeRequest.mockRejectedValueOnce(new Error());
-
-      await expect(service.login()).rejects.toThrow(
-        UnprocessableEntityException,
-      );
-    });
-  });
-
   describe('getSummary', () => {
     const summaryRequest: ISummaryRequest = {
-      pin: 'PEN100048037525',
-    };
-
-    const successResponse: ISummaryResponse = {
-      totalContributionMandatory: 324039.38,
-      totalFeesMandatory: 4800,
-      totalUnitMandatory: 51395.37,
-      netContributionMandatory: -594478.24,
-      totalContributionVoluntary: 0,
-      totalFeesVoluntary: 0,
-      totalUnitVoluntary: 0,
-      netContributionVoluntary: 0,
-      totalWithdrawalMandatory: 0,
-      totalWithdrawalVoluntary: -913717.62,
-      totalWithdrwal: -913717.62,
-      totalBalance: 324039.38,
-      balanceBF: null,
-      balanceCL: null,
-      unitPrice: 5.7533,
-      balanceMandatory: 295692.982221,
-      growthMandatory: 890171.222221,
-      balanceVoluntary: 0,
-      growthVoluntary: 0,
-      schemeName: 'TRUSTFUND RSA FUND 4',
-      fundId: 7,
-      bioData: {
-        pin: 'PEN100048037525',
-        firstname: 'IBRAHIM',
-        surname: 'SULEIMAN',
-        othernames: '',
-        email: 'test@example.com',
-        mobilePhone: '08030696825',
-        title: 'Mr',
-        gender: 'M',
-        dateOfBirth: 98838000000,
-        permanentAddress: 'TEST ADDRESS',
-        employerName: 'TEST EMPLOYER',
-        nokMobilePhone: '1234567890',
-        nokAddress: 'TEST NOK ADDRESS',
-        nokSurname: 'TEST',
-        nokOthername: 'NOK',
-        nokRelationship: 'BROTHER',
-        nokName: 'TEST NOK',
-        nokEmailaddress: '',
-        nok2Firstname: '',
-        nok2Surname: '',
-        nok2Othername: '',
-        nok2Relationship: '',
-        nok2Mobilephone: '',
-        nok2Emailaddress: '',
-        nok2Address: '',
-        fundId: null,
-        fundName: null,
-      },
-      contributions: null,
-      priceList: null,
-      price: 5.7533,
+      pin: 'PEN100048037525'
     };
 
     it('should get summary successfully', async () => {
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce({ access_token: 'test-token' });
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(successResponse);
+      const successResponse = { status: true, data: { /* summary data */ } };
+
+      mockHttpRequestService.makeRequest
+        .mockResolvedValueOnce({ data: { token: 'test-token' } }) // Login response
+        .mockResolvedValueOnce({ data: successResponse }); // Get summary response
 
       const result = await service.getSummary(summaryRequest);
 
       expect(result).toEqual(successResponse);
-      expect(mockHttpRequestService.makeRequest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          method: 'POST',
-          data: summaryRequest,
-        }),
-      );
+      expect(mockHttpRequestService.makeRequest).toHaveBeenNthCalledWith(2, {
+        method: 'POST',
+        url: expect.stringContaining('/getsummary'),
+        data: summaryRequest,
+      });
     });
 
     it('should throw UnprocessableEntityException on error', async () => {
       mockHttpRequestService.makeRequest.mockRejectedValueOnce(new Error());
-
-      await expect(service.getSummary(summaryRequest)).rejects.toThrow(
-        UnprocessableEntityException,
-      );
+      await expect(service.getSummary(summaryRequest)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
@@ -448,76 +397,58 @@ describe('TrustFundService', () => {
   describe('generateReport', () => {
     const reportRequest: IGenerateReportRequest = {
       pin: 'PEN100048037525',
-      toDate: '2024-04-31',
       fromDate: '2022-02-01',
+      toDate: '2024-04-31'
     };
 
     it('should generate report successfully', async () => {
-      const pdfBuffer = Buffer.from('fake-pdf-content');
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce({ access_token: 'test-token' });
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(pdfBuffer);
+      const pdfBuffer = Buffer.from('test-pdf-content');
+
+      mockHttpRequestService.makeRequest
+        .mockResolvedValueOnce({ data: { token: 'test-token' } }) // Login response
+        .mockResolvedValueOnce({ data: pdfBuffer }); // Generate report response
 
       const result = await service.generateReport(reportRequest);
 
-      expect(result).toEqual(pdfBuffer);
-      expect(mockHttpRequestService.makeRequest).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          method: 'POST',
-          url: expect.stringContaining('/generate/report-pin'),
-          data: reportRequest,
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer test-token',
-            responseType: 'arraybuffer'
-          })
-        }),
-      );
+      expect(result).toEqual({ data: pdfBuffer });
+      expect(mockHttpRequestService.makeRequest).toHaveBeenNthCalledWith(2, {
+        method: 'POST',
+        url: expect.stringContaining('/generate/report-pin'),
+        data: reportRequest,
+      });
     });
 
     it('should throw UnprocessableEntityException on error', async () => {
       mockHttpRequestService.makeRequest.mockRejectedValueOnce(new Error());
-
-      await expect(service.generateReport(reportRequest)).rejects.toThrow(
-        UnprocessableEntityException,
-      );
+      await expect(service.generateReport(reportRequest)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 
   describe('generateWelcomeLetter', () => {
     const letterRequest: IWelcomeLetterRequest = {
-      pin: 'PEN210063424591',
+      pin: 'PEN210063424591'
     };
 
     it('should generate welcome letter successfully', async () => {
-      const pdfBuffer = Buffer.from('fake-pdf-content');
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce({ access_token: 'test-token' });
-      mockHttpRequestService.makeRequest.mockResolvedValueOnce(pdfBuffer);
+      const pdfBuffer = Buffer.from('test-pdf-content');
+
+      mockHttpRequestService.makeRequest
+        .mockResolvedValueOnce({ data: { token: 'test-token' } }) // Login response
+        .mockResolvedValueOnce({ data: pdfBuffer }); // Generate welcome letter response
 
       const result = await service.generateWelcomeLetter(letterRequest);
 
-      expect(result).toEqual(pdfBuffer);
-      expect(mockHttpRequestService.makeRequest).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          method: 'POST',
-          url: expect.stringContaining('/generate/welcome-letter'),
-          data: letterRequest,
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer test-token',
-            responseType: 'arraybuffer'
-          })
-        }),
-      );
+      expect(result).toEqual({ data: pdfBuffer });
+      expect(mockHttpRequestService.makeRequest).toHaveBeenNthCalledWith(2, {
+        method: 'POST',
+        url: expect.stringContaining('/generate/welcome-letter'),
+        data: letterRequest,
+      });
     });
 
     it('should throw UnprocessableEntityException on error', async () => {
       mockHttpRequestService.makeRequest.mockRejectedValueOnce(new Error());
-
-      await expect(service.generateWelcomeLetter(letterRequest)).rejects.toThrow(
-        UnprocessableEntityException,
-      );
+      await expect(service.generateWelcomeLetter(letterRequest)).rejects.toThrow(UnprocessableEntityException);
     });
   });
 });

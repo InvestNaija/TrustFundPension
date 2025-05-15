@@ -10,7 +10,7 @@ import {
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
 } from '../dto';
-import { ICustomerOnboardingRequest } from '../../third-party-services/trustfund/types';
+import { ICustomerOnboardingRequest, IEmployerRequest } from '../../third-party-services/trustfund/types';
 import { IApiResponse } from 'src/core/types';
 
 @Injectable()
@@ -49,9 +49,9 @@ export class PensionService {
     }
   }
 
-  async getEmployerDetails(): Promise<IApiResponse> {
+  async getEmployerDetails(data: IEmployerRequest): Promise<IApiResponse> {
     try {
-      const employers = await this.trustFundService.getEmployers();
+      const employers = await this.trustFundService.getEmployers(data);
       return {
         status: true,
         message: 'Employers types retrieved successfully',

@@ -43,6 +43,10 @@ export interface IContributionRequest {
   pin: string;
 }
 
+export interface IEmployerRequest {
+  name: string;
+}
+
 export interface IAccountManagerRequest {
   rsa_number: string;
 }

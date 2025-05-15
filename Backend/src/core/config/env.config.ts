@@ -87,7 +87,7 @@ export const envValidationSchema = Joi.object({
   TRUSTFUND_SMS_PASSWORD: Joi.string().required(),
   TRUSTFUND_SMS_SENDER: Joi.string().required(),
   TRUSTFUND_BASE_URL: Joi.string().required(),
-  TRUSTFUND_SERVICE_URL: Joi.string().required(),
+  // TRUSTFUND_SERVICE_URL: Joi.string().required(),
   CLOUDINARY_CLOUD_NAME: Joi.string().required(),
   CLOUDINARY_API_KEY: Joi.string().required(),
   CLOUDINARY_API_SECRET: Joi.string().required(),

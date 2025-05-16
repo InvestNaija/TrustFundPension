@@ -30,9 +30,7 @@ export class NokService {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      console.log('Before save:', newAddress);
       const savedAddress = await this.addressRepository.save(newAddress);
-      console.log('After save:', savedAddress);
 
       nok.addresses = [savedAddress];
     }
@@ -50,15 +48,15 @@ export class NokService {
     }
   }
 
-  async findOne(id: string): Promise<NokResponseDto> {
+  async findOne(userId: string): Promise<NokResponseDto> {
     try {
-      const nok = await this.nokRepository.findOne({ 
-        where: { userId: id },
-        relations: ['addresses']
-      });
+      const nok = await this.nokRepository.findOne({ where: { userId } });
       if (!nok) {
         throw new NotFoundException(`Next of kin not found`);
       }
+      const addresses = await this.addressRepository.find({ where: { commonId: nok.id, commonType: 'nok' } });
+      nok.addresses = addresses;
+
       return this.mapToResponseDto(nok);
     } catch (error) {
       this.logger.error(`Error finding next of kin: ${error.message}`);

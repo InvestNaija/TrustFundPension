@@ -1,6 +1,51 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-import { Address } from '../entities/address.entity';
+import { Expose, Type } from 'class-transformer';
+
+export class AddressResponseDto {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty()
+  @Expose()
+  houseNumber: string;
+
+  @ApiProperty()
+  @Expose()
+  streetName: string;
+
+  @ApiProperty()
+  @Expose()
+  city: string;
+
+  @ApiProperty()
+  @Expose()
+  state: string;
+
+  @ApiProperty()
+  @Expose()
+  lgaCode: string;
+
+  @ApiProperty()
+  @Expose()
+  zipCode: string;
+
+  @ApiProperty()
+  @Expose()
+  countryCode: string;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  updatedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  deletedAt: Date;
+}
 
 export class EmployerResponseDto {
   @ApiProperty()
@@ -35,9 +80,10 @@ export class EmployerResponseDto {
   @Expose()
   natureOfBusiness: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: [AddressResponseDto] })
   @Expose()
-  addresses: Address[];
+  @Type(() => AddressResponseDto)
+  addresses: AddressResponseDto[];
 
   @ApiProperty()
   @Expose()

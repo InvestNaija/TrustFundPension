@@ -18,6 +18,8 @@ import { Repository } from 'typeorm';
 import { BVNData, UserRole } from '../entities';
 import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
+import { IApiResponse } from 'src/core/types';
+import { UPLOAD_TYPE } from 'src/core/constants';
 
 @Injectable()
 export class UserService {
@@ -53,12 +55,56 @@ export class UserService {
     return this.mapToResponseDto(savedUser);
   }
 
-  async findOne(id: string): Promise<UserResponseDto> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ 
+      where: { id },
+      relations: [
+        'employers',
+        'media',
+        'noks',
+      ]
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return this.mapToResponseDto(user);
+    return user;
+  }
+
+  async kycStatus(id: string): Promise<IApiResponse> {
+    const kycInfo = {
+      'nin': false,
+      'bvn': false,
+      'nok': false,
+      'employer': false,
+      'passport': false,
+      'signature': false,
+    };
+    
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    // Check basic KYC fields
+    if (user.bvn) kycInfo.bvn = true;
+    if (user.nin) kycInfo.nin = true;
+    if (user.employers?.length > 0) kycInfo.employer = true;
+    if (user.noks?.length > 0) kycInfo.nok = true;
+
+    // Check media files
+    if (user.media?.length > 0) {
+      const hasPassport = user.media.some(media => media.upload_type === UPLOAD_TYPE.PASSPORT_PHOTO);
+      const hasSignature = user.media.some(media => media.upload_type === UPLOAD_TYPE.SIGNATURE);
+      
+      if (hasPassport) kycInfo.passport = true;
+      if (hasSignature) kycInfo.signature = true;
+    }
+    
+    return {
+      status: true,
+      message: 'Customer onboarding status fetched successfully',
+      data: kycInfo,
+    };
   }
 
   async findByEmail(email: string): Promise<User | null> {

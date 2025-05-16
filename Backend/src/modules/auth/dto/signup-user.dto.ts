@@ -81,13 +81,8 @@ export class SignupUserDto {
   @IsNotEmpty()
   dob: string;
 
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  roleId: string;
-
-  @ApiProperty({ enum: ACCOUNT_TYPE })
+  @ApiProperty({ enum: ACCOUNT_TYPE, required: false })
   @IsEnum(ACCOUNT_TYPE)
-  @IsNotEmpty()
-  accountType: ACCOUNT_TYPE;
+  @IsOptional()
+  accountType?: ACCOUNT_TYPE;
 } 

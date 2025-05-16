@@ -35,21 +35,13 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const { roleId, ...userData } = createUserDto;
-    
     const user = new User();
     Object.assign(user, {
-      ...userData,
+      ...createUserDto,
       otpCodeHash: createUserDto.otpCodeHash || undefined,
     });
     
     const savedUser = await this.userRepository.save(user);
-    
-    await this.userRoleService.create({
-      userId: savedUser.id,
-      roleId: roleId
-    });
-    
     return this.mapToResponseDto(savedUser);
   }
 

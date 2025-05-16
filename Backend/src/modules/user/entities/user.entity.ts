@@ -78,7 +78,7 @@ export class User extends AbstractEntity {
     name: 'account_type',
     type: 'enum',
     enum: ACCOUNT_TYPE,
-    nullable: false
+    nullable: true
   })
   accountType: ACCOUNT_TYPE;
 

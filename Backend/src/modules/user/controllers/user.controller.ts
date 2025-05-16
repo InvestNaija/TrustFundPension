@@ -5,6 +5,7 @@ import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
+import { IApiResponse } from 'src/core/types';
 
 @ApiTags('Users')
 @Controller('users')
@@ -24,6 +25,13 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'User retrieved successfully', type: UserResponseDto })
   async findOne( @AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<UserResponseDto> {
     return this.userService.findOne(authenticatedUser.id);
+  }
+
+  @Get('status')
+  @ApiOperation({ summary: 'Get a user by id' })
+  @ApiResponse({ status: 200, description: 'User Kyc Retrieved successfully' })
+  async kycStatus( @AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
+    return this.userService.kycStatus(authenticatedUser.id);
   }
 
   @Put(':id')

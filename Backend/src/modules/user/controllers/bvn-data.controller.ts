@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BvnDataService } from '../services';
 import { CreateBvnDataDto, UpdateBvnDataDto, BvnDataResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
-import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('BVN Data')
 @Controller('bvn-data')
@@ -13,27 +11,16 @@ export class BvnDataController {
   constructor(private readonly bvnDataService: BvnDataService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create BVN data' })
+  @ApiOperation({ summary: 'Create new BVN data' })
   @ApiResponse({ status: 201, description: 'BVN data created successfully', type: BvnDataResponseDto })
-  async create(
-    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Body() createBvnDataDto: CreateBvnDataDto
-  ): Promise<BvnDataResponseDto> {
-    return this.bvnDataService.create({
-      ...createBvnDataDto,
-      userId: authenticatedUser.id
-    });
+  async create(@Body() createBvnDataDto: CreateBvnDataDto): Promise<BvnDataResponseDto> {
+    return this.bvnDataService.create(createBvnDataDto);
   }
 
-  @Get('')
-  @ApiOperation({ summary: 'Get current user\'s BVN data' })
+  @Get(':id')
+  @ApiOperation({ summary: 'Get BVN data by id' })
   @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<BvnDataResponseDto> {
-    const bvnData = await this.bvnDataService.findOne(authenticatedUser.id);
-    if (!bvnData) {
-      throw new NotFoundException('BVN data not found');
-    }
-    return bvnData;
+  async findOne(@Param('id') id: string): Promise<BvnDataResponseDto> {
+    return this.bvnDataService.findOne(id);
   }
-
 } 

@@ -3,8 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EmployerService } from '../services';
 import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
-import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('Employers')
 @Controller('employers')
@@ -13,39 +11,37 @@ export class EmployerController {
   constructor(private readonly employerService: EmployerService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create employer' })
+  @ApiOperation({ summary: 'Create a new employer' })
   @ApiResponse({ status: 201, description: 'Employer created successfully', type: EmployerResponseDto })
-  async create(
-    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Body() createEmployerDto: CreateEmployerDto
-  ): Promise<EmployerResponseDto> {
-    return this.employerService.create({
-      ...createEmployerDto,
-      userId: authenticatedUser.id
-    });
+  async create(@Body() createEmployerDto: CreateEmployerDto): Promise<EmployerResponseDto> {
+    return this.employerService.create(createEmployerDto);
   }
 
-  @Get('')
-  @ApiOperation({ summary: 'Get current user\'s employer details' })
+  @Get()
+  @ApiOperation({ summary: 'Get all employers' })
+  @ApiResponse({ status: 200, description: 'Employers retrieved successfully', type: [EmployerResponseDto] })
+  async findAll(): Promise<EmployerResponseDto[]> {
+    return this.employerService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get an employer by id' })
   @ApiResponse({ status: 200, description: 'Employer retrieved successfully', type: EmployerResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<EmployerResponseDto> {
-    return this.employerService.findOne(authenticatedUser.id);
+  async findOne(@Param('id') id: string): Promise<EmployerResponseDto> {
+    return this.employerService.findOne(id);
   }
 
-  @Put('')
-  @ApiOperation({ summary: 'Update current user\'s employer details' })
+  @Put(':id')
+  @ApiOperation({ summary: 'Update an employer' })
   @ApiResponse({ status: 200, description: 'Employer updated successfully', type: EmployerResponseDto })
-  async update(
-    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Body() updateEmployerDto: UpdateEmployerDto
-  ): Promise<EmployerResponseDto> {
-    return this.employerService.update(authenticatedUser.id, updateEmployerDto);
+  async update(@Param('id') id: string, @Body() updateEmployerDto: UpdateEmployerDto): Promise<EmployerResponseDto> {
+    return this.employerService.update(id, updateEmployerDto);
   }
 
-  @Delete('')
-  @ApiOperation({ summary: 'Delete current user\'s employer details' })
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete an employer' })
   @ApiResponse({ status: 200, description: 'Employer deleted successfully' })
-  async remove(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<void> {
-    return this.employerService.remove(authenticatedUser.id);
+  async remove(@Param('id') id: string): Promise<void> {
+    return this.employerService.remove(id);
   }
 } 

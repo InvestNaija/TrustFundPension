@@ -15,5 +15,5 @@ export class CreateBvnDataDto {
   @ApiProperty()
   @IsObject()
   @IsNotEmpty()
-  bvnResponse: any;
+  bvn_response: any;
 } 

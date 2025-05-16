@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { USER_ROLE, ACCOUNT_TYPE } from '../../constants';
+import { USER_ROLE } from '../../constants';
 
 export class CreateUsersTable1936892715738 implements MigrationInterface {
   private tableName = 'users';
@@ -132,12 +132,6 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               isNullable: false,
             },
             {
-              name: 'account_type',
-              type: 'enum',
-              enum: Object.values(ACCOUNT_TYPE),
-              isNullable: false,
-            },
-            {
               name: 'otpCodeHash',
               type: 'varchar',
               isNullable: true,
@@ -148,12 +142,12 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               isNullable: true,
             },
             {
-              name: 'isPhoneVerified',
+              name: 'isEmailVerified',
               type: 'boolean',
               default: false,
             },
             {
-              name: 'isEmailVerified',
+              name: 'isPhoneVerified',
               type: 'boolean',
               default: false,
             },

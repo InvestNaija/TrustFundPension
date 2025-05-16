@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BVNDataRepository } from '../repositories';
 import { BVNData } from '../entities';
@@ -21,12 +21,13 @@ export class BvnDataService {
     return this.mapToResponseDto(savedBvnData);
   }
 
-  async findOne(userId: string): Promise<BvnDataResponseDto | null> {
+  async findOne(id: string): Promise<BvnDataResponseDto> {
     try {
-      const bvnData = await this.bvnDataRepository.findOne({ 
-        where: { userId } 
-      });
-      return bvnData ? this.mapToResponseDto(bvnData) : null;
+      const bvnData = await this.bvnDataRepository.findOne({ where: { id } });
+      if (!bvnData) {
+        throw new NotFoundException(`BVN data with ID ${id} not found`);
+      }
+      return this.mapToResponseDto(bvnData);
     } catch (error) {
       this.logger.error(`Error finding BVN data: ${error.message}`);
       throw error;

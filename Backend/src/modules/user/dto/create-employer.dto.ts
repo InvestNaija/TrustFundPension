@@ -1,75 +1,34 @@
-import { IsString, IsDate, IsNotEmpty, ValidateNested, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsNumber, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
-export class CreateAddressDto {
-  @IsString()
-  @IsNotEmpty()
-  houseNumber: string;
-
-  @IsString()
-  @IsNotEmpty()
-  streetName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  city: string;
-
-  @IsString()
-  @IsNotEmpty()
-  state: string;
-
-  @IsString()
-  @IsNotEmpty()
-  lgaCode: string;
-
-  @IsString()
-  @IsNotEmpty()
-  zipCode: string;
-
-  @IsString()
-  @IsNotEmpty()
-  countryCode: string;
-}
 
 export class CreateEmployerDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  userId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  rcNumber: string;
+  business: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  phoneNumber: string;
-
-  @ApiProperty()
-  @IsDate()
-  @Type(() => Date)
-  initialDate: Date;
-
-  @ApiProperty()
-  @IsDate()
-  @Type(() => Date)
-  currentDate: Date;
+  phone: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  natureOfBusiness: string;
-
-  @ApiProperty()
-  @ValidateNested()
-  @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
+  type: string;
 
   @ApiProperty()
   @IsString()
-  @IsOptional()
-  userId?: string;
+  @IsNotEmpty()
+  rcno: string;
+
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  first_appoint_date: string;
 } 

@@ -3,6 +3,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class GenerateReportQueryDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  pin: string;
+
+  @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
   fromDate: string;

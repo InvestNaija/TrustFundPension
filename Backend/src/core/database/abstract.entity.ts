@@ -8,9 +8,9 @@ import {
     @PrimaryGeneratedColumn('uuid')
     id: string;
   
-    @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
+    @CreateDateColumn({ type: 'timestamptz' })
     createdAt: Date;
   
-    @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
+    @UpdateDateColumn({ type: 'timestamptz' })
     updatedAt: Date;
   }

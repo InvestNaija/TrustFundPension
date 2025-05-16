@@ -10,5 +10,5 @@ export class CreateUserRoleDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  roleId: string;
+  role_id: string;
 } 

@@ -1,23 +1,31 @@
-import { IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { CreateAddressDto } from './create-employer.dto';
 
 export class CreateNokDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  firstName: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  middleName?: string;
+  userId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  title: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  first_name: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  other_name?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  surname: string;
 
   @ApiProperty()
   @IsString()
@@ -28,19 +36,4 @@ export class CreateNokDto {
   @IsString()
   @IsNotEmpty()
   phone: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  email?: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  relationship: string;
-
-  @ApiProperty()
-  @ValidateNested()
-  @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
 } 

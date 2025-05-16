@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Address } from '../entities/address.entity';
 
 export class NokResponseDto {
   @ApiProperty()
@@ -19,13 +18,13 @@ export class NokResponseDto {
   @Expose()
   firstName: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  middleName?: string;
+  otherName: string;
 
   @ApiProperty()
   @Expose()
-  lastName: string;
+  surname: string;
 
   @ApiProperty()
   @Expose()
@@ -34,18 +33,6 @@ export class NokResponseDto {
   @ApiProperty()
   @Expose()
   phone: string;
-
-  @ApiProperty({ required: false })
-  @Expose()
-  email?: string;
-
-  @ApiProperty()
-  @Expose()
-  relationship: string;
-
-  @ApiProperty()
-  @Expose()
-  address: Address;
 
   @ApiProperty()
   @Expose()

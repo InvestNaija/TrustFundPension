@@ -3,8 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NokService } from '../services';
 import { CreateNokDto, UpdateNokDto, NokResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
-import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
 @ApiTags('Next of Kin')
 @Controller('noks')
@@ -13,42 +11,37 @@ export class NokController {
   constructor(private readonly nokService: NokService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create next of kin' })
+  @ApiOperation({ summary: 'Create a new next of kin' })
   @ApiResponse({ status: 201, description: 'Next of kin created successfully', type: NokResponseDto })
-  async create(
-    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Body() createNokDto: CreateNokDto
-  ): Promise<NokResponseDto> {
-    return this.nokService.create({
-      userId: authenticatedUser.id,
-      ...createNokDto
-    });
+  async create(@Body() createNokDto: CreateNokDto): Promise<NokResponseDto> {
+    return this.nokService.create(createNokDto);
   }
 
-  @Get('')
-  @ApiOperation({ summary: 'Get current user\'s next of kin' })
+  @Get()
+  @ApiOperation({ summary: 'Get all next of kin' })
+  @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: [NokResponseDto] })
+  async findAll(): Promise<NokResponseDto[]> {
+    return this.nokService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a next of kin by id' })
   @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<NokResponseDto> {
-    return this.nokService.findOne(authenticatedUser.id);
+  async findOne(@Param('id') id: string): Promise<NokResponseDto> {
+    return this.nokService.findOne(id);
   }
 
-  @Put('')
-  @ApiOperation({ summary: 'Update current user\'s next of kin' })
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a next of kin' })
   @ApiResponse({ status: 200, description: 'Next of kin updated successfully', type: NokResponseDto })
-  async update(
-    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Body() updateNokDto: UpdateNokDto
-  ): Promise<NokResponseDto> {
-    return this.nokService.update(authenticatedUser.id, {
-      userId: authenticatedUser.id,
-      ...updateNokDto
-    });
+  async update(@Param('id') id: string, @Body() updateNokDto: UpdateNokDto): Promise<NokResponseDto> {
+    return this.nokService.update(id, updateNokDto);
   }
 
-  @Delete('')
-  @ApiOperation({ summary: 'Delete current user\'s next of kin' })
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a next of kin' })
   @ApiResponse({ status: 200, description: 'Next of kin deleted successfully' })
-  async remove(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<void> {
-    return this.nokService.remove(authenticatedUser.id);
+  async remove(@Param('id') id: string): Promise<void> {
+    return this.nokService.remove(id);
   }
 } 

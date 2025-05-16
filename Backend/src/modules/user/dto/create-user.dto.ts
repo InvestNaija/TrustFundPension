@@ -1,37 +1,37 @@
-import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional, IsDate, IsEnum, IsUUID } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsBoolean, IsOptional, IsDate, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ACCOUNT_TYPE } from '../../../core/constants';
+import { USER_ROLE } from '../../../core/constants';
 
 export class CreateUserDto {
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
-  bvn?: string;
+  @IsNotEmpty()
+  bvn: string;
   
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
-  nin?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  pen?: string;
+  @IsNotEmpty()
+  nin: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  rsa_pin: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  first_name: string;
   
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  middleName: string;
+  middle_name: string;
   
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  last_name: string;
   
   @ApiProperty()
   @IsEmail()
@@ -68,10 +68,10 @@ export class CreateUserDto {
   @IsOptional()
   show_balance?: boolean;
 
-  @ApiProperty({ enum: ACCOUNT_TYPE, required: false })
-  @IsEnum(ACCOUNT_TYPE)
-  @IsOptional()
-  account_type?: ACCOUNT_TYPE;
+  @ApiProperty({ enum: USER_ROLE })
+  @IsEnum(USER_ROLE)
+  @IsNotEmpty()
+  role: USER_ROLE;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -86,22 +86,22 @@ export class CreateUserDto {
   @ApiProperty({ default: true })
   @IsBoolean()
   @IsOptional()
-  isEnabled?: boolean;
+  is_enabled?: boolean;
 
   @ApiProperty({ default: false })
   @IsBoolean()
   @IsOptional()
-  isLocked?: boolean;
+  is_locked?: boolean;
 
   @ApiProperty({ default: true })
   @IsBoolean()
   @IsOptional()
-  firstLogin?: boolean;
+  first_login?: boolean;
   
   @ApiProperty({ default: false })
   @IsBoolean()
   @IsOptional()
-  twoFactorAuth?: boolean;
+  two_factor_auth?: boolean;
 
   @ApiProperty({ default: false })
   @IsBoolean()

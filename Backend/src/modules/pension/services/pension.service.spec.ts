@@ -212,14 +212,8 @@ describe('PensionService', () => {
   describe('getLastTenContributions', () => {
     const userId = '123';
     const mockUser = {
-      id: 'user-id',
-      email: 'test@example.com',
-      phone: '1234567890',
-      pen: 'PIN123',
-      isEnabled: true,
-      isLocked: false,
-      firstLogin: true,
-      twoFactorAuth: false,
+      id: userId,
+      rsa_pin: 'PIN123',
     };
 
     it('should get last ten contributions successfully', async () => {
@@ -230,7 +224,7 @@ describe('PensionService', () => {
       const result = await service.getLastTenContributions(userId);
 
       expect(result).toEqual(mockResponse);
-      expect(mockTrustFundService.getLastTenContributions).toHaveBeenCalledWith({ pin: mockUser.pen });
+      expect(mockTrustFundService.getLastTenContributions).toHaveBeenCalledWith({ pin: mockUser.rsa_pin });
     });
 
     it('should throw UnprocessableEntityException when user not found', async () => {
@@ -243,14 +237,8 @@ describe('PensionService', () => {
   describe('getAccountManager', () => {
     const userId = '123';
     const mockUser = {
-      id: 'user-id',
-      email: 'test@example.com',
-      phone: '1234567890',
-      pen: 'PIN123',
-      isEnabled: true,
-      isLocked: false,
-      firstLogin: true,
-      twoFactorAuth: false,
+      id: userId,
+      rsa_pin: 'PIN123',
     };
 
     it('should get account manager successfully', async () => {
@@ -261,7 +249,7 @@ describe('PensionService', () => {
       const result = await service.getAccountManager(userId);
 
       expect(result).toEqual(mockResponse);
-      expect(mockTrustFundService.getAccountManager).toHaveBeenCalledWith({ rsa_number: mockUser.pen });
+      expect(mockTrustFundService.getAccountManager).toHaveBeenCalledWith({ rsa_number: mockUser.rsa_pin });
     });
 
     it('should throw UnprocessableEntityException when user not found', async () => {
@@ -274,14 +262,8 @@ describe('PensionService', () => {
   describe('getSummary', () => {
     const userId = '123';
     const mockUser = {
-      id: 'user-id',
-      email: 'test@example.com',
-      phone: '1234567890',
-      pen: 'PIN123',
-      isEnabled: true,
-      isLocked: false,
-      firstLogin: true,
-      twoFactorAuth: false,
+      id: userId,
+      rsa_pin: 'PIN123',
     };
 
     it('should get summary successfully', async () => {
@@ -292,7 +274,7 @@ describe('PensionService', () => {
       const result = await service.getSummary(userId);
 
       expect(result).toEqual(mockResponse);
-      expect(mockTrustFundService.getSummary).toHaveBeenCalledWith({ pin: mockUser.pen });
+      expect(mockTrustFundService.getSummary).toHaveBeenCalledWith({ pin: mockUser.rsa_pin });
     });
 
     it('should throw UnprocessableEntityException when user not found', async () => {

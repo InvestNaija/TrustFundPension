@@ -1,7 +1,6 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
-import { IApiResponse } from 'src/core/types';
 import {
   IEmailRequest,
   IEmailResponse,
@@ -12,7 +11,7 @@ import {
   IContributionRequest,
   IAccountManagerRequest,
   IAccountManager,
-  IEmployerRequest,
+  ILoginResponse,
   ISummaryRequest,
   ISummaryResponse,
   ICustomerOnboardingRequest,
@@ -23,6 +22,7 @@ import {
 @Injectable()
 export class TrustFundService {
   private logger = new Logger(TrustFundService.name);
+  private accessToken: string | null = null;
 
   // Email credentials
   private readonly EMAIL_FROM = envConfig.TRUSTFUND_EMAIL_FROM;
@@ -35,9 +35,38 @@ export class TrustFundService {
 
   constructor(private readonly httpRequest: HttpRequestService) {}
 
+  private getRequestHeaders(withAuth = true) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (!withAuth) {
+      headers.Authorization = `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`;
+    } else if (this.accessToken) {
+      headers.Authorization = `Bearer ${this.accessToken}`;
+    }
+
+    return headers;
+  }
+
+  async login(): Promise<void> {
+    try {
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/auth/login`;
+      const response = await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        headers: this.getRequestHeaders(false),
+      });
+      this.accessToken = response.access_token;
+    } catch (error) {
+      this.logger.error('Error during login:', error);
+      throw new UnprocessableEntityException('Could not authenticate');
+    }
+  }
+
   async sendEmail(emailData: IEmailRequest): Promise<IEmailResponse> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}mobile/sendemail.php`;
+      const url = `${envConfig.TRUSTFUND_URL}/mobile/sendemail.php`;
       const emailPayload = {
         ...emailData,
         from: this.EMAIL_FROM,
@@ -47,9 +76,7 @@ export class TrustFundService {
         method: 'POST',
         url,
         data: emailPayload,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error sending email:', error);
@@ -59,7 +86,7 @@ export class TrustFundService {
 
   async sendSms(smsData: ISmsRequest): Promise<ISmsResponse> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}mobile/sendsms.php`;
+      const url = `${envConfig.TRUSTFUND_URL}/mobile/sendsms.php`;
       const smsPayload = {
         ...smsData,
         username: this.SMS_USERNAME,
@@ -70,9 +97,7 @@ export class TrustFundService {
         method: 'POST',
         url,
         data: smsPayload,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error sending SMS:', error);
@@ -82,13 +107,11 @@ export class TrustFundService {
 
   async getFundTypes(): Promise<IFundType[]> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}api/get_schemes.php`;
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_schemes.php`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error getting fund types:', error);
@@ -96,34 +119,14 @@ export class TrustFundService {
     }
   }
 
-
-  async getEmployers(data: IEmployerRequest ) {
-    try {
-      const url = `${envConfig.TRUSTFUND_URL}api/get_employer_details.php`;
-      return await this.httpRequest.makeRequest({
-        method: 'POST',
-        url,
-        data,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-    } catch (error) {
-      this.logger.error('Error getting employer details:', error);
-      throw new UnprocessableEntityException('Could not get employer details');
-    }
-  }
-
   async getLastTenContributions(data: IContributionRequest): Promise<IContribution[]> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}api/get_contributions.php`;
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_contributions.php`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
         data,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error getting contributions:', error);
@@ -133,14 +136,12 @@ export class TrustFundService {
 
   async getAccountManager(data: IAccountManagerRequest): Promise<IAccountManager[]> {
     try {
-      const url = `${envConfig.TRUSTFUND_URL}api/get_agent.php`;
+      const url = `${envConfig.TRUSTFUND_URL}/api/get_agent.php`;
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
         data,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error getting account manager:', error);
@@ -150,26 +151,15 @@ export class TrustFundService {
 
   async getSummary(data: ISummaryRequest): Promise<ISummaryResponse> {
     try {
-      const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
-      };    
-      return this.httpRequest.makeRequest({
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/getsummary`;
+      return await this.httpRequest.makeRequest({
         method: 'POST',
-        url: loginUrl,
-        headers,
-      }).then(response => {
-        const summaryUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/getsummary`;
-        return this.httpRequest.makeRequest({
-          method: 'POST',
-          url: summaryUrl,
-          data,
-          headers:{
-            'Content-Type': 'application/json',
-            'Authorization': response.authorization
-          },
-        });
+        url,
+        data,
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error getting summary:', error);
@@ -179,27 +169,15 @@ export class TrustFundService {
 
   async customerOnboarding(data: ICustomerOnboardingRequest): Promise<any> {
     try {
-      const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
-      };
-      
-      return this.httpRequest.makeRequest({
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/regmodule-ecrs/onboarding`;
+      return await this.httpRequest.makeRequest({
         method: 'POST',
-        url: loginUrl,
-        headers,
-      }).then(response => {
-        const onboardingUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/regmodule-ecrs/onboarding`;
-        return this.httpRequest.makeRequest({
-          method: 'POST',
-          url: onboardingUrl,
-          data,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': response.authorization
-          },
-        });
+        url,
+        data,
+        headers: this.getRequestHeaders(),
       });
     } catch (error) {
       this.logger.error('Error during customer onboarding:', error);
@@ -209,28 +187,18 @@ export class TrustFundService {
 
   async generateReport(data: IGenerateReportRequest): Promise<Buffer> {
     try {
-      const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
-      };
-      
-      return this.httpRequest.makeRequest({
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/report-pin`;
+      return await this.httpRequest.makeRequest({
         method: 'POST',
-        url: loginUrl,
-        headers,
-      }).then(response => {
-        const reportUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/generate/report-pin`;
-        return this.httpRequest.makeRequest({
-          method: 'POST',
-          url: reportUrl,
-          data,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': response.authorization
-          },
+        url,
+        data,
+        headers: {
+          ...this.getRequestHeaders(),
           responseType: 'arraybuffer'
-        }).then(reportResponse => Buffer.from(reportResponse));
+        }
       });
     } catch (error) {
       this.logger.error('Error generating report:', error);
@@ -240,55 +208,22 @@ export class TrustFundService {
 
   async generateWelcomeLetter(data: IWelcomeLetterRequest): Promise<Buffer> {
     try {
-      const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
-      };
-      
-      return this.httpRequest.makeRequest({
+      if (!this.accessToken) {
+        await this.login();
+      }
+      const url = `${envConfig.TRUSTFUND_BASE_URL}/pensionserver-web/rest/partnerservice/generate/welcome-letter`;
+      return await this.httpRequest.makeRequest({
         method: 'POST',
-        url: loginUrl,
-        headers,
-      }).then(response => {
-        const letterUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/generate/welcome-letter`;
-        return this.httpRequest.makeRequest({
-          method: 'POST',
-          url: letterUrl,
-          data,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': response.authorization
-          },
+        url,
+        data,
+        headers: {
+          ...this.getRequestHeaders(),
           responseType: 'arraybuffer'
-        }).then(letterResponse => Buffer.from(letterResponse));
+        }
       });
     } catch (error) {
       this.logger.error('Error generating welcome letter:', error);
       throw new UnprocessableEntityException('Could not generate welcome letter');
-    }
-  }
-
-  async generateEmbassyLetterUrl(data: { surname: string; mobile: string; dateOfBirth: string }){
-    try {
-      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_URL}request_letter`;
-      const queryParams = new URLSearchParams({
-        Surname: data.surname,
-        Mobile: data.mobile,
-        DateOfBirth: data.dateOfBirth
-      });
-      
-      const url = `${baseUrl}?${queryParams.toString()}`;
-      return await this.httpRequest.makeRequest({
-        method: 'GET',
-        url,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-    } catch (error) {
-      this.logger.error('Error generating embassy letter:', error);
-      throw new UnprocessableEntityException('Could not generate embassy letter');
     }
   }
 }

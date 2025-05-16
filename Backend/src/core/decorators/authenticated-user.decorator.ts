@@ -1,19 +1,15 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { USER_ROLE } from '../constants';
 
-export interface AuthenticatedUser {
+export interface IDecodedJwtToken {
   id: string;
-  userRoles: Array<{
-    id: string;
-    userId: string;
-    roleId: string;
-  }>;
+  role: USER_ROLE;
 }
 
 export const AuthenticatedUser = createParamDecorator(
   (data: never, ctx: ExecutionContext) => {
     if (ctx.getType() === 'http') {
-      return ctx.switchToHttp().getRequest().user as AuthenticatedUser;
+      return ctx.switchToHttp().getRequest().user as IDecodedJwtToken;
     }
   },
 );

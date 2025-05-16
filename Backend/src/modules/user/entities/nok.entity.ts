@@ -1,21 +1,23 @@
-import { Column, Entity, DeleteDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Column, Entity, DeleteDateColumn, ManyToOne } from 'typeorm';
+import { User } from '.';
 import { AbstractEntity } from 'src/core/database';
-import { Address } from './address.entity';
-import { User } from './user.entity';
 
-@Entity({ name: 'noks' })
+@Entity('nok')
 export class Nok extends AbstractEntity {
-  @Column({ type: 'uuid', name: 'user_id' })
+  @Column()
   userId: string;
 
-  @Column({ name: 'first_name' })
-  firstName: string;
+  @Column()
+  title: string;
 
-  @Column({ nullable: true, name: 'middle_name' })
-  middleName: string;
+  @Column()
+  first_name: string;
 
-  @Column({ name: 'last_name' })
-  lastName: string;
+  @Column({ nullable: true })
+  other_name: string;
+
+  @Column()
+  surname: string;
 
   @Column()
   gender: string;
@@ -23,19 +25,9 @@ export class Nok extends AbstractEntity {
   @Column()
   phone: string;
 
-  @Column({ nullable: true })
-  email: string;
-
-  @Column()
-  relationship: string;
-
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true, name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt: Date;
 
-  @OneToMany(() => Address, address => address.nok, { eager: true })
-  addresses: Address[];
-
   @ManyToOne(() => User, user => user.noks)
-  @JoinColumn({ name: 'user_id' })
   user: User;
 }

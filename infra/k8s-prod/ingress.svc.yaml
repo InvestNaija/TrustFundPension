@@ -12,7 +12,7 @@ spec:
       http:
         paths:
           - pathType: Prefix
-            path: /api/v1/?(.*)
+            path: /api/v2/?(.*)
             backend:
               service:
                 name: backend-srv

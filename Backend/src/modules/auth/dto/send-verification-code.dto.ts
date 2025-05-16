@@ -19,27 +19,4 @@ export class SendVerificationCodeDto {
   @IsEnum(VerificationMethod)
   @IsNotEmpty()
   method: VerificationMethod;
-}
-
-export class SendCodeDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsEmail()
-  @Transform(({ value }) => value?.toLowerCase().trim())
-  email?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  phone?: string;
-
-  @ApiProperty({ enum: VerificationMethod })
-  @IsEnum(VerificationMethod)
-  @IsNotEmpty()
-  method: VerificationMethod;
-
-  @ApiProperty({ enum: ['bvn', 'nin'] })
-  @IsString()
-  @IsNotEmpty()
-  context: 'bvn' | 'nin';
 } 

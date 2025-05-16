@@ -4,7 +4,7 @@ import { UserService } from '../services';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
-import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
+import { IDecodedJwtToken } from '../../../core/decorators';
 
 @ApiTags('Users')
 @Controller('users')

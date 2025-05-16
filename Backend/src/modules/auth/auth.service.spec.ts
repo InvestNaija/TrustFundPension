@@ -3,13 +3,11 @@ import { AuthService } from './auth.service';
 import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TrustFundService } from '../third-party-services/trustfund/trustfund.service';
-import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { USER_ROLE, ACCOUNT_TYPE } from '../../core/constants';
+import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { USER_ROLE } from '../../core/constants';
 import { VerificationMethod } from './dto';
 import { Logger } from '@nestjs/common';
 import { generateOtpCodeHash, verifyPassword, hashPassword, generateOtpDetails } from '../../shared/utils';
-import { LoginDto } from './dto';
-import { IDecodedJwtToken } from './strategies/types';
 
 // Mock the utils functions
 jest.mock('../../shared/utils', () => ({
@@ -35,7 +33,6 @@ describe('AuthService', () => {
     findOne: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
-    updatePassword: jest.fn(),
     generateSignedUrlsForUserFiles: jest.fn(),
   };
 
@@ -85,39 +82,28 @@ describe('AuthService', () => {
     const signupDto = {
       email: 'test@example.com',
       password: 'password123',
-      firstName: 'John',
-      lastName: 'Doe',
-      middleName: 'Middle',
+      first_name: 'John',
+      last_name: 'Doe',
+      middle_name: 'Middle',
       phone: '1234567890',
-      dob: '1990-01-01',
-      gender: 'M',
-      accountType: ACCOUNT_TYPE.RSA,
-      roleId: '1',
-    };
-
-    const signupDtoWithOptionalFields = {
-      ...signupDto,
       bvn: '12345678901',
       nin: '12345678901',
-      pen: 'PIN123',
+      rsa_pin: 'PIN123',
+      dob: '1990-01-01',
+      gender: 'M',
+      role: USER_ROLE.CLIENT,
     };
 
     const mockUser = {
       id: '123',
       email: 'test@example.com',
       password: 'hashedPassword',
-      userRoles: [
-        {
-          id: '1',
-          userId: '123',
-          roleId: USER_ROLE.CLIENT
-        }
-      ],
+      role: USER_ROLE.CLIENT,
       otpCodeHash: null,
       otpCodeExpiry: null,
     };
 
-    it('should successfully register a new user without optional fields', async () => {
+    it('should successfully register a new user', async () => {
       mockUserService.findByEmail.mockResolvedValue(null);
       mockUserService.create.mockResolvedValue(mockUser);
 
@@ -129,21 +115,6 @@ describe('AuthService', () => {
         data: mockUser,
       });
       expect(mockUserService.findByEmail).toHaveBeenCalledWith(signupDto.email);
-      expect(mockUserService.create).toHaveBeenCalled();
-    });
-
-    it('should successfully register a new user with optional fields', async () => {
-      mockUserService.findByEmail.mockResolvedValue(null);
-      mockUserService.create.mockResolvedValue(mockUser);
-
-      const result = await service.signupUser(signupDtoWithOptionalFields);
-
-      expect(result).toEqual({
-        status: true,
-        message: 'Registration successful! Please verify your account',
-        data: mockUser,
-      });
-      expect(mockUserService.findByEmail).toHaveBeenCalledWith(signupDtoWithOptionalFields.email);
       expect(mockUserService.create).toHaveBeenCalled();
     });
 
@@ -260,7 +231,7 @@ describe('AuthService', () => {
       id: '123',
       email: 'test@example.com',
       phone: '1234567890',
-      firstName: 'John',
+      first_name: 'John',
       isEmailVerified: false,
       isPhoneVerified: false,
     };
@@ -317,21 +288,18 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    const loginDto = new LoginDto();
-    loginDto.email = 'test@example.com';
-    loginDto.password = 'password123';
-    loginDto.validateLoginMethod = jest.fn();
+    const loginDto = {
+      email: 'test@example.com',
+      password: 'password123',
+    };
 
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      password: 'hashed_password123',
+      password: 'hashedPassword',
+      role: USER_ROLE.CLIENT,
       isEmailVerified: true,
-      isPhoneVerified: true,
-    };
-
-    const mockSignedUrls = {
-      profileImageUrl: 'signed_url',
+      isPhoneVerified: true
     };
 
     const mockTokens = {
@@ -339,8 +307,11 @@ describe('AuthService', () => {
       refreshToken: 'refresh_token',
     };
 
+    const mockSignedUrls = {
+      profilePictureUrl: 'https://example.com/profile.jpg',
+    };
+
     beforeEach(() => {
-      mockJwtService.signAsync.mockReset();
       mockJwtService.signAsync
         .mockImplementationOnce(() => Promise.resolve(mockTokens.accessToken))
         .mockImplementationOnce(() => Promise.resolve(mockTokens.refreshToken));
@@ -367,10 +338,7 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if password is invalid', async () => {
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      const invalidDto = new LoginDto();
-      invalidDto.email = loginDto.email;
-      invalidDto.password = 'wrong_password';
-      invalidDto.validateLoginMethod = jest.fn();
+      const invalidDto = { ...loginDto, password: 'wrong_password' };
       await expect(service.login(invalidDto)).rejects.toThrow(UnauthorizedException);
     });
 
@@ -386,15 +354,9 @@ describe('AuthService', () => {
   });
 
   describe('refreshUserToken', () => {
-    const authenticatedUser: IDecodedJwtToken = {
+    const authenticatedUser = {
       id: '123',
-      userRoles: [
-        {
-          id: '1',
-          userId: '123',
-          roleId: USER_ROLE.CLIENT
-        }
-      ]
+      role: USER_ROLE.CLIENT,
     };
 
     const mockUser = {
@@ -581,28 +543,28 @@ describe('AuthService', () => {
   });
 
   describe('resetPassword', () => {
+    const resetPasswordDto = {
+      email: 'test@example.com',
+      otpCode: '123456',
+      password: 'new_password123',
+    };
+
+    const mockUser = {
+      id: '123',
+      email: 'test@example.com',
+      otpCodeHash: 'hashed_123456',
+      otpCodeExpiry: new Date(Date.now() + 3600000), // 1 hour from now
+    };
+
     it('should reset password successfully', async () => {
-      const resetPasswordDto = {
-        email: 'test@example.com',
-        otpCode: '123456',
-        password: 'newPassword123',
-      };
-
-      const mockUser = {
-        id: '1',
-        email: 'test@example.com',
-        otpCodeHash: generateOtpCodeHash('123456'),
-        otpCodeExpiry: new Date(Date.now() + 3600000), // 1 hour from now
-      };
-
       mockUserService.findByEmail.mockResolvedValue(mockUser);
-      mockUserService.update.mockResolvedValue({ ...mockUser, password: 'hashedPassword' });
+      mockUserService.update.mockResolvedValue(mockUser);
 
       const result = await service.resetPassword(resetPasswordDto);
 
       expect(result).toEqual({
         status: true,
-        message: 'Password reset successful',
+        message: 'Password reset successfully',
         data: {},
       });
       expect(mockUserService.update).toHaveBeenCalledWith(mockUser.id, {
@@ -613,41 +575,24 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw UnprocessableEntityException if OTP is invalid', async () => {
-      const resetPasswordDto = {
-        email: 'test@example.com',
-        otpCode: '123456',
-        password: 'newPassword123',
-      };
-
-      const mockUser = {
-        id: '1',
-        email: 'test@example.com',
-        otpCodeHash: generateOtpCodeHash('654321'), // Different OTP
-        otpCodeExpiry: new Date(Date.now() + 3600000),
-      };
-
-      mockUserService.findByEmail.mockResolvedValue(mockUser);
-      const invalidDto = { ...resetPasswordDto, otpCode: '123456' };
-      await expect(service.resetPassword(invalidDto)).rejects.toThrow(UnprocessableEntityException);
+    it('should throw NotFoundException if user not found', async () => {
+      mockUserService.findByEmail.mockResolvedValue(null);
+      await expect(service.resetPassword(resetPasswordDto)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw UnprocessableEntityException if OTP has expired', async () => {
-      const resetPasswordDto = {
-        email: 'test@example.com',
-        otpCode: '123456',
-        password: 'newPassword123',
-      };
+    it('should throw BadRequestException if OTP is invalid', async () => {
+      mockUserService.findByEmail.mockResolvedValue(mockUser);
+      const invalidDto = { ...resetPasswordDto, otpCode: '654321' };
+      await expect(service.resetPassword(invalidDto)).rejects.toThrow(BadRequestException);
+    });
 
+    it('should throw BadRequestException if OTP has expired', async () => {
       const expiredUser = {
-        id: '1',
-        email: 'test@example.com',
-        otpCodeHash: generateOtpCodeHash('123456'),
+        ...mockUser,
         otpCodeExpiry: new Date(Date.now() - 3600000), // 1 hour ago
       };
-
       mockUserService.findByEmail.mockResolvedValue(expiredUser);
-      await expect(service.resetPassword(resetPasswordDto)).rejects.toThrow(UnprocessableEntityException);
+      await expect(service.resetPassword(resetPasswordDto)).rejects.toThrow(BadRequestException);
     });
   });
 

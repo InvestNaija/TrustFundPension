@@ -8,18 +8,11 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: trustfund.inv2test.com.ng
+    - host: https://trustfund.edugate.com.ng
       http:
         paths:
           - pathType: Prefix
-            path: /api/v1/?(.*)
-            backend:
-              service:
-                name: backend-srv
-                port:
-                  number: 3001
-          - pathType: Prefix
-            path: /docs/?(.*)
+            path: /api/v2/?(.*)
             backend:
               service:
                 name: backend-srv
@@ -32,3 +25,4 @@ spec:
                 name: web-admin-srv
                 port:
                   number: 80
+

@@ -1,7 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { ACCOUNT_TYPE } from '../../../core/constants';
-import { UserRoleResponseDto } from './user-role-response.dto';
+import { USER_ROLE } from '../../../core/constants';
 
 export class UserResponseDto {
   @ApiProperty()
@@ -14,16 +13,16 @@ export class UserResponseDto {
   nin: string;
 
   @ApiProperty()
-  pen: string;
+  rsa_pin: string;
 
-  @ApiProperty({ name: 'first_name' })
-  firstName: string;
+  @ApiProperty()
+  first_name: string;
   
-  @ApiProperty({ name: 'middle_name' })
-  middleName: string;
+  @ApiProperty()
+  middle_name: string;
   
-  @ApiProperty({ name: 'last_name' })
-  lastName: string;
+  @ApiProperty()
+  last_name: string;
   
   @ApiProperty()
   email: string;
@@ -38,65 +37,62 @@ export class UserResponseDto {
   phone: string;
 
   @ApiProperty()
-  uuidToken: string;
+  uuid_token: string;
 
-  @ApiProperty({ name: 'ref_code' })
-  refCode: string;
+  @ApiProperty()
+  ref_code: string;
 
   @ApiProperty()
   referrer: string;
 
-  @ApiProperty({ name: 'show_balance' })
-  showBalance: boolean;
+  @ApiProperty()
+  show_balance: boolean;
 
-  @ApiProperty({ name: 'state_of_posting' })
-  stateOfPosting: string;
+  @ApiProperty()
+  state_of_posting: string;
 
-  @ApiProperty({ name: 'lga_of_posting' })
-  lgaOfPosting: string;
+  @ApiProperty()
+  lga_of_posting: string;
 
-  @ApiProperty({ name: 'is_enabled' })
-  isEnabled: boolean;
+  @ApiProperty()
+  is_enabled: boolean;
 
-  @ApiProperty({ name: 'is_locked' })
-  isLocked: boolean;
+  @ApiProperty()
+  is_locked: boolean;
 
-  @ApiProperty({ name: 'first_login' })
-  firstLogin: boolean;
+  @ApiProperty()
+  first_login: boolean;
   
-  @ApiProperty({ name: 'two_factor_auth' })
-  twoFactorAuth: boolean;
+  @ApiProperty()
+  two_factor_auth: boolean;
 
-  @ApiProperty({ type: [UserRoleResponseDto], name: 'user_roles' })
-  userRoles: UserRoleResponseDto[];
+  @ApiProperty({ enum: USER_ROLE })
+  role: USER_ROLE;
 
-  @ApiProperty({ enum: ACCOUNT_TYPE, name: 'account_type' })
-  accountType: ACCOUNT_TYPE;
-
-  @ApiProperty({ name: 'otp_code_hash' })
+  @ApiProperty()
   otpCodeHash: string | null;
 
-  @ApiProperty({ name: 'otp_code_expiry' })
+  @ApiProperty()
   otpCodeExpiry: Date | null;
 
-  @ApiProperty({ name: 'is_email_verified' })
+  @ApiProperty()
   isEmailVerified: boolean;
 
-  @ApiProperty({ name: 'is_phone_verified' })
+  @ApiProperty()
   isPhoneVerified: boolean;
 
-  @ApiProperty({ name: 'password_changed_at' })
+  @ApiProperty()
   passwordChangedAt: Date | null;
 
-  @ApiProperty({ name: 'created_at' })
+  @ApiProperty()
   createdAt: Date;
 
-  @ApiProperty({ name: 'updated_at' })
+  @ApiProperty()
   updatedAt: Date;
 
   @Exclude()
   password: string;
 
-  @ApiProperty({ name: 'deleted_at' })
+  @ApiProperty()
   deletedAt: Date | null;
 } 

@@ -67,166 +67,36 @@ spec:
                 secretKeyRef:
                   name: backend.depl
                   key: PORT
-            - name: CORS_ALLOWED_ORIGINS
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: CORS_ALLOWED_ORIGINS
-            - name: CLOUDINARY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: CLOUDINARY_API_KEY
-            - name: CLOUDINARY_API_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: CLOUDINARY_API_SECRET
-            - name: CLOUDINARY_CLOUD_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: CLOUDINARY_CLOUD_NAME
-            - name: CLOUDINARY_URL
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: CLOUDINARY_URL
-            - name: DB_HOST
+            - name: DB_PG_HOST
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_HOST
-            - name: DB_NAME
+                  key: DB_PG_HOST
+            - name: DB_PG_DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_NAME
-            - name: DB_PASSWORD
+                  key: DB_PG_DB_NAME
+            - name: DB_PG_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PASSWORD
-            - name: DB_USERNAME
+                  key: DB_PG_PASSWORD
+            - name: DB_PG_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_USERNAME
-            - name: DB_PORT
+                  key: DB_PG_USERNAME
+            - name: DB_PG_PORT
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_PORT
-            - name: DB_DIALECT
+                  key: DB_PG_PORT
+            - name: DB_PG_TIMEZONE
               valueFrom:
                 secretKeyRef:
                   name: backend.depl
-                  key: DB_DIALECT
-            - name: DB_SCHEMA_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: DB_SCHEMA_NAME
-            - name: DB_TIMEZONE
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: DB_TIMEZONE
-            - name: JWT_ACCESS_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: JWT_ACCESS_TOKEN_SECRET
-            - name: JWT_REFRESH_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: JWT_REFRESH_TOKEN_SECRET
-            - name: JWT_ACCESS_TOKEN_EXPIRY
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: JWT_ACCESS_TOKEN_EXPIRY
-            - name: JWT_REFRESH_TOKEN_EXPIRY
-              valueFrom:
-                secretKeyRef:
-                  name: common.depl
-                  key: JWT_REFRESH_TOKEN_EXPIRY
-            - name: TRUSTFUND_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_USERNAME
-            - name: TRUSTFUND_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_PASSWORD
-            - name: TRUSTFUND_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_BASE_URL
-            - name: TRUSTFUND_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_URL
-            - name: TRUSTFUND_EMAIL_FROM
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_EMAIL_FROM
-            - name: TRUSTFUND_EMAIL_FROM_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_EMAIL_FROM_NAME
-            - name: TRUSTFUND_SERVICE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_SERVICE_URL
-            - name: TRUSTFUND_SMS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_SMS_USERNAME
-            - name: TRUSTFUND_SMS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_SMS_PASSWORD
-            - name: TRUSTFUND_SMS_SENDER
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: TRUSTFUND_SMS_SENDER
-            - name: QOREID_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: QOREID_BASE_URL
-            - name: QOREID_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: QOREID_CLIENT_ID
-            - name: QOREID_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: QOREID_SECRET
-            - name: VERIFYME_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: VERIFYME_BASE_URL
-            - name: VERIFYME_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: backend.depl
-                  key: VERIFYME_SECRET_KEY
+                  key: DB_PG_TIMEZONE
 ---
 apiVersion: v1
 kind: Service

@@ -12,11 +12,6 @@ dotenv.config();
 
 export const envConfig = {
   NODE_ENV: process.env.NODE_ENV,
-  VERIFYME_BASE_URL: process.env.VERIFYME_BASE_URL,
-  VERIFYME_SECRET_KEY: process.env.VERIFYME_SECRET_KEY,
-  QOREID_BASE_URL: process.env.QOREID_BASE_URL,
-  QOREID_CLIENT_ID: process.env.QOREID_CLIENT_ID,
-  QOREID_SECRET: process.env.QOREID_SECRET,
   DB_USERNAME: process.env.DB_USERNAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_NAME: process.env.DB_NAME,
@@ -38,12 +33,7 @@ export const envConfig = {
   TRUSTFUND_SMS_USERNAME: process.env.TRUSTFUND_SMS_USERNAME,
   TRUSTFUND_SMS_PASSWORD: process.env.TRUSTFUND_SMS_PASSWORD,
   TRUSTFUND_SMS_SENDER: process.env.TRUSTFUND_SMS_SENDER,
-  TRUSTFUND_BASE_URL: process.env.TRUSTFUND_BASE_URL,
-  TRUSTFUND_SERVICE_URL: process.env.TRUSTFUND_SERVICE_URL || `https://services.trustfundpensions.com/request_letter`,
-  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+  TRUSTFUND_BASE_URL: process.env.TRUSTFUND_BASE_URL
 }
 
 export interface IEnvConfig {
@@ -61,11 +51,6 @@ export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid(...Object.values(Env))
     .required(),
-  VERIFYME_BASE_URL: Joi.string().required(),
-  VERIFYME_SECRET_KEY: Joi.string().required(),
-  QOREID_BASE_URL: Joi.string().required(),
-  QOREID_CLIENT_ID: Joi.string().required(),
-  QOREID_SECRET: Joi.string().required(),
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
   DB_NAME: Joi.string().required(),
@@ -87,11 +72,6 @@ export const envValidationSchema = Joi.object({
   TRUSTFUND_SMS_PASSWORD: Joi.string().required(),
   TRUSTFUND_SMS_SENDER: Joi.string().required(),
   TRUSTFUND_BASE_URL: Joi.string().required(),
-  // TRUSTFUND_SERVICE_URL: Joi.string().required(),
-  CLOUDINARY_CLOUD_NAME: Joi.string().required(),
-  CLOUDINARY_API_KEY: Joi.string().required(),
-  CLOUDINARY_API_SECRET: Joi.string().required(),
-  CLOUDINARY_URL: Joi.string().required(),
 });
 
 // import * as dotenv from 'dotenv';

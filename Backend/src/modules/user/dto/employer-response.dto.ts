@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Address } from '../entities/address.entity';
 
 export class EmployerResponseDto {
   @ApiProperty()
@@ -13,31 +12,23 @@ export class EmployerResponseDto {
 
   @ApiProperty()
   @Expose()
-  name: string;
+  business: string;
 
   @ApiProperty()
   @Expose()
-  rcNumber: string;
+  phone: string;
 
   @ApiProperty()
   @Expose()
-  phoneNumber: string;
+  type: string;
 
   @ApiProperty()
   @Expose()
-  initialDate: Date;
+  rcno: string;
 
   @ApiProperty()
   @Expose()
-  currentDate: Date;
-  
-  @ApiProperty()
-  @Expose()
-  natureOfBusiness: string;
-
-  @ApiProperty()
-  @Expose()
-  addresses: Address[];
+  first_appoint_date: string;
 
   @ApiProperty()
   @Expose()

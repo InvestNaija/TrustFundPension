@@ -138,7 +138,12 @@ export class UserService {
         };
       }
 
-      const bvnResponse = await this.verifyMeService.verifyBvn(bvn, firstName, lastName);
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const bvnResponse = await this.verifyMeService.verifyBvn(bvn, user.firstName, user.lastName);
 
       if (bvnResponse.data) {
         const formattedData = this.formatBvnResponse(bvnResponse.data);

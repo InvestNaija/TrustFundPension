@@ -61,7 +61,7 @@ export class UserService {
       relations: [
         'employers',
         'media',
-        'noks',
+        // 'noks',
       ]
     });
     if (!user) {

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmployerRepository, AddressRepository } from '../repositories';
 import { Employer } from '../entities';
 import { Address } from '../entities/address.entity';
-import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto } from '../dto';
+import { CreateEmployerDto, UpdateEmployerDto, EmployerResponseDto, AddressResponseDto } from '../dto';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -72,13 +72,16 @@ export class EmployerService {
 
   async findOne(userId: string): Promise<EmployerResponseDto> {
     try {
-      const employer = await this.employerRepository.findOne({ 
-        where: { userId },
-        relations: ['addresses']
-      });
+      const employer = await this.employerRepository.findOne({ where: { userId } });
+
       if (!employer) {
         throw new NotFoundException(`Employer for user ID ${userId} not found`);
       }
+      
+      const addresses = await this.addressRepository.find({ where: { commonId: employer.id, commonType: 'Employer' } });
+
+      employer.addresses = addresses;
+      
       return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);
@@ -149,6 +152,16 @@ export class EmployerService {
       excludeExtraneousValues: true,
       enableImplicitConversion: true
     });
+    
+    if (employer.addresses) {
+      mapped.addresses = employer.addresses.map(address => 
+        plainToClass(AddressResponseDto, address, {
+          excludeExtraneousValues: true,
+          enableImplicitConversion: true
+        })
+      );
+    }
+    
     this.logger.debug('Mapping employer to DTO:', { original: employer, mapped });
     return mapped;
   }

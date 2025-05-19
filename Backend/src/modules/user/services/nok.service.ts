@@ -50,7 +50,10 @@ export class NokService {
 
   async findOne(userId: string): Promise<NokResponseDto> {
     try {
-      const nok = await this.nokRepository.findOne({ where: { userId } });
+      const nok = await this.nokRepository.findOne({ 
+        where: { userId },
+        order: { createdAt: 'DESC' }
+      });
       if (!nok) {
         throw new NotFoundException(`Next of kin not found`);
       }
@@ -66,7 +69,8 @@ export class NokService {
 
   async update(userId: string, updateNokDto: UpdateNokDto): Promise<NokResponseDto> {
     const nok = await this.nokRepository.findOne({ 
-      where: { userId }
+      where: { userId },
+      order: { createdAt: 'DESC' }
     });
     
     if (!nok) {

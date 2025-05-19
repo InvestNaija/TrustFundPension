@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class CreateNokTable1936892715742 implements MigrationInterface {
-  private tableName = 'nok';
+  private tableName = 'noks';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);

@@ -89,14 +89,14 @@ export class EmployerService {
     }
   }
 
-  async findById(id: string): Promise<EmployerResponseDto> {
+  async findById(userId: string): Promise<EmployerResponseDto> {
     try {
       const employer = await this.employerRepository.findOne({ 
-        where: { id },
+        where: { userId },
         relations: ['addresses']
       });
       if (!employer) {
-        throw new NotFoundException(`Employer with ID ${id} not found`);
+        throw new NotFoundException(`Employer with ID ${userId} not found`);
       }
       return this.mapToResponseDto(employer);
     } catch (error) {
@@ -105,22 +105,20 @@ export class EmployerService {
     }
   }
 
-  async update(id: string, updateEmployerDto: UpdateEmployerDto): Promise<EmployerResponseDto> {
+  async update(userId: string, updateEmployerDto: UpdateEmployerDto): Promise<EmployerResponseDto> {
     try {
       const employer = await this.employerRepository.findOne({ 
-        where: { id },
-        relations: ['addresses']
+        where: { userId },
       });
       if (!employer) {
-        throw new NotFoundException(`Employer with ID ${id} not found`);
+        throw new NotFoundException(`Employer with ID ${userId} not found`);
       }
 
       Object.assign(employer, updateEmployerDto);
       const updatedEmployer = await this.employerRepository.save(employer);
-      
-      // Fetch the updated employer with addresses
+    
       const employerWithAddresses = await this.employerRepository.findOne({
-        where: { id: updatedEmployer.id },
+        where: { userId: updatedEmployer.userId },
         relations: ['addresses']
       });
 
@@ -135,11 +133,11 @@ export class EmployerService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(userId: string): Promise<void> {
     try {
-      const result = await this.employerRepository.softDelete({ id });
+      const result = await this.employerRepository.softDelete({ userId });
       if (result.affected === 0) {
-        throw new NotFoundException(`Employer with ID ${id} not found`);
+        throw new NotFoundException(`Employer with ID ${userId} not found`);
       }
     } catch (error) {
       this.logger.error(`Error removing employer: ${error.message}`);

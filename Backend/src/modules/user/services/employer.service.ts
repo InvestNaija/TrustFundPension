@@ -72,17 +72,24 @@ export class EmployerService {
 
   async findOne(userId: string): Promise<EmployerResponseDto> {
     try {
-      const employer = await this.employerRepository.findOne({ where: { userId } });
+      const employer = await this.employerRepository.findOne({ 
+        where: { userId }, 
+        order: { createdAt: 'DESC' },
+        relations: ['addresses']
+      });
 
-      if (!employer) {
+    if (!employer) {
         throw new NotFoundException(`Employer for user ID ${userId} not found`);
-      }
-      
-      const addresses = await this.addressRepository.find({ where: { commonId: employer.id, commonType: 'Employer' } });
+    }
 
+    if (!employer.addresses || employer.addresses.length === 0) {
+      const addresses = await this.addressRepository.find({
+        where: { commonId: employer.id, commonType: 'employer' },
+      });
       employer.addresses = addresses;
-      
-      return this.mapToResponseDto(employer);
+    }
+
+    return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);
       throw error;
@@ -109,24 +116,37 @@ export class EmployerService {
     try {
       const employer = await this.employerRepository.findOne({ 
         where: { userId },
+        order: { createdAt: 'DESC' },
+        relations: ['addresses']
       });
       if (!employer) {
         throw new NotFoundException(`Employer with ID ${userId} not found`);
       }
 
-      Object.assign(employer, updateEmployerDto);
-      const updatedEmployer = await this.employerRepository.save(employer);
-    
-      const employerWithAddresses = await this.employerRepository.findOne({
-        where: { userId: updatedEmployer.userId },
-        relations: ['addresses']
-      });
+      const { address, ...employerData } = updateEmployerDto;
+      Object.assign(employer, employerData);
 
-      if (!employerWithAddresses) {
-        throw new NotFoundException('Employer not found after update');
+      if (address) {
+        const existingAddress = await this.addressRepository.findOne({
+          where: { commonId: employer.id, commonType: 'employer' },
+        });
+
+        if (existingAddress) {
+          Object.assign(existingAddress, address);
+          await this.addressRepository.save(existingAddress);
+        } else {
+          const newAddress = new Address();
+          Object.assign(newAddress, {
+            ...address,
+            commonId: employer.id,
+            commonType: 'employer',
+          });
+          await this.addressRepository.save(newAddress);
+        }
       }
-      
-      return this.mapToResponseDto(employerWithAddresses);
+
+      const updatedEmployer = await this.employerRepository.save(employer);
+      return this.mapToResponseDto(updatedEmployer);
     } catch (error) {
       this.logger.error(`Error updating employer: ${error.message}`);
       throw error;

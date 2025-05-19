@@ -1,5 +1,7 @@
 import { IsString, IsNumber, IsDateString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { CreateAddressDto } from './create-employer.dto';
 
 export class UpdateEmployerDto {
   @ApiProperty({ required: false })
@@ -37,5 +39,11 @@ export class UpdateEmployerDto {
   @IsString()
   @IsOptional()
   natureOfBusiness?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  @Type(() => CreateAddressDto)
+  address?: CreateAddressDto;
 
 } 

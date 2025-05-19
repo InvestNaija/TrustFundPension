@@ -64,9 +64,9 @@ export class NokService {
     }
   }
 
-  async update(id: string, updateNokDto: UpdateNokDto): Promise<NokResponseDto> {
+  async update(userId: string, updateNokDto: UpdateNokDto): Promise<NokResponseDto> {
     const nok = await this.nokRepository.findOne({ 
-      where: { userId: id }
+      where: { userId }
     });
     
     if (!nok) {
@@ -99,11 +99,11 @@ export class NokService {
     return this.mapToResponseDto(savedNok);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(userId: string): Promise<void> {
     try {
-      const result = await this.nokRepository.softDelete({ id });
+      const result = await this.nokRepository.softDelete({ userId });
       if (result.affected === 0) {
-        throw new NotFoundException(`Next of kin with ID ${id} not found`);
+        throw new NotFoundException(`Next of kin with ID ${userId} not found`);
       }
     } catch (error) {
       this.logger.error(`Error removing next of kin: ${error.message}`);

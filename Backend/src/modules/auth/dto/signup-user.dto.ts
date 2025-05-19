@@ -36,10 +36,10 @@ export class SignupUserDto {
   @IsString()
   firstName: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  middleName: string;
+  middleName?: string;
 
   @ApiProperty()
   @IsNotEmpty()

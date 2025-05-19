@@ -23,10 +23,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   firstName: string;
   
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  middleName: string;
+  @IsOptional()
+  middleName?: string;
   
   @ApiProperty()
   @IsString()

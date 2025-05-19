@@ -10,25 +10,32 @@ export class UpdateEmployerDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  business?: string;
+  name?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  phone?: string;
+  rcNumber?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  type?: string;
+  phoneNumber?: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  rcno?: string;
 
   @ApiProperty({ required: false })
   @IsDateString()
   @IsOptional()
-  first_appoint_date?: string;
+  initialDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsDateString()
+  @IsOptional()
+  currentDate?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  natureOfBusiness?: string;
+
 } 

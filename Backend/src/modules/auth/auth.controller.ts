@@ -24,6 +24,7 @@ import {
   ValidateOtpDto,
   VerifyAccountDto,
   VerifyEmailDto,
+  ChangePasswordDto,
 } from './dto';
 import { JwtAccessTokenGuard, JwtRefreshTokenGuard } from './guards';
 import { IJwtTokens } from './types';
@@ -32,6 +33,7 @@ import { IDecodedJwtToken } from './strategies';
 import { VerificationMethod } from './dto';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { OtpAuthGuard } from 'src/core/auth/guards/otp.guard';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -175,6 +177,18 @@ export class AuthController {
     @Body() dto: VerifyAccountDto,
   ): Promise<IApiResponse> {
     return this.authService.verifyAccount(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  async changePassword(
+    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
+    @Body() dto: ChangePasswordDto
+  ): Promise<IApiResponse> {
+    return await this.authService.changePassword(authenticatedUser.id, dto);
   }
 
   private setCookieOptions(req: Request): CookieOptions {

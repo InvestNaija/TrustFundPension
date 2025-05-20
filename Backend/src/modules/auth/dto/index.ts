@@ -8,3 +8,4 @@ export * from './verify-email.dto';
 export * from './verification-preference.dto';
 export * from './send-verification-code.dto';
 export * from './verify-account.dto';
+export * from './change-password.dto';

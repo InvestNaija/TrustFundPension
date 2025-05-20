@@ -179,7 +179,7 @@ export class UserService {
         const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse);
         return {
           status: true,
-          message: 'BVN details retrieved from cache',
+          message: 'BVN details retrieved',
           data: formattedData,
         };
       }

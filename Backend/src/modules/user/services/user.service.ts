@@ -20,6 +20,7 @@ import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
 import { IApiResponse } from 'src/core/types';
 import { UPLOAD_TYPE } from 'src/core/constants';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -262,6 +263,24 @@ export class UserService {
     } catch (error) {
       throw new UnprocessableEntityException('Could not verify NIN');
     }
+  }
+
+  async changePassword(userId: string, dto: { oldPassword: string; newPassword: string }): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.password) {
+      throw new BadRequestException('Password not set for this user');
+    }
+    const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    user.password = hashed;
+    const updatedUser = await this.userRepository.save(user);
+    return this.mapToResponseDto(updatedUser);
   }
 
   private formatBvnResponse(data: any) {

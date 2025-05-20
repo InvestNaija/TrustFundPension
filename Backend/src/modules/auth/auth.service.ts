@@ -413,6 +413,36 @@ export class AuthService {
     };
   }
 
+  async changePassword(userId: string, dto: { oldPassword: string; newPassword: string }): Promise<IApiResponse> {
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.password) {
+      throw new BadRequestException('Password not set for this user');
+    }
+    const isMatch = await verifyPassword(dto.oldPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+    const hashed = await hashPassword(dto.newPassword);
+    if (!hashed) {
+      throw new BadRequestException('Failed to hash password');
+    }
+    await this.userService.updatePassword(userId, {
+      password: hashed,
+      passwordChangedAt: new Date(),
+      otpCodeHash: null,
+      otpCodeExpiry: null
+    });
+
+    return {
+      status: true,
+      message: 'Password changed successfully',
+      data: {},
+    };
+  }
+
   private async generateJwtTokens(
     payload: { id: string; userRoles: any[] },
   ): Promise<{ accessToken: string; refreshToken: string }> {

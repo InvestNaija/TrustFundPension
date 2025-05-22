@@ -1,12 +1,14 @@
 import { Body, Controller, Get, Post, Res, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { PensionService } from '../services';
 import {
   EmailRequestDto,
   SmsRequestDto,
   CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
+  CreateFundTransferDto,
+  FundTransferResponseDto,
 } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
@@ -16,6 +18,8 @@ import { IEmployerRequest } from 'src/modules/third-party-services/trustfund/typ
 
 @ApiTags('Pension')
 @Controller('pension')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PensionController {
   constructor(private readonly pensionService: PensionService) {}
 
@@ -124,5 +128,16 @@ export class PensionController {
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
   async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
    return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+  }
+
+  @Post('fund-transfer')
+  @ApiOperation({ summary: 'Create a new fund transfer request' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Fund transfer request created successfully', type: FundTransferResponseDto })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid request or user not eligible for requested fund' })
+  async createFundTransfer(
+    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
+    @Body() dto: CreateFundTransferDto,
+  ): Promise<IApiResponse> {
+    return await this.pensionService.createFundTransfer(authenticatedUser.id, dto);
   }
 } 

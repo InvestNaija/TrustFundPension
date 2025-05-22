@@ -421,10 +421,16 @@ export class AuthService {
     if (!user.password) {
       throw new BadRequestException('Password not set for this user');
     }
+
     const isMatch = await verifyPassword(dto.oldPassword, user.password);
     if (!isMatch) {
       throw new BadRequestException('Old password is incorrect');
     }
+
+    if (dto.oldPassword === dto.newPassword) {
+      throw new BadRequestException('New password cannot be the same as the old password');
+    }
+    
     const hashed = await hashPassword(dto.newPassword);
     if (!hashed) {
       throw new BadRequestException('Failed to hash password');

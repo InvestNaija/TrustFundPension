@@ -17,6 +17,7 @@ import { Repository } from 'typeorm';
 import { FundTransfer } from '../entities/fund-transfer.entity';
 import { CreateFundTransferDto, FundTransferResponseDto } from '../dto/fund-transfer.dto';
 import { plainToClass } from 'class-transformer';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class PensionService {
@@ -378,6 +379,19 @@ export class PensionService {
     const user = await this.userService.findOne(userId);
     if (!user) {
       throw new BadRequestException('User not found');
+    }
+
+    // Check for existing pending request
+    const existingRequest = await this.fundTransferRepository.findOne({
+      where: {
+        userId,
+        isApproved: false,
+        deletedAt: IsNull()
+      }
+    });
+
+    if (existingRequest) {
+      throw new BadRequestException('You already have a pending fund transfer request. Please wait for it to be processed.');
     }
 
     const age = this.calculateAge(new Date(user.dob));

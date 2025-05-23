@@ -18,7 +18,6 @@ import { IEmployerRequest } from 'src/modules/third-party-services/trustfund/typ
 
 @ApiTags('Pension')
 @Controller('pension')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PensionController {
   constructor(private readonly pensionService: PensionService) {}
@@ -131,6 +130,7 @@ export class PensionController {
   }
 
   @Post('fund-transfer')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new fund transfer request' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Fund transfer request created successfully', type: FundTransferResponseDto })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid request or user not eligible for requested fund' })

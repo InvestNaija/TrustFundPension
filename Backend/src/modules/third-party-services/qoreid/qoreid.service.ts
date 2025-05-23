@@ -3,15 +3,21 @@ import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
 import { IQoreIdNinResponse } from './types';
 
+interface TokenData {
+  accessToken: string;
+  expiryTime: number;
+  headers: Record<string, string>;
+}
+
 @Injectable()
 export class QoreIdService {
   private logger = new Logger(QoreIdService.name);
-  private accessToken: string | null = null;
-  private headers: Record<string, string> = {};
+  private tokenManager: Map<string, TokenData> = new Map();
+  private readonly TOKEN_KEY = 'qoreid_main_token';
 
   constructor(private readonly httpRequest: HttpRequestService) {}
 
-  private async initializeToken(): Promise<void> {
+  private async initializeToken(): Promise<TokenData> {
     try {
       const url = `${envConfig.QOREID_BASE_URL}/token`;
       const response = await this.httpRequest.makeRequest({
@@ -28,12 +34,18 @@ export class QoreIdService {
         throw new UnprocessableEntityException('Invalid token response');
       }
 
-      this.accessToken = response.accessToken;
-      this.headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.accessToken}`,
+      const tokenData: TokenData = {
+        accessToken: response.accessToken,
+        expiryTime: Date.now() + ((response.expiresIn - 300) * 1000),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${response.accessToken}`,
+        }
       };
+
+      this.tokenManager.set(this.TOKEN_KEY, tokenData);
       this.logger.log('Successfully initialized QoreID token');
+      return tokenData;
     } catch (error) {
       this.logger.error('Error during token initialization:', error);
       if (error instanceof UnprocessableEntityException) {
@@ -43,17 +55,26 @@ export class QoreIdService {
     }
   }
 
+  private async ensureValidToken(): Promise<TokenData> {
+    const currentToken = this.tokenManager.get(this.TOKEN_KEY);
+    const isTokenExpired = !currentToken || Date.now() >= currentToken.expiryTime;
+    
+    if (isTokenExpired) {
+      return this.initializeToken();
+    }
+    
+    return currentToken;
+  }
+
   async verifyNin(nin: string): Promise<IQoreIdNinResponse> {
     try {
-      if (!this.accessToken) {
-        await this.initializeToken();
-      }
+      const tokenData = await this.ensureValidToken();
 
       const url = `${envConfig.QOREID_BASE_URL}/v1/ng/identities/nin/${nin}`;
       const response = await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        headers: this.headers,
+        headers: tokenData.headers,
       });
 
       if (!response || !response.nin) {
@@ -70,4 +91,4 @@ export class QoreIdService {
       throw new UnprocessableEntityException('Could not verify NIN');
     }
   }
-} 
+}

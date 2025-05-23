@@ -201,6 +201,19 @@ export class AuthService {
 
     const signedUrls = await this.userService.generateSignedUrlsForUserFiles(user);
 
+    await this.trustFundService.sendEmail({
+      to: user.email,
+      subject: 'Welcome Back!',
+      body: `
+        <h2>Welcome back, ${user.first_name}!</h2>
+        <p>You have successfully logged into your TrustFund Pension account.</p>
+        <p>If you did not initiate this login, please contact our support team immediately.</p>
+        <p>Best regards,<br>TrustFund Pension Team</p>
+      `,
+    }).catch((error) => {
+      this.logger.error(`Failed to send welcome email: ${error.message}`);
+    });
+
     return {
       ...user,
       ...signedUrls,

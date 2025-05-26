@@ -150,12 +150,12 @@ export class AuthService {
       this.sendEmailVerificationOTP({
         to: user.email,
         subject: 'Verify Your Account',
-        body: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        body: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
       });
     } else {
       this.sendSmsVerificationOTP({
         msisdn: user.phone,
-        msg: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        msg: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
       });
     }
 
@@ -205,7 +205,7 @@ export class AuthService {
       to: user.email,
       subject: 'Welcome Back!',
       body: `
-        <h2>Welcome back, ${user.first_name}!</h2>
+        <h2>Welcome back, ${user.firstName}!</h2>
         <p>You have successfully logged into your TrustFund Pension account.</p>
         <p>If you did not initiate this login, please contact our support team immediately.</p>
         <p>Best regards,<br>TrustFund Pension Team</p>
@@ -262,12 +262,12 @@ export class AuthService {
       this.sendEmailVerificationOTP({
         to: user.email,
         subject: 'Password Reset',
-        body: `Hello ${user.first_name}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
+        body: `Hello ${user.firstName}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
       });
     } else {
       this.sendSmsVerificationOTP({
         msisdn: user.phone,
-        msg: `Hello ${user.first_name}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
+        msg: `Hello ${user.firstName}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
       });
     }
 
@@ -369,12 +369,12 @@ export class AuthService {
       this.sendEmailVerificationOTP({
         to: user.email,
         subject: 'Verify Your Account',
-        body: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        body: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
       });
     } else {
       this.sendSmsVerificationOTP({
         msisdn: user.phone,
-        msg: `Hello ${user.first_name}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        msg: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
       });
     }
 

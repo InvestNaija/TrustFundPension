@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Referral } from '../entities';
 import { CreateReferralDto, UpdateReferralDto } from '../dto';
@@ -16,7 +16,33 @@ export class ReferralService {
     private readonly userService: UserService,
   ) {}
 
+  async validateAndFindReferralCode(code: string): Promise<Referral> {
+    const referral = await this.referralRepository.findOne({
+      where: { code },
+      relations: ['owner'],
+    });
+
+    if (!referral) {
+      throw new BadRequestException('Invalid referral code');
+    }
+
+    return referral;
+  }
+
   async generateAndCreateReferral(userId: string): Promise<IApiResponse> {
+    // Check if user already has a referral code
+    const existingReferral = await this.referralRepository.findOne({
+      where: { owner: { id: userId } }
+    });
+
+    if (existingReferral) {
+      return {
+        status: true,
+        message: 'User already has a referral code',
+        data: existingReferral
+      };
+    }
+
     // Generate a unique referral code
     let referralCode = generateReferralCode();
     let isUnique = false;

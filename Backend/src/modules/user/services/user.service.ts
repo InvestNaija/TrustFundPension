@@ -52,10 +52,10 @@ export class UserService {
     const user = await this.userRepository.findOne({ 
       where: { id },
       relations: [
-        'employer',
+        'employers',
         'userRoles',
         'bvnData',
-        'nok',
+        'noks',
         'referrals',
         'referred',
         'media'

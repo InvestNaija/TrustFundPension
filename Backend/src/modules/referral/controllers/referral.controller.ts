@@ -22,6 +22,14 @@ export class ReferralController {
     return this.referralService.generateAndCreateReferral(authenticatedUser.id);
   }
 
+  @ApiOperation({ summary: 'Get referral code for authenticated user' })
+  @ApiResponse({ status: 200, description: 'Return user referral code', type: Referral })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get('my-code')
+  getMyReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return this.referralService.getUserReferralCode(authenticatedUser.id);
+  }
+
   @ApiOperation({ summary: 'Create new referral' })
   @ApiResponse({ status: 201, description: 'Referral created successfully', type: Referral })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -67,13 +75,5 @@ export class ReferralController {
   @Delete(':id')
   remove(@Param('id') id: string, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.remove(id, authenticatedUser.id);
-  }
-
-  @ApiOperation({ summary: 'Get referral code for authenticated user' })
-  @ApiResponse({ status: 200, description: 'Return user referral code', type: Referral })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @Get('my-code')
-  getMyReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
-    return this.referralService.getUserReferralCode(authenticatedUser.id);
   }
 } 

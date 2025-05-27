@@ -227,6 +227,16 @@ spec:
                 secretKeyRef:
                   name: backend.depl
                   key: VERIFYME_SECRET_KEY
+            - name: SUPPORT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: SUPPORT_EMAIL
+            - name: SUPPORT_PHONE
+              valueFrom:
+                secretKeyRef:
+                  name: backend.depl
+                  key: SUPPORT_PHONE
 ---
 apiVersion: v1
 kind: Service

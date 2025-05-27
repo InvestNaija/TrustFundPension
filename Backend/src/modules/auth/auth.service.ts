@@ -36,6 +36,7 @@ import {
   IEmailRequest,
   ISmsRequest,
 } from '../third-party-services/trustfund/types';
+import { ReferralService } from '../referral/services';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +45,8 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly trustFundService: TrustFundService
+    private readonly trustFundService: TrustFundService,
+    private readonly referralService: ReferralService,
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
@@ -60,17 +62,42 @@ export class AuthService {
     if (!hashedPassword) {
       throw new BadRequestException('Failed to hash password');
     }
-    const { ...userData } = dto;
+
+    // Validate referral code if provided
+    let referrerId: string | undefined;
+    if (dto.referralCode) {
+      try {
+        const referral = await this.referralService.validateAndFindReferralCode(dto.referralCode);
+        referrerId = referral.owner.id;
+      } catch (error) {
+        throw new BadRequestException('Invalid referral code');
+      }
+    }
+
+    const { referralCode, ...userData } = dto;
     const user = await this.userService.create({
       ...userData,
       password: hashedPassword,
       account_type: dto.accountType || undefined,
     });
 
+    // Generate referral code for the new user
+    const referralResponse = await this.referralService.generateAndCreateReferral(user.id);
+
+    // If user was referred, update the referral with the referrer
+    if (referrerId) {
+      await this.referralService.update(referralResponse.data.id, {
+        referrer: referrerId
+      }, user.id);
+    }
+
     return {
       status: true,
       message: 'Registration successful! Please verify your account',
-      data: user,
+      data: {
+        ...user,
+        referralCode: referralResponse.data.code
+      },
     };
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Referral } from '../entities';
 import { CreateReferralDto, UpdateReferralDto } from '../dto';
@@ -6,6 +6,7 @@ import { UserService } from '../../user/services';
 import { User } from '../../user/entities';
 import { ReferralRepository } from '../repositories';
 import { IApiResponse } from 'src/shared/types';
+import { generateReferralCode } from 'src/shared/utils/referral.util';
 
 @Injectable()
 export class ReferralService {
@@ -14,6 +15,62 @@ export class ReferralService {
     private readonly referralRepository: ReferralRepository,
     private readonly userService: UserService,
   ) {}
+
+  async validateAndFindReferralCode(code: string): Promise<Referral> {
+    const referral = await this.referralRepository.findOne({
+      where: { code },
+      relations: ['owner'],
+    });
+
+    if (!referral) {
+      throw new BadRequestException('Invalid referral code');
+    }
+
+    return referral;
+  }
+
+  async generateAndCreateReferral(userId: string): Promise<IApiResponse> {
+    // Check if user already has a referral code
+    const existingReferral = await this.referralRepository.findOne({
+      where: { owner: { id: userId } }
+    });
+
+    if (existingReferral) {
+      return {
+        status: true,
+        message: 'User already has a referral code',
+        data: existingReferral
+      };
+    }
+
+    // Generate a unique referral code
+    let referralCode = generateReferralCode();
+    let isUnique = false;
+    
+    while (!isUnique) {
+      // Check if code already exists
+      const existingReferral = await this.referralRepository.findOne({
+        where: { code: referralCode }
+      });
+      if (!existingReferral) {
+        isUnique = true;
+      } else {
+        referralCode = generateReferralCode();
+      }
+    }
+
+    // Create the referral
+    const referral = await this.referralRepository.save({
+      code: referralCode,
+      owner: { id: userId } as User,
+    });
+
+    return {
+      status: true,
+      message: 'Referral code generated successfully',
+      data: referral
+    };
+  }
 
   async create(createReferralDto: CreateReferralDto): Promise<IApiResponse> {
     const owner = await this.userService.findOne(createReferralDto.owner) as User;
@@ -130,6 +187,24 @@ export class ReferralService {
       status: true,
       message: 'Referral deleted successfully',
       data: {}
+    };
+  }
+
+  async getUserReferralCode(userId: string): Promise<IApiResponse> {
+    const referral = await this.referralRepository.findOne({
+      where: { owner: { id: userId } },
+      relations: ['owner', 'referrer'],
+    });
+
+    if (!referral) {
+      // If no referral code exists, generate one
+      return this.generateAndCreateReferral(userId);
+    }
+
+    return {
+      status: true,
+      message: 'Referral code retrieved successfully',
+      data: referral
     };
   }
 } 

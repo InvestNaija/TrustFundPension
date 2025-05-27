@@ -85,4 +85,9 @@ export class SignupUserDto {
   @IsEnum(ACCOUNT_TYPE)
   @IsOptional()
   accountType?: ACCOUNT_TYPE;
+
+  @ApiProperty({ required: false, description: 'Referral code of the user who referred this user' })
+  @IsString()
+  @IsOptional()
+  referralCode?: string;
 } 

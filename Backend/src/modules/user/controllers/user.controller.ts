@@ -24,7 +24,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({ status: 200, description: 'User retrieved successfully', type: UserResponseDto })
   async findOne( @AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<UserResponseDto> {
-    return this.userService.findOne(authenticatedUser.id);
+    return this.userService.findOneUser(authenticatedUser.id);
   }
 
   @Get('status')

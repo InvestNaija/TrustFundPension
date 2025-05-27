@@ -48,7 +48,7 @@ export class UserService {
     return this.mapToResponseDto(savedUser);
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOneUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ 
       where: { id },
       relations: [
@@ -58,6 +58,19 @@ export class UserService {
         'noks',
         'referrals',
         'referred',
+        'media'
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ 
+      where: { id },
+      relations: [
         'media'
       ],
     });
@@ -77,7 +90,7 @@ export class UserService {
       'signature': false,
     };
     
-    const user = await this.findOne(id);
+    const user = await this.findOneUser(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }

@@ -52,10 +52,14 @@ export class UserService {
     const user = await this.userRepository.findOne({ 
       where: { id },
       relations: [
-        'employers',
-        'media',
-        'noks',
-      ]
+        'employer',
+        'userRoles',
+        'bvnData',
+        'nok',
+        'referrals',
+        'referred',
+        'media'
+      ],
     });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

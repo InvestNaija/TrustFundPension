@@ -68,4 +68,12 @@ export class ReferralController {
   remove(@Param('id') id: string, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.remove(id, authenticatedUser.id);
   }
+
+  @ApiOperation({ summary: 'Get referral code for authenticated user' })
+  @ApiResponse({ status: 200, description: 'Return user referral code', type: Referral })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get('my-code')
+  getMyReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return this.referralService.getUserReferralCode(authenticatedUser.id);
+  }
 } 

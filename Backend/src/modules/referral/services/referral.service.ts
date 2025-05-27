@@ -189,4 +189,22 @@ export class ReferralService {
       data: {}
     };
   }
+
+  async getUserReferralCode(userId: string): Promise<IApiResponse> {
+    const referral = await this.referralRepository.findOne({
+      where: { owner: { id: userId } },
+      relations: ['owner', 'referrer'],
+    });
+
+    if (!referral) {
+      // If no referral code exists, generate one
+      return this.generateAndCreateReferral(userId);
+    }
+
+    return {
+      status: true,
+      message: 'Referral code retrieved successfully',
+      data: referral
+    };
+  }
 } 

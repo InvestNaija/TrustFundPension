@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional, IsDate } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsDate, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
@@ -67,4 +67,19 @@ export class UpdateUserDto {
   @IsOptional()
   @IsDate()
   otpCodeExpiry?: Date | null;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isOnboarded?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsDate()
+  @IsOptional()
+  onboardingDate?: Date;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  bvn?: string;
 } 

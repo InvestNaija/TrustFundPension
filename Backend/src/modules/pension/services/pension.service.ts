@@ -18,6 +18,7 @@ import { FundTransfer } from '../entities/fund-transfer.entity';
 import { CreateFundTransferDto, FundTransferResponseDto } from '../dto/fund-transfer.dto';
 import { plainToClass } from 'class-transformer';
 import { IsNull } from 'typeorm';
+import { BVNData } from '../../user/entities';
 
 @Injectable()
 export class PensionService {
@@ -26,6 +27,8 @@ export class PensionService {
     private readonly userService: UserService,
     @InjectRepository(FundTransfer)
     private readonly fundTransferRepository: Repository<FundTransfer>,
+    @InjectRepository(BVNData)
+    private readonly bvnDataRepository: Repository<BVNData>,
   ) {}
 
   async sendEmail(data: EmailRequestDto) {
@@ -417,5 +420,135 @@ export class PensionService {
         excludeExtraneousValues: true,
       }),
     };
+  }
+
+  async completeOnboarding(userId: string): Promise<IApiResponse> {
+    try {
+      const user = await this.userService.findOne(userId);
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (user.isOnboarded) {
+        throw new BadRequestException('User is already onboarded');
+      }
+
+      const bvnData = await this.bvnDataRepository.findOne({
+        select: ['id', 'bvnResponse'],
+        where: {
+          bvn: user.bvn
+        }
+      });
+      if (!bvnData) {
+        throw new BadRequestException('BVN data not found');
+      }
+
+      if (!user.firstName || !user.lastName || !user.gender || !user.dob || !user.phone || 
+          !user.email || !user.stateOfPosting || !user.lgaOfPosting || !user.bvn || !user.noks || !user.employers) {
+        throw new BadRequestException('Please complete your profile information before onboarding');
+      }
+
+      const nok = user.noks?.[0];
+      if (!nok.addresses?.[0]) {
+        throw new BadRequestException('Next of Kin address is required');
+      }
+
+      const employer = user.employers?.[0];
+      if (!employer.addresses?.[0]) {
+        throw new BadRequestException('Employer address is required');
+      }
+
+      const nokAddress = nok.addresses?.[0];
+      const employerAddress = employer.addresses?.[0];
+
+      const onboardingRequest: ICustomerOnboardingRequest = {
+        formRefno: `ONB-${Date.now()}`,
+        schemeId: '1',
+        ssn: '1',
+        title: user.gender.toLowerCase() === 'male' ? 'Mr' : 'Mrs',
+        surname: user.lastName,
+        firstname: user.firstName,
+        othernames: user.middleName || '',
+        gender: user.gender,
+        dateOfBirth: user.dob,
+        maritalStatusCode: 'Single',
+        mobilePhone: user.phone,
+        email: user.email,
+        permanentAddress: bvnData.bvnResponse.residential_address || '',
+        permanentAddressLocation: bvnData.bvnResponse.residential_address || '',
+        permState: bvnData.bvnResponse.state_of_residence || '',
+        permLga: bvnData.bvnResponse.lga_of_residence || '',
+        bankName: '',
+        accountNumber: '',
+        accountName: `${user.firstName} ${user.lastName}`,
+        bvn: user.bvn,
+        employerType: 'Private',
+        employerRcno: employer.rcNumber,
+        dateOfFirstApointment: new Date().toISOString().split('T')[0],
+        employerLocation: employerAddress.streetName,
+        employerCountry: employerAddress.countryCode,
+        employerStatecode: employerAddress.state,
+        employerLga: employerAddress.lgaCode,
+        employerCity: employerAddress.city,
+        employerBusiness: employer.natureOfBusiness || '',
+        employerAddress1: employerAddress.streetName || '',
+        employerAddress: employerAddress.streetName || '',
+        employerZip: employerAddress.zipCode || '',
+        employerBox: employerAddress.houseNumber || '',
+        employerPhone: employer.phoneNumber || '',
+        nokTitle: nok.gender.toLowerCase() === 'male' ? 'Mr' : 'Mrs',
+        nokName: nok.firstName + ' ' + nok.lastName,
+        nokSurname: nok.lastName,
+        nokGender: nok.gender,
+        nokRelationship: nok.relationship,
+        nokLocation: nokAddress.streetName || '',
+        nokCountry: nokAddress.countryCode || '',
+        nokStatecode: nokAddress.state || '',
+        nokLga: nokAddress.lgaCode || '',
+        nokCity: nokAddress.city || '',
+        nokOthername: nok.middleName || '',
+        nokAddress1: nokAddress.streetName || '',
+        nokAddress: nokAddress.streetName || '',
+        nokZip: nokAddress.zipCode || '',
+        nokEmailaddress: nok.email || '',
+        nokBox: nokAddress.houseNumber || '',
+        nokMobilePhone: nok.phone || '',
+        pictureImage: '',
+        formImage: '',
+        signatureImage: '',
+        placeOfBirth: bvnData.bvnResponse.place_of_birth || '',
+        nationalityCode: 'NGA',
+        stateOfOrigin: bvnData.bvnResponse.state_of_origin || '',
+        lgaCode: bvnData.bvnResponse.lga_of_origin || '',
+        permCountry: 'NG',
+        permCity: bvnData.bvnResponse.lga_of_residence || '',
+        permBox: '',
+        permanentAddress1: bvnData.bvnResponse.residential_address || '',
+        permZip: '',
+        stateOfPosting: bvnData.bvnResponse.state_of_residence || '',
+        agentCode: '1',
+        maidenName: '',
+      };
+
+      const response = await this.trustFundService.customerOnboarding(onboardingRequest);
+
+      await this.userService.update(userId, {
+        isOnboarded: true,
+        onboardingDate: new Date(),
+      });
+
+      return {
+        status: true,
+        message: 'Customer onboarding completed successfully',
+        data: response,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new UnprocessableEntityException(
+        error.response?.message || 'Failed to complete customer onboarding',
+      );
+    }
   }
 } 

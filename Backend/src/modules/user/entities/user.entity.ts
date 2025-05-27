@@ -124,4 +124,10 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Referral, referral => referral.referrer)
   referred: Referral[];
+
+  @Column({ name: 'is_onboarded', default: false })
+  isOnboarded: boolean;
+
+  @Column({ name: 'onboarding_date', type: 'timestamptz', nullable: true })
+  onboardingDate: Date | null;
 }

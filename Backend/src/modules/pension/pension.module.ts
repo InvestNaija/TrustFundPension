@@ -7,10 +7,11 @@ import { ThirdPartyServicesModule } from '../third-party-services';
 import { FundTransfer } from './entities/fund-transfer.entity';
 import { FundTransferController } from './controllers/fund-transfer.controller';
 import { FundTransferService } from './services/fund-transfer.service';
+import { BVNData } from '../user/entities';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([FundTransfer]),
+    TypeOrmModule.forFeature([FundTransfer, BVNData]),
     UserModule,
     ThirdPartyServicesModule,
   ],

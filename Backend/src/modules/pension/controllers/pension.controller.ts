@@ -84,13 +84,13 @@ export class PensionController {
     return await this.pensionService.getSummary(authenticatedUser.id);
   }
 
-  @Post('onboarding')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Customer onboarding' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarded successfully' })
-  async customerOnboarding(@Body() data: CustomerOnboardingRequestDto): Promise<IApiResponse> {
-    return await this.pensionService.customerOnboarding(data);
-  }
+  // @Post('onboarding')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: 'Customer onboarding' })
+  // @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarded successfully' })
+  // async customerOnboarding(@Body() data: CustomerOnboardingRequestDto): Promise<IApiResponse> {
+  //   return await this.pensionService.customerOnboarding(data);
+  // }
 
   @Get('generate-report')
   @UseGuards(JwtAuthGuard)
@@ -139,5 +139,13 @@ export class PensionController {
     @Body() dto: CreateFundTransferDto,
   ): Promise<IApiResponse> {
     return await this.pensionService.createFundTransfer(authenticatedUser.id, dto);
+  }
+
+  @Post('onboarding')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Customer onboarding' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarding completed successfully' })
+  async customerOnboarding(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
+    return await this.pensionService.completeOnboarding(authenticatedUser.id);
   }
 } 

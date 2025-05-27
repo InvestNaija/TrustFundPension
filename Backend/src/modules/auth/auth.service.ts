@@ -36,6 +36,7 @@ import {
   IEmailRequest,
   ISmsRequest,
 } from '../third-party-services/trustfund/types';
+import { ReferralService } from '../referral/services';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +45,8 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly trustFundService: TrustFundService
+    private readonly trustFundService: TrustFundService,
+    private readonly referralService: ReferralService,
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
@@ -66,6 +68,9 @@ export class AuthService {
       password: hashedPassword,
       account_type: dto.accountType || undefined,
     });
+
+    // Generate referral code for the new user
+    await this.referralService.generateAndCreateReferral(user.id);
 
     return {
       status: true,

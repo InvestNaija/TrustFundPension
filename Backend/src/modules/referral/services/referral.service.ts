@@ -6,6 +6,7 @@ import { UserService } from '../../user/services';
 import { User } from '../../user/entities';
 import { ReferralRepository } from '../repositories';
 import { IApiResponse } from 'src/shared/types';
+import { generateReferralCode } from 'src/shared/utils/referral.util';
 
 @Injectable()
 export class ReferralService {
@@ -14,6 +15,36 @@ export class ReferralService {
     private readonly referralRepository: ReferralRepository,
     private readonly userService: UserService,
   ) {}
+
+  async generateAndCreateReferral(userId: string): Promise<IApiResponse> {
+    // Generate a unique referral code
+    let referralCode = generateReferralCode();
+    let isUnique = false;
+    
+    while (!isUnique) {
+      // Check if code already exists
+      const existingReferral = await this.referralRepository.findOne({
+        where: { code: referralCode }
+      });
+      if (!existingReferral) {
+        isUnique = true;
+      } else {
+        referralCode = generateReferralCode();
+      }
+    }
+
+    // Create the referral
+    const referral = await this.referralRepository.save({
+      code: referralCode,
+      owner: { id: userId } as User,
+    });
+
+    return {
+      status: true,
+      message: 'Referral code generated successfully',
+      data: referral
+    };
+  }
 
   async create(createReferralDto: CreateReferralDto): Promise<IApiResponse> {
     const owner = await this.userService.findOne(createReferralDto.owner) as User;

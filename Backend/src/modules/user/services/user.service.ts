@@ -53,8 +53,8 @@ export class UserService {
       where: { id },
       relations: [
         'employers',
-        'userRoles',
-        'bvnData',
+        // 'userRole',
+        // 'bvnData',
         'noks',
         'referrals',
         'referred',

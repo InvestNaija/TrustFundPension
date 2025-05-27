@@ -214,6 +214,7 @@ export class AuthService {
 
     const isValidPassword = await verifyPassword(dto.password, user.password);
     if (!isValidPassword) {
+      await this.sendFailedLoginNotification(user);
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -228,14 +229,20 @@ export class AuthService {
 
     const signedUrls = await this.userService.generateSignedUrlsForUserFiles(user);
 
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString();
+    const formattedTime = now.toLocaleTimeString();
+
     await this.trustFundService.sendEmail({
       to: user.email,
-      subject: 'Welcome Back!',
+      subject: 'Trustfund Login Notification',
       body: `
-        <h2>Welcome back, ${user.firstName}!</h2>
-        <p>You have successfully logged into your TrustFund Pension account.</p>
-        <p>If you did not initiate this login, please contact our support team immediately.</p>
-        <p>Best regards,<br>TrustFund Pension Team</p>
+        <h2>Hello ${user.firstName},</h2>
+        <p>You successfully logged into your Trustfund Mobile app on ${formattedDate} at ${formattedTime}.</p>
+        <p>If you did not initiate this session, please contact our Support Team immediately on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}</p>
+        <p><strong>Please note:</strong> Never share your password with anyone. Create passwords that are hard to guess and don't include personal information in your password.</p>
+        <p>Thank you for choosing Trustfund Pensions</p>
+        <p><em><strong>This is an automated message, please do not reply directly to the email.</strong></em></p>
       `,
     }).catch((error) => {
       this.logger.error(`Failed to send welcome email: ${error.message}`);
@@ -288,8 +295,14 @@ export class AuthService {
     if (dto.method === VerificationMethod.EMAIL) {
       this.sendEmailVerificationOTP({
         to: user.email,
-        subject: 'Password Reset',
-        body: `Hello ${user.firstName}, your password reset code is: ${otpCode}. Please use this code to reset your password.`,
+        subject: 'Password reset',
+        body: `
+          <h2>Hello ${user.firstName}</h2>
+          <p>Below is your one-time passcode below to reset your password.</p>
+          <h1 style="font-size: 24px; font-weight: bold; text-align: center; padding: 10px; background-color: #f5f5f5; border-radius: 5px;">${otpCode}</h1>
+          <p>If you did not make this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL} right away.</p>
+          <p><em>This is an automated message; please do not reply directly to this email.</em></p>
+        `,
       });
     } else {
       this.sendSmsVerificationOTP({
@@ -395,13 +408,19 @@ export class AuthService {
     if (dto.method === VerificationMethod.EMAIL) {
       this.sendEmailVerificationOTP({
         to: user.email,
-        subject: 'Verify Your Account',
-        body: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        subject: 'Verify your email',
+        body: `
+          <h2>Hi ${user.firstName},</h2>
+          <p>Thank you for registering on the Trustfund Mobile Application.</p>
+          <p>Use the code below to complete your registration</p>
+          <h1 style="font-size: 24px; font-weight: bold; text-align: center; padding: 10px; background-color: #f5f5f5; border-radius: 5px;">${otpCode}</h1>
+          <p>Thank you.</p>
+        `,
       });
     } else {
       this.sendSmsVerificationOTP({
         msisdn: user.phone,
-        msg: `Hello ${user.firstName}, your verification code is: ${otpCode}. Please use this code to verify your account.`,
+        msg: `Your verification code is: ${otpCode}. Please do not share your code with anyone.`,
       });
     }
 
@@ -419,10 +438,22 @@ export class AuthService {
     const { otpCode, otpCodeHash, otpCodeExpiry } = generateOtpDetails();
 
     await this.userService.update(userId, { otpCodeHash, otpCodeExpiry });
-    
+
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     let message: string;
     if (dto.context === 'bvn') {
-      message = `Your BVN verification code is: ${otpCode}`;
+      message = `
+      <h2>Hi ${user.firstName},</h2>
+      <p>Your BVN validation code is <strong>${otpCode}</strong></p>
+      <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
+      <p>This token confirms that the BVN you submitted is yours.</p>
+      <p>Please do not share your token with anyone.</p>
+      <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
+    `;
     } else {
       message = `Your NIN verification code is: ${otpCode}`;
     }
@@ -431,8 +462,8 @@ export class AuthService {
       if (!dto.email) throw new BadRequestException('Email is required');
       await this.trustFundService.sendEmail({
         to: dto.email,
-        subject: 'Verification Code',
-        body: message,
+        subject: `${dto.context.toUpperCase()} Validation Token`,
+        body: message
       });
     } else {
       if (!dto.phone) throw new BadRequestException('Phone is required');
@@ -531,5 +562,26 @@ export class AuthService {
       .catch((error) => {
         this.logger.error(`Failed to send SMS verification OTP: ${error.message}`);
       });
+  }
+
+  private async sendFailedLoginNotification(user: any): Promise<void> {
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString();
+    const formattedTime = now.toLocaleTimeString();
+
+    await this.trustFundService.sendEmail({
+      to: user.email,
+      subject: 'Login Unsuccessful',
+      body: `
+        <h2>Hello ${user.firstName},</h2>
+        <p>Your login attempt on ${formattedTime} at ${formattedDate} was unsuccessful.</p>
+        <p>If you did not initiate this session, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL} immediately.</p>
+        <p><strong>Please note:</strong> Never share your password with anyone. Create passwords that are hard to guess and don't include personal information in your password.</p>
+        <p>Thank you for choosing Trustfund Pension</p>
+        <p><em><strong>This is an automated message, please do not reply directly to the email.</strong></em></p>
+      `,
+    }).catch((error) => {
+      this.logger.error(`Failed to send failed login notification: ${error.message}`);
+    });
   }
 }

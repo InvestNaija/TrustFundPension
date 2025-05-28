@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from '../services';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../dto';
+import { CreateUserDto, ListUsersDto, ListUsersResponseDto, UpdateUserDto, UserResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
@@ -18,6 +18,13 @@ export class UserController {
   @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(createUserDto);
+  }
+
+  @Get('/all')
+  @ApiOperation({ summary: 'Get paginated list of courses' })
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully',type: ListUsersResponseDto })
+  listUsers(@Query() query: ListUsersDto): Promise<IApiResponse> {
+    return this.userService.listUsers(query);
   }
 
   @Get('')

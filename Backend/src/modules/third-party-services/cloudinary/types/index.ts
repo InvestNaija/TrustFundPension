@@ -14,6 +14,10 @@ export interface IQoreIdNinResponse {
 export interface CloudinaryUploadResponse {
   public_id: string;
   secure_url: string;
+  format: string;
+  bytes: number;
+  width: number;
+  height: number;
   [key: string]: any;  // Allow other properties from UploadApiResponse
 }
 
@@ -24,6 +28,12 @@ export interface CloudinaryResponse {
     id?: string;
     service?: string;
     url?: string;
+    file_type?: string;
+    file_size?: number;
+    format?: string;
+    bytes?: number;
+    width?: number;
+    height?: number;
   };
   message?: string;
 }

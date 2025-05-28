@@ -17,12 +17,12 @@ export class CreateMediaDto {
   @IsNotEmpty()
   upload_type: UPLOAD_TYPE;
 
-  @ApiProperty({ description: 'URL of the uploaded file' })
+  @ApiProperty({ description: 'URL of the uploaded file', required: false })
   @IsString()
   @IsOptional()
-  file_url: string;
+  file_url?: string;
 
-  @ApiProperty({ description: 'Type of the file (e.g., image/jpeg, video/mp4)' })
+  @ApiProperty({ description: 'Type of the file (e.g., image/jpeg, video/mp4)', required: false })
   @IsString()
   @IsOptional()
   file_type?: string;
@@ -36,4 +36,8 @@ export class CreateMediaDto {
   @IsString()
   @IsOptional()
   tags?: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  file?: Express.Multer.File;
 } 

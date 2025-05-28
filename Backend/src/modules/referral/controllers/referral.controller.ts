@@ -14,6 +14,22 @@ import { Referral } from '../entities/referral.entity';
 export class ReferralController {
   constructor(private readonly referralService: ReferralService) {}
 
+  @ApiOperation({ summary: 'Generate a new referral code for authenticated user' })
+  @ApiResponse({ status: 201, description: 'Referral code generated successfully', type: Referral })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Post('generate')
+  generateReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return this.referralService.generateAndCreateReferral(authenticatedUser.id);
+  }
+
+  @ApiOperation({ summary: 'Get referral code for authenticated user' })
+  @ApiResponse({ status: 200, description: 'Return user referral code', type: Referral })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get('my-code')
+  getMyReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+    return this.referralService.getUserReferralCode(authenticatedUser.id);
+  }
+
   @ApiOperation({ summary: 'Create new referral' })
   @ApiResponse({ status: 201, description: 'Referral created successfully', type: Referral })
   @ApiResponse({ status: 400, description: 'Bad request' })

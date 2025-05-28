@@ -20,6 +20,8 @@ import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
 import { IApiResponse } from 'src/core/types';
 import { UPLOAD_TYPE } from 'src/core/constants';
+import { ListUsersDto } from '../dto';
+import { PageDto } from '../../../shared/dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -48,14 +50,42 @@ export class UserService {
     return this.mapToResponseDto(savedUser);
   }
 
-  async findOne(id: string): Promise<User> {
+  async listUsers(query: ListUsersDto): Promise<IApiResponse> {
+    const { users, pageMeta } =
+      await this.userRepository.listUsers(query);
+
+    return {
+      status: true,
+      message: 'Users fetched successfully',
+      data: new PageDto(users, pageMeta),
+    };
+  }
+
+  async findOneUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ 
       where: { id },
       relations: [
         'employers',
-        'media',
+        // 'userRole',
+        // 'bvnData',
         'noks',
-      ]
+        'referrals',
+        'referred',
+        'media'
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ 
+      where: { id },
+      relations: [
+        'media'
+      ],
     });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -73,7 +103,7 @@ export class UserService {
       'signature': false,
     };
     
-    const user = await this.findOne(id);
+    const user = await this.findOneUser(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }

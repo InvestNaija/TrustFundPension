@@ -1,14 +1,16 @@
 /* eslint-disable camelcase */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { v2 } from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 import {
   CloudinaryUploadResponse,
   CloudinaryResponse,
   FileParams,
 } from './types';
-import { cloudinaryConfig } from './cloudinary.config';
+import { envConfig } from '../../../core/config';
 
-v2.config(cloudinaryConfig);
+// Configure Cloudinary
+const cloudinaryUrl = `cloudinary://${envConfig.CLOUDINARY_API_KEY}:${envConfig.CLOUDINARY_API_SECRET}@${envConfig.CLOUDINARY_CLOUD_NAME}`;
+cloudinary.config(cloudinaryUrl);
 
 @Injectable()
 export class CloudinaryService {
@@ -16,7 +18,11 @@ export class CloudinaryService {
   async upload(file: Express.Multer.File): Promise<CloudinaryResponse> {
     try {
       const uploaded = await new Promise<CloudinaryUploadResponse>((resolve, reject) => {
-        const uploadStream = v2.uploader.upload_stream(
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'auto',
+            folder: 'trustfund'
+          },
           (error, result) => {
             if (error) {
               reject(error);
@@ -38,6 +44,12 @@ export class CloudinaryService {
           id: uploaded.public_id,
           service: 'cloudinary',
           url: uploaded.secure_url,
+          file_type: file.mimetype,
+          file_size: file.size,
+          format: uploaded.format,
+          bytes: uploaded.bytes,
+          width: uploaded.width,
+          height: uploaded.height
         },
       };
     } catch (error) {
@@ -54,7 +66,7 @@ export class CloudinaryService {
 
   async delete(publicId: { id: string }): Promise<CloudinaryResponse> {
     try {
-      await v2.api.delete_resources([publicId.id]);
+      await cloudinary.api.delete_resources([publicId.id]);
       return {
         success: true,
         status: 200,

@@ -30,6 +30,7 @@ export interface ISmsResponse {
 export interface IFundType {
   scheme_ID: string;
   scheme_name: string;
+  price: string;
 }
 
 export interface IContribution {

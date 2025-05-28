@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user';
 import { ThirdPartyServicesModule } from '../third-party-services';
+import { ReferralModule } from '../referral';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { ThirdPartyServicesModule } from '../third-party-services';
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY },
     }),
     UserModule,
-    ThirdPartyServicesModule
+    ThirdPartyServicesModule,
+    ReferralModule
   ],
   controllers: [AuthController],
   providers: [AuthService],

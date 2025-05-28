@@ -230,12 +230,12 @@ spec:
             - name: SUPPORT_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: backend.depl
+                  name: common.depl
                   key: SUPPORT_EMAIL
             - name: SUPPORT_PHONE
               valueFrom:
                 secretKeyRef:
-                  name: backend.depl
+                  name: common.depl
                   key: SUPPORT_PHONE
 ---
 apiVersion: v1

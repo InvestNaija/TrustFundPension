@@ -120,10 +120,10 @@ export class User extends AbstractEntity {
   userRoles: UserRole[];
 
   @OneToMany(() => Referral, referral => referral.owner)
-  referrals: Referral[];
+  referrals: Referral;
 
   @OneToMany(() => Referral, referral => referral.referrer)
-  referred: Referral[];
+  referred: Referral;
 
   @Column({ name: 'is_onboarded', default: false })
   isOnboarded: boolean;

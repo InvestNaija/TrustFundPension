@@ -20,6 +20,8 @@ import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
 import { IApiResponse } from 'src/core/types';
 import { UPLOAD_TYPE } from 'src/core/constants';
+import { ListUsersDto } from '../dto';
+import { PageDto } from '../../../shared/dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -46,6 +48,17 @@ export class UserService {
     
     const savedUser = await this.userRepository.save(user);
     return this.mapToResponseDto(savedUser);
+  }
+
+  async listUsers(query: ListUsersDto): Promise<IApiResponse> {
+    const { users, pageMeta } =
+      await this.userRepository.listUsers(query);
+
+    return {
+      status: true,
+      message: 'Users fetched successfully',
+      data: new PageDto(users, pageMeta),
+    };
   }
 
   async findOneUser(id: string): Promise<User> {

@@ -242,7 +242,11 @@ export class UserService {
       }
 
       await this.userRepository.update({ id: userId }, {
-        bvn
+        bvn,
+        gender: existingBvnData.bvnResponse.gender,
+        dob: existingBvnData.bvnResponse.birthdate,
+        stateOfPosting: existingBvnData.bvnResponse.state_of_residence,
+        lgaOfPosting: existingBvnData.bvnResponse.lga_of_residence,
       });
     } catch (error) {
       throw new UnprocessableEntityException('Could not verify BVN');

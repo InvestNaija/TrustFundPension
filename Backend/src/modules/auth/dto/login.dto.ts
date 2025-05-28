@@ -10,7 +10,7 @@ export class LoginDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{10}$/, { message: 'RSA PIN must be 10 digits' })
+  // @Matches(/^\d{10}$/, { message: 'RSA PIN must be 10 digits' })
   rsaPin?: string;
 
   @IsOptional()

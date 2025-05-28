@@ -23,7 +23,7 @@ export class UserController {
   @Get('/all')
   @ApiOperation({ summary: 'Get paginated list of courses' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully',type: ListUsersResponseDto })
-  listCourses(@Query() query: ListUsersDto): Promise<IApiResponse> {
+  listUsers(@Query() query: ListUsersDto): Promise<IApiResponse> {
     return this.userService.listUsers(query);
   }
 

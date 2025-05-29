@@ -119,7 +119,7 @@ export class User extends AbstractEntity {
   @OneToMany(() => UserRole, ur => ur.user)
   userRoles: UserRole[];
 
-  @OneToMany(() => Referral, referral => referral.owner)
+  @OneToOne(() => Referral, referral => referral.owner)
   referrals: Referral;
 
   @OneToMany(() => Referral, referral => referral.referrer)

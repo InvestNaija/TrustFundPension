@@ -8,8 +8,6 @@ import { PageMetaDto } from '../../../shared/dto';
 
 @Injectable()
 export class UserRepository extends AbstractRepository<User> {
-  private readonly logger = new Logger(UserRepository.name);
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,

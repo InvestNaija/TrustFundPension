@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { AbstractEntity } from '../../../core/database';
 import { User } from '../../user/entities/user.entity';
 
@@ -7,7 +7,7 @@ export class Referral extends AbstractEntity {
   @Column({ unique: true })
   code: string;
 
-  @ManyToOne(() => User, user => user.referrals, { eager: true })
+  @OneToOne(() => User, user => user.referrals)
   @JoinColumn({ name: 'owner_id' })
   owner: User;
 

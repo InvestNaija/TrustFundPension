@@ -15,6 +15,7 @@ import { AuthModule } from './modules/auth';
 import { ReferralModule } from './modules/referral';
 import { ContactUsModule } from './modules/contact-us';
 import { MediaModule } from './modules/media';
+import { BranchModule } from './modules/branch/branch.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MediaModule } from './modules/media';
     ReferralModule,
     ContactUsModule,
     MediaModule,
+    BranchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

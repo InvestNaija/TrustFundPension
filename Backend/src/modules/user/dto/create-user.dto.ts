@@ -38,15 +38,15 @@ export class CreateUserDto {
   @IsNotEmpty()
   email: string;
   
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  dob: string;
+  @ApiProperty({ required: false })
+  @IsString() 
+  @IsOptional()
+  dob?: string;
   
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  gender: string;
+  @IsOptional()
+  gender?: string;
   
   @ApiProperty()
   @IsString()

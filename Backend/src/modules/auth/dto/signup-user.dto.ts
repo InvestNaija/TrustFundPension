@@ -71,15 +71,15 @@ export class SignupUserDto {
   @IsNotEmpty()
   phone: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  gender: string;
+  gender?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsDateString()
-  @IsNotEmpty()
-  dob: string;
+  dob?: string;
 
   @ApiProperty({ enum: ACCOUNT_TYPE, required: false })
   @IsEnum(ACCOUNT_TYPE)

@@ -200,6 +200,12 @@ export interface IGenerateReportRequest {
   fromDate: string;
 }
 
+export interface IUnremittedContributionsRequest {
+  pin: string;
+  toDate: string;
+  fromDate: string;
+}
+
 export interface IWelcomeLetterRequest {
   pin: string;
 }

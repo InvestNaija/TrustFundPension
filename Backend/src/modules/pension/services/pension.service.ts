@@ -183,6 +183,24 @@ export class PensionService {
     }
   }
 
+  async generateUnremittedContributions(query: GenerateReportQueryDto, userId: string) {
+    try {
+      const user = await this.userService.findOne(userId);
+      if (!user) {
+        throw new UnprocessableEntityException('User not found');
+      }
+
+      const data = {
+        pin: user.pen,
+        fromDate: query.fromDate,
+        toDate: query.toDate,
+      };
+      return await this.trustFundService.generateUnremittedContributions(data);
+    } catch (error) {
+      throw new UnprocessableEntityException('Failed to generate unremitted contributions');
+    }
+  }
+
   async generateWelcomeLetter(userId: string) {
     try {
       const user = await this.userService.findOne(userId);

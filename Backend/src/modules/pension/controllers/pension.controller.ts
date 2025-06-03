@@ -141,6 +141,20 @@ export class PensionController {
     return await this.pensionService.createFundTransfer(authenticatedUser.id, dto);
   }
 
+  @Get('unremitted-contributions')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Generate unremitted contributions' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Unremitted contributions generated successfully' })
+  async generateUnremittedContributions(@Query() query: GenerateReportQueryDto, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response){
+      const buffer = await this.pensionService.generateUnremittedContributions(query, authenticatedUser.id);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=unremitted-contributions.pdf',
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
   @Post('onboarding')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })

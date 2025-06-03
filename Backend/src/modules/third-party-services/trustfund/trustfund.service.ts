@@ -18,6 +18,7 @@ import {
   ICustomerOnboardingRequest,
   IGenerateReportRequest,
   IWelcomeLetterRequest,
+  IUnremittedContributionsRequest,
 } from './types';
 
 @Injectable()
@@ -266,6 +267,37 @@ export class TrustFundService {
     } catch (error) {
       this.logger.error('Error generating welcome letter:', error);
       throw new UnprocessableEntityException('Could not generate welcome letter');
+    }
+  }
+
+  async generateUnremittedContributions(data: IUnremittedContributionsRequest): Promise<Buffer> {
+    try {
+      const loginUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/auth/login`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
+      };
+      
+      return this.httpRequest.makeRequest({
+        method: 'POST',
+        url: loginUrl,
+        headers,
+      }).then(response => {
+        const unremittedContributionsUrl = `${envConfig.TRUSTFUND_BASE_URL}pensionserver-web/rest/partnerservice/contribution/generate-list/missing-month-by-pin`;
+        return this.httpRequest.makeRequest({
+          method: 'POST',
+          url: unremittedContributionsUrl,
+          data,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': response.authorization
+          },
+          responseType: 'arraybuffer'
+        }).then(response => Buffer.from(response));
+      });
+    } catch (error) {
+      this.logger.error('Error generating unremitted contributions:', error);
+      throw new UnprocessableEntityException('Could not generate unremitted contributions');
     }
   }
 

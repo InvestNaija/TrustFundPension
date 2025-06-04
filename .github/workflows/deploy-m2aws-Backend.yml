@@ -3,7 +3,7 @@ name: Deploy Backend-Master To AWS
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
     paths:
       - 'Backend/**'
 

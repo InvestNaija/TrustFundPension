@@ -3,7 +3,7 @@ name: Deploy WebAdmin-Master To AWS
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
     paths:
       - 'Frontend/web/admin/**'
 

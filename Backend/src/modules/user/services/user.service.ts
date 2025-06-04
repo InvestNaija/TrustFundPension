@@ -169,6 +169,14 @@ export class UserService {
   
       // Sorting
       queryBuilder.orderBy('user.createdAt', 'DESC');
+
+      // Add relations
+      queryBuilder
+        .leftJoinAndSelect('user.employers', 'employers')
+        .leftJoinAndSelect('user.noks', 'noks')
+        .leftJoinAndSelect('user.referrals', 'referrals')
+        .leftJoinAndSelect('user.referred', 'referred')
+        .leftJoinAndSelect('user.media', 'media');
   
       // Pagination
       const total = await queryBuilder.getCount();

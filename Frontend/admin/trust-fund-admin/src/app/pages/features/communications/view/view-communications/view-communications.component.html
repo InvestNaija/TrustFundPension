@@ -1,0 +1,79 @@
+<main class="">
+  <section>
+    <div class="title-container mt-[64px]">
+      <h1 class="header1">Communications</h1>
+    </div>
+    <div
+      class="tab-filter-container flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row justify-between items-center gap-y-3 mt-[24px]"
+    >
+      <div class="tab-container">
+        <div
+          class="flex flex-row border border-[#F0F0F0] bg-[#F5F5F5] rounded-[10px] gap-2 px-[4px] py-[3px] text-nowrap"
+        >
+          <button
+            class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+            [class.tab--btn]="currentTab == 'faqs'"
+            (click)="tabChange('faqs')"
+          >
+            FAQs
+          </button>
+
+          <button
+          class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+          [class.tab--btn]="currentTab == 'promotions'"
+          (click)="tabChange('promotions')"
+        >
+         Promotions
+        </button>
+
+          <button
+            class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+            [class.tab--btn]="currentTab == 'contact'"
+            (click)="tabChange('contact')"
+          >
+            Contact
+          </button>
+          <button
+          class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+          [class.tab--btn]="currentTab == 'notifications'"
+          (click)="tabChange('notifications')"
+        >
+       Notifications
+        </button>
+        <button
+        class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+        [class.tab--btn]="currentTab == 'branch'"
+        (click)="tabChange('branch')"
+      >
+     Branch Locator
+      </button>
+        </div>
+      </div>
+
+      <div class="filter-container">
+        <div class="flex flex-row gap-3 items-center">
+          <div class="save-button ml-0">
+          <button class="cursor-pointer border border-[#013355] rounded-lg bg-[#013355] p-[8px] text-white text-xs font-medium leading-[18px] tracking-[0.12px] outline-none"
+          (click)="create(currentTab)"><span class="flex items-center">{{btnName}}</span></button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container mt-[26px] pb-[20px]">
+        @if (currentTab === 'faqs')
+        {
+          <app-faqs />
+        } @else if (currentTab === 'promotions')
+        {
+          <app-promotions />
+        } @else if (currentTab === 'contact') {
+          <app-contact />
+        } @else if (currentTab === 'notifications') {
+          <app-notifications />
+        }  @else if (currentTab === 'branch') {
+          <app-branch-locator (updated)=" branchUpdated"/>
+        }
+    </div>
+  </section>
+</main>

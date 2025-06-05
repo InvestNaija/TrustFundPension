@@ -1,0 +1,271 @@
+
+
+<div class="relative overflow-x-auto sm:rounded-lg">
+  <table class="w-full text-sm text-left rtl:text-right">
+      <thead class="text-sm text-primary leading-[22px] font-semibold bg-[#F5F5F5] text-nowrap">
+          <tr>
+              <th scope="col" class="p-4">
+                  <div class="flex items-center">
+                      <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-blue-600 bg-white border-4 border-tertiary rounded-sm focus:ring-blue-500">
+                      <label for="checkbox-all-search" class="sr-only">checkbox</label>
+                  </div>
+              </th>
+              <th scope="col" class="px-2 py-3">
+                  User ID
+              </th>
+              <th scope="col" class="px-2 py-3">
+                  Name
+              </th>
+              <th scope="col" class="px-2 py-3">
+                  Registration Date
+              </th>
+              <th scope="col" class="px-2 py-3 ">
+                 KYC Status
+              </th>
+              <th scope="col" class="px-2 py-3 ">
+               Referral Code
+             </th>
+              <th scope="col" class="px-2 py-3">
+                  Action
+              </th>
+          </tr>
+      </thead>
+      <tbody class="text-sm font-medium leading-[22px] text-primary text-nowrap">
+
+
+
+        <tr class="bg-white border-b  border-[#F5F5F5]">
+          <td class="w-4 p-4">
+              <div class="flex items-center">
+                  <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+              </div>
+          </td>
+          <td class="px-2 py-4">
+            PEN-1024
+        </td>
+          <td class="px-2 py-4">
+            <div class="flex items-center">
+              <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+              <span class="ml-2">Ebiere Osuagwu</span>
+
+          </div>
+          </td>
+          <td class="px-2 py-4">
+             Mar 28, 2025
+          </td>
+          <td class="px-2 py-4">
+            <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+             Rejected
+            </span>
+          </td>
+          <td class="px-2 py-4 ">
+             REF-XIYRJ
+          </td>
+          <td class="px-2 py-4">
+              <a (click)="openUserProfileDialog({})" class="cursor-pointer rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+          </td>
+      </tr>
+
+      <tr class="bg-white border-b  border-[#F5F5F5]">
+        <td class="w-4 p-4">
+            <div class="flex items-center">
+                <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+            </div>
+        </td>
+        <td class="px-2 py-4">
+          PEN-1024
+      </td>
+        <td class="px-2 py-4">
+          <div class="flex items-center">
+            <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+            <span class="ml-2">Ebiere Osuagwu</span>
+
+        </div>
+        </td>
+        <td class="px-2 py-4">
+           Mar 28, 2025
+        </td>
+        <td class="px-2 py-4">
+          <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+           Rejected
+          </span>
+        </td>
+        <td class="px-2 py-4 ">
+           REF-XIYRJ
+        </td>
+        <td class="px-2 py-4">
+            <a (click)="openUserProfileDialog({})" class="rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+        </td>
+    </tr>
+
+
+    <tr class="bg-white border-b  border-[#F5F5F5]">
+      <td class="w-4 p-4">
+          <div class="flex items-center">
+              <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+          </div>
+      </td>
+      <td class="px-2 py-4">
+        PEN-1024
+    </td>
+      <td class="px-2 py-4">
+        <div class="flex items-center">
+          <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+          <span class="ml-2">Ebiere Osuagwu</span>
+
+      </div>
+      </td>
+      <td class="px-2 py-4">
+         Mar 28, 2025
+      </td>
+      <td class="px-2 py-4">
+        <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+         Rejected
+        </span>
+      </td>
+      <td class="px-2 py-4 ">
+         REF-XIYRJ
+      </td>
+      <td class="px-2 py-4">
+          <a (click)="openUserProfileDialog({})" class="rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+      </td>
+  </tr>
+
+
+  <tr class="bg-white border-b  border-[#F5F5F5]">
+    <td class="w-4 p-4">
+        <div class="flex items-center">
+            <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+        </div>
+    </td>
+    <td class="px-2 py-4">
+      PEN-1024
+  </td>
+    <td class="px-2 py-4">
+      <div class="flex items-center">
+        <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+        <span class="ml-2">Ebiere Osuagwu</span>
+
+    </div>
+    </td>
+    <td class="px-2 py-4">
+       Mar 28, 2025
+    </td>
+    <td class="px-2 py-4">
+      <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+       Rejected
+      </span>
+    </td>
+    <td class="px-2 py-4 ">
+       REF-XIYRJ
+    </td>
+    <td class="px-2 py-4">
+        <a (click)="openUserProfileDialog({})" class="rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+    </td>
+</tr>
+
+
+<tr class="bg-white border-b  border-[#F5F5F5]">
+  <td class="w-4 p-4">
+      <div class="flex items-center">
+          <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+          <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+      </div>
+  </td>
+  <td class="px-2 py-4">
+    PEN-1024
+</td>
+  <td class="px-2 py-4">
+    <div class="flex items-center">
+      <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+      <span class="ml-2">Ebiere Osuagwu</span>
+
+  </div>
+  </td>
+  <td class="px-2 py-4">
+     Mar 28, 2025
+  </td>
+  <td class="px-2 py-4">
+    <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+     Rejected
+    </span>
+  </td>
+  <td class="px-2 py-4 ">
+     REF-XIYRJ
+  </td>
+  <td class="px-2 py-4">
+      <a (click)="openUserProfileDialog({})" class="rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+  </td>
+</tr>
+
+
+<tr class="bg-white border-b  border-[#F5F5F5]">
+  <td class="w-4 p-4">
+      <div class="flex items-center">
+          <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+          <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+      </div>
+  </td>
+  <td class="px-2 py-4">
+    PEN-1024
+</td>
+  <td class="px-2 py-4">
+    <div class="flex items-center">
+      <span><img [src]="'assets/images/user.png'" alt="User Image"/></span>
+      <span class="ml-2">Ebiere Osuagwu</span>
+
+  </div>
+  </td>
+  <td class="px-2 py-4">
+     Mar 28, 2025
+  </td>
+  <td class="px-2 py-4">
+    <span class="text-[#E01529] text-xs font-semibold leading-[18px] tracking-[0.12px] p-[4px] bg-[#FDECEE] rounded-sm">
+     Rejected
+    </span>
+  </td>
+  <td class="px-2 py-4 ">
+     REF-XIYRJ
+  </td>
+  <td class="px-2 py-4">
+      <a (click)="openUserProfileDialog({})" class="rounded-lg bg-[#D7EFFF] p-[8px] text-xs text-[#013355] font-medium leading-[18px] tracking-[0.12px]">View Profile</a>
+  </td>
+</tr>
+
+
+
+
+
+      </tbody>
+  </table>
+  <!-- <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
+      <span class="text-sm font-normal text-gray-500  mb-4 md:mb-0 block w-full md:inline md:w-auto">Showing <span class="font-semibold text-gray-900 ">1-10</span> of <span class="font-semibold text-gray-900">1000</span></span>
+      <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+          <li>
+              <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+          </li>
+          <li>
+              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+          </li>
+          <li>
+              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+          </li>
+          <li>
+              <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+          </li>
+          <li>
+              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+          </li>
+          <li>
+              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
+          </li>
+          <li>
+      <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+          </li>
+      </ul>
+  </nav> -->
+</div>

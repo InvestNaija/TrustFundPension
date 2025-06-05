@@ -1,0 +1,11 @@
+span.profileName {
+  border: 1px solid var(--gray-lighter);
+  background: #013355;
+  text-align: center;
+  color: #fff;
+  font-size: 32px;
+  font-style: normal;
+  letter-spacing: -0.64px;
+  padding: 16px 10px;
+  border-radius: 50px;
+}

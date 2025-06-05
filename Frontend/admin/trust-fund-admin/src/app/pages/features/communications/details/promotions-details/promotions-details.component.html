@@ -1,0 +1,90 @@
+<main class="bg-white">
+  <section>
+    <div mat-dialog-title  class="">
+      <div class="title-header flex justify-between items-center">
+        <h2
+          class="text-primary text-[18px] font-semibold  tracking-[0.18px]"
+        >
+        {{data?.create ? 'Create banner' : 'Edit banner'}}
+
+        </h2>
+        <div>
+          <div
+            class="rounded-full p-[3px] bg-[#F5F5F5] text-tertiary cursor-pointer"
+            (click)="closeDialog()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section >
+    <div class=""  mat-dialog-content>
+      <div class="form-container pb-[20px]">
+        <div class="p-[24px] rounded-lg border border-dashed border-[#D5D6D7]" >
+               <div class="flex justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <path d="M42 38V10C42 7.79981 40.2002 6 38 6H10C7.79981 6 6 7.79981 6 10V38C6 40.2002 7.79981 42 10 42H38C40.2002 42 42 40.2002 42 38ZM17 27L22 33L29 24L38 36H10L17 27Z" fill="#AEDEFE"/>
+                  </svg>
+               </div>
+               <div class="text-container flex flex-col mt-[24px]">
+                   <span class="text-center text-sm font-semibold leading-[22px] text-primary">Click to upload image</span>
+                   <span class="text-center text-xs leading-[18px] text-tertiary tracking-[0.12px]">Recommended size</span>
+                   <span class="text-center text-xs leading-[18px] text-tertiary tracking-[0.12px]">360 x 180px. JPEG or PNG only.</span>
+                   <span class="text-center text-xs leading-[18px] text-tertiary tracking-[0.12px]">Max 5MB</span>
+               </div>
+        </div>
+        <div class="form-group flex flex-col gap-1  mt-[24px]">
+          <label class="label2">Title</label>
+          <input
+          type="text"
+          id="header"
+          class="input-field placeholder-tertiary text-sm"
+          placeholder="Enter title"
+        />
+        </div>
+
+        <div class="form-group flex flex-col gap-1 mt-[24px]">
+          <label class="label2">Body</label>
+          <textarea id="message" rows="3"
+          type="text"
+          id="header"
+          class="input-field placeholder-tertiary text-sm"
+          placeholder="Enter description"
+>
+      </textarea>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="btn-container w-full" mat-dialog-actions>
+      <!-- <button class="cancel-btn">
+        Cancel
+      </button> -->
+      <button class=" cursor-pointer border border-[#013355] rounded-lg bg-[#013355] p-[12px] text-white text-base font-semibold leading-[24px] tracking-[0.12px] outline-none w-full">
+        Upload banner
+      </button>
+  </div>
+  </section>
+</main>

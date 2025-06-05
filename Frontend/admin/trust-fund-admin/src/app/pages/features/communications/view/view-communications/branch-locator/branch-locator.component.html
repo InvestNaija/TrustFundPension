@@ -1,0 +1,36 @@
+<main>
+  <section>
+    <div class="title-body-container flex justify-center">
+         <div class="border rounded-3xl border-[#EAEAEB] w-[504px] px-[24px] pt-[16px] pb-[24px]">
+                <div class="title-container flex flex-col gap-2 py-[16px]">
+                 <span class="text-primary font-bold leading-[22px] tracking-[0.18px] text-lg">Branch Locator</span>
+                 <span class="text-tertiary text-xs leading-[18px] tracking-[0.12px] font-medium">Manage your branch locator here</span>
+                </div>
+                <mat-divider class="text-[#F0F0F0]"></mat-divider>
+                <div class="body-container mt-[40px]">
+                  @for (branch of branchList; track branch.id) {
+                   <div class="flex justify-between items-center mb-[24px]">
+                          <div class="flex flex-col">
+                            <span class="text-xs leading-[22px] text-tertiary font-normal">{{branch?.createdAt | date}}</span>
+                            <span class="text-sm font-semibold leading-[22px] text-primary">{{branch?.name}} ({{branch?.phone}})</span>
+                            <span class="text-sm leading-[22px] text-tertiary font-normal">{{branch?.fullAddress}}</span>
+                          </div>
+                          <div>
+                            <span>
+                              <svg (click)="openBranchDialog(branch)" class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                              <path d="M10 6H6C5.46957 6 4.96086 6.21071 4.58579 6.58579C4.21071 6.96086 4 7.46957 4 8V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H16C16.5304 20 17.0391 19.7893 17.4142 19.4142C17.7893 19.0391 18 18.5304 18 18V14M14 4H20M20 4V10M20 4L10 14" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg></span>
+                          </div>
+                   </div>
+                  }
+                  <div fxLayout="row" fxLayoutAlign="start center" class="mt-2">
+                    <app-pagination-footer [currentPage]="currentPage" [totalPages]="totalItems" (pageChange)="onPageChange($event)"
+                      [selectedItemsPerPage]="itemsPerPage" (selectedItems)="updateSelectedItemsPerPage($event)"></app-pagination-footer>
+                  </div>
+
+                </div>
+         </div>
+    </div>
+  </section>
+  </main>
+

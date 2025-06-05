@@ -1,0 +1,272 @@
+<main>
+  <section>
+    <div class="title-container mt-[64px]">
+      <h1 class="header1">Fund Management</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="anlysis-container mt-[20px] pb-[24px]">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4"
+      >
+        <div class="border border-[#F5F5F5] bg-[#F5F5F5] rounded-[20px]  px-[4px] pb-[4px]" >
+        <div class="title-container py-[24px] px-[8px] flex justify-between items-center">
+          <span class="text-base font-bold leading-[24px] text-primary">Fund I</span>
+          <span>
+            <svg [matMenuTriggerFor]="menuFilter"  class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H5.01M12 12H12.01M19 12H19.01M6 12C6 12.2652 5.89464 12.5196 5.70711 12.7071C5.51957 12.8946 5.26522 13 5 13C4.73478 13 4.48043 12.8946 4.29289 12.7071C4.10536 12.5196 4 12.2652 4 12C4 11.7348 4.10536 11.4804 4.29289 11.2929C4.48043 11.1054 4.73478 11 5 11C5.26522 11 5.51957 11.1054 5.70711 11.2929C5.89464 11.4804 6 11.7348 6 12ZM13 12C13 12.2652 12.8946 12.5196 12.7071 12.7071C12.5196 12.8946 12.2652 13 12 13C11.7348 13 11.4804 12.8946 11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12C11 11.7348 11.1054 11.4804 11.2929 11.2929C11.4804 11.1054 11.7348 11 12 11C12.2652 11 12.5196 11.1054 12.7071 11.2929C12.8946 11.4804 13 11.7348 13 12ZM20 12C20 12.2652 19.8946 12.5196 19.7071 12.7071C19.5196 12.8946 19.2652 13 19 13C18.7348 13 18.4804 12.8946 18.2929 12.7071C18.1054 12.5196 18 12.2652 18 12C18 11.7348 18.1054 11.4804 18.2929 11.2929C18.4804 11.1054 18.7348 11 19 11C19.2652 11 19.5196 11.1054 19.7071 11.2929C19.8946 11.4804 20 11.7348 20 12Z" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          </span>
+          <mat-menu #menuFilter="matMenu">
+            <div
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]" (click)="openFundManagementDialog({})">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Edit</span>
+            </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Delete</span>
+            </div>
+            </button>
+            </div>
+          </mat-menu>
+        </div>
+        <div class="">
+           <div class="bg-white rounded-[16px] px-[8px] py-[24px]">
+               <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm leading-[22px] text-primary">Total amount</span>
+              <span class="font-medium text-sm leading-[22px] text-primary">N54,000,000,000</span>
+               </div>
+
+               <div class="flex justify-between items-center mt-[24px]">
+                <span class="font-semibold text-sm leading-[22px] text-primary">Unit amount</span>
+                <span class="font-medium text-sm leading-[22px] text-primary">N50.00</span>
+                 </div>
+
+                 <div class="flex justify-between items-center mt-[24px]">
+                  <span class="font-semibold text-sm leading-[22px] text-primary">Interest rate</span>
+                  <span class="font-medium text-sm leading-[22px] text-primary">N22.50</span>
+                   </div>
+
+                   <div class="flex justify-between items-center mt-[24px]">
+                    <span class="font-semibold text-sm leading-[22px] text-primary">Subscribed units</span>
+                    <span class="font-medium text-sm leading-[22px] text-primary">800,000,000</span>
+                     </div>
+           </div>
+        </div>
+      </div>
+
+      <div class="border border-[#F5F5F5] bg-[#F5F5F5] rounded-[20px]  px-[4px] pb-[4px]" >
+        <div class="title-container py-[24px] px-[8px] flex justify-between items-center">
+          <span class="text-base font-bold leading-[24px] text-primary">Fund II</span>
+          <span>
+            <svg [matMenuTriggerFor]="menuFilter"  class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H5.01M12 12H12.01M19 12H19.01M6 12C6 12.2652 5.89464 12.5196 5.70711 12.7071C5.51957 12.8946 5.26522 13 5 13C4.73478 13 4.48043 12.8946 4.29289 12.7071C4.10536 12.5196 4 12.2652 4 12C4 11.7348 4.10536 11.4804 4.29289 11.2929C4.48043 11.1054 4.73478 11 5 11C5.26522 11 5.51957 11.1054 5.70711 11.2929C5.89464 11.4804 6 11.7348 6 12ZM13 12C13 12.2652 12.8946 12.5196 12.7071 12.7071C12.5196 12.8946 12.2652 13 12 13C11.7348 13 11.4804 12.8946 11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12C11 11.7348 11.1054 11.4804 11.2929 11.2929C11.4804 11.1054 11.7348 11 12 11C12.2652 11 12.5196 11.1054 12.7071 11.2929C12.8946 11.4804 13 11.7348 13 12ZM20 12C20 12.2652 19.8946 12.5196 19.7071 12.7071C19.5196 12.8946 19.2652 13 19 13C18.7348 13 18.4804 12.8946 18.2929 12.7071C18.1054 12.5196 18 12.2652 18 12C18 11.7348 18.1054 11.4804 18.2929 11.2929C18.4804 11.1054 18.7348 11 19 11C19.2652 11 19.5196 11.1054 19.7071 11.2929C19.8946 11.4804 20 11.7348 20 12Z" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          </span>
+          <mat-menu #menuFilter="matMenu">
+            <div
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]" (click)="openFundManagementDialog({})">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Edit</span>
+            </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Delete</span>
+            </div>
+            </button>
+            </div>
+          </mat-menu>
+        </div>
+        <div class="">
+           <div class="bg-white rounded-[16px] px-[8px] py-[24px]">
+               <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm leading-[22px] text-primary">Total amount</span>
+              <span class="font-medium text-sm leading-[22px] text-primary">N54,000,000,000</span>
+               </div>
+
+               <div class="flex justify-between items-center mt-[24px]">
+                <span class="font-semibold text-sm leading-[22px] text-primary">Unit amount</span>
+                <span class="font-medium text-sm leading-[22px] text-primary">N50.00</span>
+                 </div>
+
+                 <div class="flex justify-between items-center mt-[24px]">
+                  <span class="font-semibold text-sm leading-[22px] text-primary">Interest rate</span>
+                  <span class="font-medium text-sm leading-[22px] text-primary">N22.50</span>
+                   </div>
+
+                   <div class="flex justify-between items-center mt-[24px]">
+                    <span class="font-semibold text-sm leading-[22px] text-primary">Subscribed units</span>
+                    <span class="font-medium text-sm leading-[22px] text-primary">800,000,000</span>
+                     </div>
+           </div>
+        </div>
+      </div>
+
+      <div class="border border-[#F5F5F5] bg-[#F5F5F5] rounded-[20px]  px-[4px] pb-[4px]" >
+        <div class="title-container py-[24px] px-[8px] flex justify-between items-center">
+          <span class="text-base font-bold leading-[24px] text-primary">Fund III</span>
+          <span>
+            <svg [matMenuTriggerFor]="menuFilter"  class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H5.01M12 12H12.01M19 12H19.01M6 12C6 12.2652 5.89464 12.5196 5.70711 12.7071C5.51957 12.8946 5.26522 13 5 13C4.73478 13 4.48043 12.8946 4.29289 12.7071C4.10536 12.5196 4 12.2652 4 12C4 11.7348 4.10536 11.4804 4.29289 11.2929C4.48043 11.1054 4.73478 11 5 11C5.26522 11 5.51957 11.1054 5.70711 11.2929C5.89464 11.4804 6 11.7348 6 12ZM13 12C13 12.2652 12.8946 12.5196 12.7071 12.7071C12.5196 12.8946 12.2652 13 12 13C11.7348 13 11.4804 12.8946 11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12C11 11.7348 11.1054 11.4804 11.2929 11.2929C11.4804 11.1054 11.7348 11 12 11C12.2652 11 12.5196 11.1054 12.7071 11.2929C12.8946 11.4804 13 11.7348 13 12ZM20 12C20 12.2652 19.8946 12.5196 19.7071 12.7071C19.5196 12.8946 19.2652 13 19 13C18.7348 13 18.4804 12.8946 18.2929 12.7071C18.1054 12.5196 18 12.2652 18 12C18 11.7348 18.1054 11.4804 18.2929 11.2929C18.4804 11.1054 18.7348 11 19 11C19.2652 11 19.5196 11.1054 19.7071 11.2929C19.8946 11.4804 20 11.7348 20 12Z" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          </span>
+          <mat-menu #menuFilter="matMenu">
+            <div
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]" (click)="openFundManagementDialog({})">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Edit</span>
+            </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Delete</span>
+            </div>
+            </button>
+            </div>
+          </mat-menu>
+        </div>
+        <div class="">
+           <div class="bg-white rounded-[16px] px-[8px] py-[24px]">
+               <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm leading-[22px] text-primary">Total amount</span>
+              <span class="font-medium text-sm leading-[22px] text-primary">N54,000,000,000</span>
+               </div>
+
+               <div class="flex justify-between items-center mt-[24px]">
+                <span class="font-semibold text-sm leading-[22px] text-primary">Unit amount</span>
+                <span class="font-medium text-sm leading-[22px] text-primary">N50.00</span>
+                 </div>
+
+                 <div class="flex justify-between items-center mt-[24px]">
+                  <span class="font-semibold text-sm leading-[22px] text-primary">Interest rate</span>
+                  <span class="font-medium text-sm leading-[22px] text-primary">N22.50</span>
+                   </div>
+
+                   <div class="flex justify-between items-center mt-[24px]">
+                    <span class="font-semibold text-sm leading-[22px] text-primary">Subscribed units</span>
+                    <span class="font-medium text-sm leading-[22px] text-primary">800,000,000</span>
+                     </div>
+           </div>
+        </div>
+      </div>
+
+      <div class="border border-[#F5F5F5] bg-[#F5F5F5] rounded-[20px]  px-[4px] pb-[4px]" >
+        <div class="title-container py-[24px] px-[8px] flex justify-between items-center">
+          <span class="text-base font-bold leading-[24px] text-primary">Fund IV</span>
+          <span>
+            <svg [matMenuTriggerFor]="menuFilter"  class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H5.01M12 12H12.01M19 12H19.01M6 12C6 12.2652 5.89464 12.5196 5.70711 12.7071C5.51957 12.8946 5.26522 13 5 13C4.73478 13 4.48043 12.8946 4.29289 12.7071C4.10536 12.5196 4 12.2652 4 12C4 11.7348 4.10536 11.4804 4.29289 11.2929C4.48043 11.1054 4.73478 11 5 11C5.26522 11 5.51957 11.1054 5.70711 11.2929C5.89464 11.4804 6 11.7348 6 12ZM13 12C13 12.2652 12.8946 12.5196 12.7071 12.7071C12.5196 12.8946 12.2652 13 12 13C11.7348 13 11.4804 12.8946 11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12C11 11.7348 11.1054 11.4804 11.2929 11.2929C11.4804 11.1054 11.7348 11 12 11C12.2652 11 12.5196 11.1054 12.7071 11.2929C12.8946 11.4804 13 11.7348 13 12ZM20 12C20 12.2652 19.8946 12.5196 19.7071 12.7071C19.5196 12.8946 19.2652 13 19 13C18.7348 13 18.4804 12.8946 18.2929 12.7071C18.1054 12.5196 18 12.2652 18 12C18 11.7348 18.1054 11.4804 18.2929 11.2929C18.4804 11.1054 18.7348 11 19 11C19.2652 11 19.5196 11.1054 19.7071 11.2929C19.8946 11.4804 20 11.7348 20 12Z" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          </span>
+          <mat-menu #menuFilter="matMenu">
+            <div
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]" (click)="openFundManagementDialog({})">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Edit</span>
+            </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Delete</span>
+            </div>
+            </button>
+            </div>
+          </mat-menu>
+        </div>
+        <div class="">
+           <div class="bg-white rounded-[16px] px-[8px] py-[24px]">
+               <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm leading-[22px] text-primary">Total amount</span>
+              <span class="font-medium text-sm leading-[22px] text-primary">N54,000,000,000</span>
+               </div>
+
+               <div class="flex justify-between items-center mt-[24px]">
+                <span class="font-semibold text-sm leading-[22px] text-primary">Unit amount</span>
+                <span class="font-medium text-sm leading-[22px] text-primary">N50.00</span>
+                 </div>
+
+                 <div class="flex justify-between items-center mt-[24px]">
+                  <span class="font-semibold text-sm leading-[22px] text-primary">Interest rate</span>
+                  <span class="font-medium text-sm leading-[22px] text-primary">N22.50</span>
+                   </div>
+
+                   <div class="flex justify-between items-center mt-[24px]">
+                    <span class="font-semibold text-sm leading-[22px] text-primary">Subscribed units</span>
+                    <span class="font-medium text-sm leading-[22px] text-primary">800,000,000</span>
+                     </div>
+           </div>
+        </div>
+      </div>
+
+      <div class="border border-[#F5F5F5] bg-[#F5F5F5] rounded-[20px]  px-[4px] pb-[4px]" >
+        <div class="title-container py-[24px] px-[8px] flex justify-between items-center">
+          <span class="text-base font-bold leading-[24px] text-primary">Fund V</span>
+          <span>
+            <svg [matMenuTriggerFor]="menuFilter"  class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H5.01M12 12H12.01M19 12H19.01M6 12C6 12.2652 5.89464 12.5196 5.70711 12.7071C5.51957 12.8946 5.26522 13 5 13C4.73478 13 4.48043 12.8946 4.29289 12.7071C4.10536 12.5196 4 12.2652 4 12C4 11.7348 4.10536 11.4804 4.29289 11.2929C4.48043 11.1054 4.73478 11 5 11C5.26522 11 5.51957 11.1054 5.70711 11.2929C5.89464 11.4804 6 11.7348 6 12ZM13 12C13 12.2652 12.8946 12.5196 12.7071 12.7071C12.5196 12.8946 12.2652 13 12 13C11.7348 13 11.4804 12.8946 11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12C11 11.7348 11.1054 11.4804 11.2929 11.2929C11.4804 11.1054 11.7348 11 12 11C12.2652 11 12.5196 11.1054 12.7071 11.2929C12.8946 11.4804 13 11.7348 13 12ZM20 12C20 12.2652 19.8946 12.5196 19.7071 12.7071C19.5196 12.8946 19.2652 13 19 13C18.7348 13 18.4804 12.8946 18.2929 12.7071C18.1054 12.5196 18 12.2652 18 12C18 11.7348 18.1054 11.4804 18.2929 11.2929C18.4804 11.1054 18.7348 11 19 11C19.2652 11 19.5196 11.1054 19.7071 11.2929C19.8946 11.4804 20 11.7348 20 12Z" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          </span>
+          <mat-menu #menuFilter="matMenu">
+            <div
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]" (click)="openFundManagementDialog({})">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Edit</span>
+            </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center ">
+              <span class="text-sm leading-[22px] text-primary font-[400]">Delete</span>
+            </div>
+            </button>
+            </div>
+          </mat-menu>
+        </div>
+        <div class="">
+           <div class="bg-white rounded-[16px] px-[8px] py-[24px]">
+               <div class="flex justify-between items-center">
+              <span class="font-semibold text-sm leading-[22px] text-primary">Total amount</span>
+              <span class="font-medium text-sm leading-[22px] text-primary">N54,000,000,000</span>
+               </div>
+
+               <div class="flex justify-between items-center mt-[24px]">
+                <span class="font-semibold text-sm leading-[22px] text-primary">Unit amount</span>
+                <span class="font-medium text-sm leading-[22px] text-primary">N50.00</span>
+                 </div>
+
+                 <div class="flex justify-between items-center mt-[24px]">
+                  <span class="font-semibold text-sm leading-[22px] text-primary">Interest rate</span>
+                  <span class="font-medium text-sm leading-[22px] text-primary">N22.50</span>
+                   </div>
+
+                   <div class="flex justify-between items-center mt-[24px]">
+                    <span class="font-semibold text-sm leading-[22px] text-primary">Subscribed units</span>
+                    <span class="font-medium text-sm leading-[22px] text-primary">800,000,000</span>
+                     </div>
+           </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>

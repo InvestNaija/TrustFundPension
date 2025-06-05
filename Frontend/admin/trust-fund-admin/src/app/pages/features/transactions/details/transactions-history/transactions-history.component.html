@@ -1,0 +1,155 @@
+<main>
+  <section>
+    <div mat-dialog-title  class="">
+      <div class="title-header flex justify-between items-center">
+        <h2
+          class="text-primary text-[18px] font-semibold  tracking-[0.18px]"
+        >
+          Transactions
+        </h2>
+        <div>
+          <div
+            class="rounded-full p-[3px] bg-[#F5F5F5] text-tertiary cursor-pointer"
+            (click)="closeDialog()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-[40px]">
+        <div class="user-details-container flex flex-row gap-[24px] items-center border border-[#F0F0F0] p-[16px] rounded-[12px]">
+              <div class="img-container">
+                  <img [src]="'assets/images/trans-img.png'" alt="User Image" />
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold leading-[22px] text-primary">Boluwatife Olusola</span>
+                <span class="text-tertiary text-sm font-normal leading-[22px]">PEN-10249086785</span>
+              </div>
+            </div>
+          </div>
+    </div>
+
+  </section>
+
+  <section>
+    <div class="history-container mt-[40px] " mat-dialog-content>
+       <div class="title-container">
+        <span class="text-sm leading-[22px] text-primary font-semibold">History</span>
+       </div>
+       <div class="body-container mt-[24px]">
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+
+        <div class="flex items-center justify-between mt-[16px] px-[8px] py-[12px]">
+          <div class="flex flex-row gap-2 items-center">
+               <span>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#F0F0F0"/>
+                  <path d="M21.8337 17.6667L16.0003 23.5M16.0003 23.5L10.167 17.6667M16.0003 23.5V8.5" stroke="#0A0A0A" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="font-medium text-sm leading-[22px] text-primary">N100,000</span>
+          </div>
+          <div>
+            <span class="font-medium text-sm leading-[22px] text-primary">Apr 01, 2025</span>
+          </div>
+        </div>
+
+
+
+
+       </div>
+    </div>
+  </section>
+
+  </main>

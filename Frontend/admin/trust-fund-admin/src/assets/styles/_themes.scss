@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@layer theme, base, components, utilities;
+
+@theme {
+  --color-primary: oklch(0.1448 0 0);
+  --color-primaryColor: '#005055';
+  --color-tertiary: oklch(0.5591 0.0048 271.33);
+  --color-secondary: oklch(0.8115 0.0028 286.34);
+  --color-brand-sec: oklch(0.5865 0.121186 233.0221);
+  --color-accent: '#BABABA';
+  --color-inputFocus: '#49B5BB';
+  --color-primaryActive: oklch(0.3107 0.078 245.48);
+}

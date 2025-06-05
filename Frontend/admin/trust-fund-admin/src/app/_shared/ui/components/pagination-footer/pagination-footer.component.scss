@@ -1,0 +1,38 @@
+.check_zindex {
+  z-index: 10;
+}
+.zIndex_1 {
+  z-index: 1;
+}
+.pagination-footer-height {
+  width: 100%; /* Allow the component to expand to the parent's width */
+  // margin-left: 350px;
+  // max-width: calc(100% - 250px);
+}
+// @media (max-width: 640px) {
+//   .pagination-footer-height {
+//     height: 20vh;
+//     width: 92vw;
+//     max-width: 92vw;
+//   }
+// }
+// @media (min-width: 640px) and (max-width: 767px) {
+//   .pagination-footer-height {
+//     width: 82vw;
+//   }
+// }
+// @media (min-width: 767px) and (max-width: 1536px) {
+//   .pagination-footer-height {
+//     width: 82vw;
+//   }
+// }
+// @media (min-width: 1536px) {
+//   .pagination-footer-height {
+//     width: 92vw;
+//   }
+// }
+
+.currentPage {
+  color: #0A0A0A;
+  border-color: #0087B8;
+}

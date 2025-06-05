@@ -1,0 +1,106 @@
+<main class="bg-white">
+  <section>
+    <div mat-dialog-title class="">
+      <div class="title-header flex justify-between items-center">
+        <h2 class="text-primary text-[18px] font-semibold tracking-[0.18px]">
+          {{ data?.create ? "Create Branch" : "Edit Branch" }}
+        </h2>
+        <div>
+          <div
+            class="rounded-full p-[3px] bg-[#F5F5F5] text-tertiary cursor-pointer"
+            (click)="closeDialog()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="" mat-dialog-content>
+      <div class="form-container pb-[20px]">
+        <form [formGroup]="addressForm">
+          <div class="form-group flex flex-col gap-1 mb-[24px]">
+            <label class="label2">Branch name</label>
+            <input
+              type="text"
+              id="name"
+              class="input-field placeholder-tertiary text-sm"
+              placeholder="Enter branch name"
+              formControlName="name"
+            />
+            <div class="error-wrapper">
+              <span *ngIf="uiErrors.name" class="error ">{{uiErrors.name}}</span>
+            </div>
+
+          </div>
+
+          <div class="form-group flex flex-col gap-1 mb-[24px]">
+            <label class="label2">Email</label>
+            <input
+              type="text"
+              id="email"
+              class="input-field placeholder-tertiary text-sm"
+              placeholder="Enter email"
+              formControlName="email"
+            />
+            <div class="error-wrapper">
+              <span *ngIf="uiErrors.email" class="error ">{{uiErrors.email}}</span>
+            </div>
+
+          </div>
+
+          <div class="form-group flex flex-col gap-1 mb-[24px]">
+            <label class="label2">Phone number</label>
+            <input
+              type="number"
+              id="phone"
+              class="input-field placeholder-tertiary text-sm"
+              placeholder="Enter phone number"
+              formControlName="phone"
+            />
+            <div class="error-wrapper">
+              <span *ngIf="uiErrors.phone" class="error ">{{uiErrors.phone}}</span>
+            </div>
+
+          </div>
+
+          <div class="form-group flex flex-col gap-1 mb-[24px]">
+            <label class="label2">Address <small>(Please pick from the search results...{{container.countdown}})</small></label>
+            <input placeholder="Please wait, loading..." autocorrect="off" matInput autocapitalize="off" spellcheck="off" type="text"   class="input-field placeholder-tertiary text-sm" formControlName="address" #search />
+            <div class="error-wrapper">
+              <span *ngIf="uiErrors.address" class="error ">{{uiErrors.address}}</span>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="btn-container" mat-dialog-actions>
+      <button class="cancel-btn">Cancel</button>
+      <button (click)="submit()" class="save-btn">
+        <div class="flex justify-center">
+          <span class="" *ngIf="!submitting">Save</span>
+          <app-loader2 *ngIf="submitting"></app-loader2>
+          </div>
+      </button>
+    </div>
+  </section>
+</main>

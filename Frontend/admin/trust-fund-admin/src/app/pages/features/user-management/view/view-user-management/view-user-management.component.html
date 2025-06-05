@@ -1,0 +1,146 @@
+<main class="">
+  <section>
+    <div class="title-container mt-[64px]">
+      <h1 class="header1">User Management</h1>
+    </div>
+    <div
+      class="tab-filter-container flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row justify-between items-center gap-y-3 mt-[24px]"
+    >
+      <div class="tab-container">
+        <div
+          class="flex flex-row border border-[#F0F0F0] bg-[#F5F5F5] rounded-[10px] gap-2 px-[4px] py-[3px] text-nowrap"
+        >
+          <button
+            class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+            [class.tab--btn]="currentTab == 'all'"
+            (click)="tabChange('all')"
+          >
+            All
+          </button>
+
+          <button
+          class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+          [class.tab--btn]="currentTab == 'operator'"
+          (click)="tabChange('operator')"
+        >
+         Operator
+        </button>
+
+          <button
+            class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+            [class.tab--btn]="currentTab == 'supervisor'"
+            (click)="tabChange('supervisor')"
+          >
+            Supervisor
+          </button>
+          <button
+          class="cursor-pointer text-tertiary text-xs font-medium leading-[18px] tracking-[0.12px] p-[8px] w-full"
+          [class.tab--btn]="currentTab == 'manager'"
+          (click)="tabChange('manager')"
+        >
+       Manager
+        </button>
+        </div>
+      </div>
+
+      <div class="filter-container">
+        <div class="flex flex-row gap-3 items-center">
+          <div class="filter-button">
+            <button class="filter cursor-pointer"
+            [matMenuTriggerFor]="menuFilter"><span class="flex items-center">Filter by <svg class="ml-[6px]" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12.6673 6L8.00065 10.6667L3.33398 6" stroke="#737477" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg></span></button>
+          </div>
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="2" height="26" viewBox="0 0 2 26" fill="none">
+              <path d="M1 1V25" stroke="#F0F0F0" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+          </div>
+          <div class="export-button">
+            <button class="filter cursor-pointer"
+            [matMenuTriggerFor]="menuExport"><span class="flex items-center">Export <svg class="ml-[6px]"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2.66602 10.6666V11.3333C2.66602 11.8637 2.87673 12.3724 3.2518 12.7475C3.62687 13.1226 4.13558 13.3333 4.66602 13.3333H11.3327C11.8631 13.3333 12.3718 13.1226 12.7469 12.7475C13.122 12.3724 13.3327 11.8637 13.3327 11.3333V10.6666M10.666 7.99996L7.99935 10.6666M7.99935 10.6666L5.33268 7.99996M7.99935 10.6666V2.66663" stroke="#737477" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg></span></button>
+          </div>
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="2" height="26" viewBox="0 0 2 26" fill="none">
+              <path d="M1 1V25" stroke="#F0F0F0" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+          </div>
+          <div class="save-button ml-0">
+          <button class="cursor-pointer border border-[#013355] rounded-lg bg-[#013355] p-[8px] text-white text-xs font-medium leading-[18px] tracking-[0.12px] outline-none"
+          (click)="openUserManagementDialog({})"><span class="flex items-center">Create user <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M7.99935 2.66675V13.3334M13.3327 8.00008H2.66602" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></span></button>
+            </div>
+        </div>
+
+        <mat-menu #menuFilter="matMenu">
+          <div
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        >
+          <button mat-menu-item class="mb-[20px]">
+            <div class="flex items-center ">
+            <span class="text-sm leading-[22px] text-primary font-[400]">Date</span>
+          </div>
+          </button>
+          <button mat-menu-item class="mb-[20px]">
+            <div class="flex items-center ">
+            <span class="text-sm leading-[22px] text-primary font-[400]">Male</span>
+          </div>
+          </button>
+          </div>
+        </mat-menu>
+
+        <mat-menu #menuExport="matMenu">
+          <div
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        >
+          <button mat-menu-item class="mb-[36px]">
+            <div class="flex items-center ">
+              <span class="">
+                <img
+                [src]="'assets/images/pdf.png'"
+                width="32"
+                height="32"
+                alt="PDF"
+              />
+          </span>
+            <span class="text-sm leading-[20px] text-primary font-[510] ml-[10px]">Export as PDF</span>
+          </div>
+          </button>
+          <button mat-menu-item class="mb-[36px]">
+            <div class="flex items-center ">
+              <span class="">
+                <img
+                [src]="'assets/images/xls.png'"
+                width="32"
+                height="32"
+                alt="PDF"
+              />
+          </span>
+            <span class="text-sm leading-[20px] text-primary font-[510] ml-[10px]">Export as XLSX</span>
+          </div>
+          </button>
+          </div>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="table-container mt-[26px] pb-[20px]">
+        @if (currentTab === 'all')
+        {
+          <app-all />
+        } @else if (currentTab === 'operator')
+        {
+          <app-operator />
+        } @else if (currentTab === 'supervisor') {
+          <app-supervisor />
+        } @else if (currentTab === 'manager') {
+          <app-manager />
+        }
+    </div>
+  </section>
+</main>

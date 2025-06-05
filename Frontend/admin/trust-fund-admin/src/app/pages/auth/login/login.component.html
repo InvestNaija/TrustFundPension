@@ -1,0 +1,91 @@
+<main class="h-full">
+  <section class="">
+    <div class="logo-container flex justify-center pt-[139.62px]">
+      <img
+        src="assets/logo/trustfund-logo.png"
+        width="157.161px"
+        height="64px"
+        alt="TrustFund Logo"
+        class=""
+      />
+    </div>
+    <div class="header-container mt-6">
+      <h2 class="header2 text-center">Welcome back</h2>
+      <p class="text-tertiary text-sm font-medium leading-[22px] text-center">
+        Sign in to access to your dashboard
+      </p>
+    </div>
+    <div class="form-container mt-[40px] flex justify-center">
+      <form [formGroup]="loginForm" class="w-[360px]">
+        <div class="mb-[24px]">
+          <label class="label">Email</label>
+          <input
+            type="text"
+            id="email"
+            class="input-field placeholder-tertiary"
+            placeholder="Email address"
+            formControlName="email"
+
+          />
+          <div class="error-wrapper" *ngIf="uiErrors.email">
+            <span class="error">{{ uiErrors.email }}</span>
+          </div>
+        </div>
+
+        <div class="mb-[48px] r">
+          <label class="label">Password</label>
+          <div class="relative">
+          <input
+            id="password"
+            class="input-field placeholder-tertiary"
+            placeholder="Password"
+            [type]="container['fieldTextType'] ? 'text' : 'password'"
+            formControlName="password"
+          />
+          <div class="error-wrapper" *ngIf="uiErrors.password">
+            <span class="error">{{ uiErrors.password }}</span>
+          </div>
+          <div
+            class="absolute inset-y-0 right-0 pr-[1rem] flex items-center "
+          >
+          <i class="{{
+            container['fieldTextType']
+              ? 'ri-eye-off-line'
+              : 'ri-eye-line'
+          }} text-[24px] cursor-pointer" (click)="showEyes()"></i>
+          </div>
+          </div>
+        </div>
+
+        <div class="mb-[24px]">
+          <button
+          [disabled]="submitting"
+          (click)="onSubmit()"
+            type="submit"
+            class="text-white bg-primaryActive focus:outline-none font-semibold rounded-lg text-base w-full py-[12px] text-center leading-[24px] tracking-[0.32px] cursor-pointer"
+          >
+          <div class="flex justify-center">
+          <span class="" *ngIf="!submitting">Sign in</span>
+          <app-loader2 *ngIf="submitting"></app-loader2>
+          </div>
+          </button>
+        </div>
+        <div class="text-center">
+          <span
+            class="text-sm font-medium leading-[22px] tracking-[0.28px] text-tertiary"
+            >Issues signing in?
+            <a
+              class="text-sm font-bold leading-[22px] tracking-[0.28px] text-brand-sec"
+              >Contact admin</a
+            ></span
+          >
+        </div>
+      </form>
+    </div>
+  </section>
+  <section>
+    <div class="absolute bottom-0 w-full">
+      <img src="assets/images/skyline.svg" width="100%" alt="TrustFund Logo" />
+    </div>
+  </section>
+</main>

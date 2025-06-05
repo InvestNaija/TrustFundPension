@@ -1,0 +1,476 @@
+<main>
+  <section>
+    <div mat-dialog-title  class="">
+      <div class="title-header flex justify-between items-center">
+        <h2
+          class="text-primary text-[18px] font-semibold  tracking-[0.18px]"
+        >
+          Review user profile
+        </h2>
+        <div>
+          <div
+            class="rounded-full p-[3px] bg-[#F5F5F5] text-tertiary cursor-pointer"
+            (click)="closeDialog()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="px-[24px] py-[16px]">
+    <div class="note-container w-full p-[8px] bg-[#FFF8E6] text-[#EC9E00] rounded-[4px] text-sm">
+        <div class="flex">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M18 10C18 12.1217 17.1571 14.1566 15.6569 15.6569C14.1566 17.1571 12.1217 18 10 18C7.87827 18 5.84344 17.1571 4.34315 15.6569C2.84285 14.1566 2 12.1217 2 10C2 7.87827 2.84285 5.84344 4.34315 4.34315C5.84344 2.84285 7.87827 2 10 2C12.1217 2 14.1566 2.84285 15.6569 4.34315C17.1571 5.84344 18 7.87827 18 10ZM11 14C11 14.2652 10.8946 14.5196 10.7071 14.7071C10.5196 14.8946 10.2652 15 10 15C9.73478 15 9.48043 14.8946 9.29289 14.7071C9.10536 14.5196 9 14.2652 9 14C9 13.7348 9.10536 13.4804 9.29289 13.2929C9.48043 13.1054 9.73478 13 10 13C10.2652 13 10.5196 13.1054 10.7071 13.2929C10.8946 13.4804 11 13.7348 11 14ZM10 5C9.73478 5 9.48043 5.10536 9.29289 5.29289C9.10536 5.48043 9 5.73478 9 6V10C9 10.2652 9.10536 10.5196 9.29289 10.7071C9.48043 10.8946 9.73478 11 10 11C10.2652 11 10.5196 10.8946 10.7071 10.7071C10.8946 10.5196 11 10.2652 11 10V6C11 5.73478 10.8946 5.48043 10.7071 5.29289C10.5196 5.10536 10.2652 5 10 5Z" fill="#EC9E00"/>
+              </svg>
+            </div>
+          <div class="ml-2 flex flex-col">
+           <span>Some field are missing</span>
+           <div>
+            <ul class="list-disc">
+              <li>Profile photo</li>
+              <li>Signature</li>
+            </ul>
+          </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+  </section>
+  <section >
+    <div class="p-[24px]"  mat-dialog-content>
+      <div class="tab mt-1">
+        <div class="border-b border-[#EAEAEB]">
+          <ul
+            class="flex flex-wrap -mb-px text-sm font-semibold text-center text-[#A1A1A1] gap-y-4"
+          >
+            <li class="me-1">
+              <a
+                (click)="tab = 'personal'; $event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                [ngClass]="{ 'tab-active': tab === 'personal' }"
+                class="inline-flex items-center justify-center px-4 pb-2 rounded-t-lg group cursor-pointer"
+              >
+                Personal Details
+              </a>
+            </li>
+            <li class="me-1">
+              <a
+                (click)="tab = 'contact'; $event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                [ngClass]="{ 'tab-active': tab === 'contact' }"
+                class="inline-flex items-center justify-center px-4 pb-2 rounded-t-lg group cursor-pointer"
+                aria-current="page"
+              >
+                Contact Details
+              </a>
+            </li>
+            <li class="me-1">
+              <a
+                (click)="tab = 'others'; $event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                [ngClass]="{ 'tab-active': tab === 'others' }"
+                class="inline-flex items-center justify-center px-4 pb-2 rounded-t-lg group cursor-pointer"
+                aria-current="page"
+              >
+                Others
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-[24px]">
+          <div class="">
+            @if(tab === 'personal') {
+            <div
+              class="personal-wrapper border border-[#F0F0F0] rounded-[16px] p-[16px] "
+            >
+              <div class="user-picture-container flex justify-between">
+                <div></div>
+                <div class="relative">
+                  <svg class="absolute ml-14 mt-[-5px]"  xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18 10C18 12.1217 17.1571 14.1566 15.6569 15.6569C14.1566 17.1571 12.1217 18 10 18C7.87827 18 5.84344 17.1571 4.34315 15.6569C2.84285 14.1566 2 12.1217 2 10C2 7.87827 2.84285 5.84344 4.34315 4.34315C5.84344 2.84285 7.87827 2 10 2C12.1217 2 14.1566 2.84285 15.6569 4.34315C17.1571 5.84344 18 7.87827 18 10ZM11 14C11 14.2652 10.8946 14.5196 10.7071 14.7071C10.5196 14.8946 10.2652 15 10 15C9.73478 15 9.48043 14.8946 9.29289 14.7071C9.10536 14.5196 9 14.2652 9 14C9 13.7348 9.10536 13.4804 9.29289 13.2929C9.48043 13.1054 9.73478 13 10 13C10.2652 13 10.5196 13.1054 10.7071 13.2929C10.8946 13.4804 11 13.7348 11 14ZM10 5C9.73478 5 9.48043 5.10536 9.29289 5.29289C9.10536 5.48043 9 5.73478 9 6V10C9 10.2652 9.10536 10.5196 9.29289 10.7071C9.48043 10.8946 9.73478 11 10 11C10.2652 11 10.5196 10.8946 10.7071 10.7071C10.8946 10.5196 11 10.2652 11 10V6C11 5.73478 10.8946 5.48043 10.7071 5.29289C10.5196 5.10536 10.2652 5 10 5Z" fill="#E01529"/>
+                    </svg>
+
+                <div class="rounded-[12px]">
+                  <img
+                    [src]="'assets/images/user-pic.png'"
+                    alt="Image"
+                    width="72"
+                    height="72"
+                  />
+                </div>
+              </div>
+                <div >
+                  <svg
+                  *ngIf="data?.pen === null"
+                  (click)="editPersonal=!editPersonal"
+                    class="cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M11 4.99992H6C5.46957 4.99992 4.96086 5.21063 4.58579 5.5857C4.21071 5.96078 4 6.46948 4 6.99992V17.9999C4 18.5304 4.21071 19.0391 4.58579 19.4141C4.96086 19.7892 5.46957 19.9999 6 19.9999H17C17.5304 19.9999 18.0391 19.7892 18.4142 19.4141C18.7893 19.0391 19 18.5304 19 17.9999V12.9999M17.586 3.58592C17.7705 3.3949 17.9912 3.24253 18.2352 3.13772C18.4792 3.0329 18.7416 2.97772 19.0072 2.97542C19.2728 2.97311 19.5361 3.02371 19.7819 3.12427C20.0277 3.22484 20.251 3.37334 20.4388 3.56113C20.6266 3.74891 20.7751 3.97222 20.8756 4.21801C20.9762 4.4638 21.0268 4.72716 21.0245 4.99272C21.0222 5.25828 20.967 5.52072 20.8622 5.76473C20.7574 6.00874 20.605 6.22942 20.414 6.41392L11.828 14.9999H9V12.1719L17.586 3.58592Z"
+                      stroke="#737477"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+<form  [formGroup]="personalForm">
+              <div class="form-container mt-[24px]">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="label2">Full name</label>
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.firstName}} {{data?.lastName}}</span
+                  >
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Date of birth</label>
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.dob ? (data?.dob | date) : 'NIL'}}</span
+                  >
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Gender</label>
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.gender ? data?.gender : 'NIL'}}</span
+                  >
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Pension number</label>
+                  @if(!editPersonal) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.pen ? data.pen : 'Not created'}}</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="pension_number"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Pension number"
+                  />
+                  }
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2 flex">Signature    <svg class="ml-1"  xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18 10C18 12.1217 17.1571 14.1566 15.6569 15.6569C14.1566 17.1571 12.1217 18 10 18C7.87827 18 5.84344 17.1571 4.34315 15.6569C2.84285 14.1566 2 12.1217 2 10C2 7.87827 2.84285 5.84344 4.34315 4.34315C5.84344 2.84285 7.87827 2 10 2C12.1217 2 14.1566 2.84285 15.6569 4.34315C17.1571 5.84344 18 7.87827 18 10ZM11 14C11 14.2652 10.8946 14.5196 10.7071 14.7071C10.5196 14.8946 10.2652 15 10 15C9.73478 15 9.48043 14.8946 9.29289 14.7071C9.10536 14.5196 9 14.2652 9 14C9 13.7348 9.10536 13.4804 9.29289 13.2929C9.48043 13.1054 9.73478 13 10 13C10.2652 13 10.5196 13.1054 10.7071 13.2929C10.8946 13.4804 11 13.7348 11 14ZM10 5C9.73478 5 9.48043 5.10536 9.29289 5.29289C9.10536 5.48043 9 5.73478 9 6V10C9 10.2652 9.10536 10.5196 9.29289 10.7071C9.48043 10.8946 9.73478 11 10 11C10.2652 11 10.5196 10.8946 10.7071 10.7071C10.8946 10.5196 11 10.2652 11 10V6C11 5.73478 10.8946 5.48043 10.7071 5.29289C10.5196 5.10536 10.2652 5 10 5Z" fill="#E01529"/>
+                    </svg>
+</label>
+                  <div
+                    class="border border-[#C1C1C3] rounded-[8px] h-[120px] w-full bg-[#F5F5F5]"
+                  >
+                    <div class="flex justify-center py-[12%]">
+                      <span
+                        class="text-tertiary font-medium text-sm leading-[22px]"
+                        >Not created</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            </div>
+            } @if(tab === 'contact') {
+            <div class="contact-wrapper border border-[#F0F0F0] rounded-[16px] p-[16px] ">
+              <form  [formGroup]="contactForm">
+              <div class="form-container">
+                <div class="flex justify-end">
+                  <div>
+                    <svg
+                    (click)="editContact=!editContact"
+                      class="cursor-pointer mb-1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M11 4.99992H6C5.46957 4.99992 4.96086 5.21063 4.58579 5.5857C4.21071 5.96078 4 6.46948 4 6.99992V17.9999C4 18.5304 4.21071 19.0391 4.58579 19.4141C4.96086 19.7892 5.46957 19.9999 6 19.9999H17C17.5304 19.9999 18.0391 19.7892 18.4142 19.4141C18.7893 19.0391 19 18.5304 19 17.9999V12.9999M17.586 3.58592C17.7705 3.3949 17.9912 3.24253 18.2352 3.13772C18.4792 3.0329 18.7416 2.97772 19.0072 2.97542C19.2728 2.97311 19.5361 3.02371 19.7819 3.12427C20.0277 3.22484 20.251 3.37334 20.4388 3.56113C20.6266 3.74891 20.7751 3.97222 20.8756 4.21801C20.9762 4.4638 21.0268 4.72716 21.0245 4.99272C21.0222 5.25828 20.967 5.52072 20.8622 5.76473C20.7574 6.00874 20.605 6.22942 20.414 6.41392L11.828 14.9999H9V12.1719L17.586 3.58592Z"
+                        stroke="#737477"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="label2">Phone number</label>
+                  @if(!editContact) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.phone? data?.phone : 'NIL'}}</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="phone_number"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Phone number"
+                    formControlName="phone"
+                  />
+                  }
+                </div>
+
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Email</label>
+                  @if(!editContact) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >{{data?.email? data?.email : 'NIL'}}</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="email"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Email"
+                    formControlName="email"
+                  />
+                  }
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Address</label>
+                  @if(!editContact) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >Plot 268 Light Estate Orchid Road, Lekki, Lagos</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="address"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Address"
+                  />
+                  }
+                </div>
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Relationship with next of kin</label>
+                  @if(!editContact) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >Wife</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="nok_relationship"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Nok relationship"
+                  />
+                  }
+                </div>
+
+
+                <div class="form-group flex flex-col gap-1 mt-[24px]">
+                  <label class="label2">Next of kin phone number</label>
+                  @if(!editContact) {
+                  <span class="text-tertiary font-medium text-sm leading-[22px]"
+                    >+234 701 2345 678</span
+                  >
+                  } @else {
+                    <input
+                    type="text"
+                    id="nok_phone"
+                    class="input-field placeholder-tertiary text-sm"
+                    placeholder="Nok phone"
+                  />
+                  }
+                </div>
+
+              </div>
+            </form>
+            </div>
+            } @if(tab === 'others') {
+              <div class="others-wrapper border border-[#F0F0F0] rounded-[16px] p-[16px] ">
+                <form  [formGroup]="othersForm">
+                <div class="form-container">
+                  <div class="flex justify-end">
+                    <div>
+                      <svg
+                      (click)="editOthers=!editOthers"
+                        class="cursor-pointer mb-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M11 4.99992H6C5.46957 4.99992 4.96086 5.21063 4.58579 5.5857C4.21071 5.96078 4 6.46948 4 6.99992V17.9999C4 18.5304 4.21071 19.0391 4.58579 19.4141C4.96086 19.7892 5.46957 19.9999 6 19.9999H17C17.5304 19.9999 18.0391 19.7892 18.4142 19.4141C18.7893 19.0391 19 18.5304 19 17.9999V12.9999M17.586 3.58592C17.7705 3.3949 17.9912 3.24253 18.2352 3.13772C18.4792 3.0329 18.7416 2.97772 19.0072 2.97542C19.2728 2.97311 19.5361 3.02371 19.7819 3.12427C20.0277 3.22484 20.251 3.37334 20.4388 3.56113C20.6266 3.74891 20.7751 3.97222 20.8756 4.21801C20.9762 4.4638 21.0268 4.72716 21.0245 4.99272C21.0222 5.25828 20.967 5.52072 20.8622 5.76473C20.7574 6.00874 20.605 6.22942 20.414 6.41392L11.828 14.9999H9V12.1719L17.586 3.58592Z"
+                          stroke="#737477"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+
+                  </div>
+                  <div class="form-group flex flex-col gap-1">
+                    <label class="label2">Profession</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >+Software Engineer</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="profession"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Profession"
+                    />
+                    }
+                  </div>
+
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">Fund Type</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >Fund 1</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="fund_type"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Fund type"
+                    />
+                    }
+                  </div>
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">Account type</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >{{data?.accountType? data?.accountType : 'NIL'}}</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="account_type"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Account type"
+                      formControlName="accountType"
+                    />
+                    }
+                  </div>
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">BVN</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >{{data?.bvn? data?.bvn : 'NIL'}}</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="bvn"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Bvn"
+                      formControlName="bvn"
+                    />
+                    }
+                  </div>
+
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">NIN</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >{{data?.nin? data?.nin : 'NIL'}}</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="nin"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Nin"
+                      formControlName="nin"
+                    />
+                    }
+                  </div>
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">Account Manager</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >Kemi Ogunnaike</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="account_manager"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Account manager"
+                    />
+                    }
+                  </div>
+
+                  <div class="form-group flex flex-col gap-1 mt-[24px]">
+                    <label class="label2">Account Manager email</label>
+                    @if(!editOthers) {
+                    <span class="text-tertiary font-medium text-sm leading-[22px]"
+                      >kemiO&#64;trustfundpensions.com</span
+                    >
+                    } @else {
+                      <input
+                      type="text"
+                      id="account_manager_email"
+                      class="input-field placeholder-tertiary text-sm"
+                      placeholder="Account manager email"
+                    />
+                    }
+                  </div>
+
+                </div>
+                </form>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="btn-container" mat-dialog-actions>
+      <button class="cancel-btn">
+        Cancel
+      </button>
+      <button class="save-btn">
+        Save
+      </button>
+  </div>
+  </section>
+</main>

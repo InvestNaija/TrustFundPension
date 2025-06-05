@@ -1,0 +1,83 @@
+<main class="bg-white">
+  <section>
+    <div mat-dialog-title  class="">
+      <div class="title-header flex justify-between items-center">
+        <h2
+          class="text-primary text-[18px] font-semibold  tracking-[0.18px]"
+        >
+         Edit fund
+        </h2>
+        <div>
+          <div
+            class="rounded-full p-[3px] bg-[#F5F5F5] text-tertiary cursor-pointer"
+            (click)="closeDialog()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section >
+    <div class=""  mat-dialog-content>
+      <div class="form-container pb-[20px]">
+        <div class="form-group flex flex-col gap-1">
+          <label class="label2">Fund name</label>
+          <input
+          type="text"
+          id="fund_name"
+          class="input-field placeholder-tertiary text-sm"
+          placeholder="Fund name"
+        />
+        </div>
+
+        <div class="form-group flex flex-col gap-1 mt-[24px]">
+          <label class="label2">Unit amount (₦)</label>
+          <input
+          type="text"
+          id="unit_amount"
+          class="input-field placeholder-tertiary text-sm"
+          placeholder="Unit amount"
+        />
+        </div>
+
+        <div class="form-group flex flex-col gap-1 mt-[24px]">
+          <label class="label2">Interest rate (₦)</label>
+          <input
+          type="text"
+          id="interest_rate"
+          class="input-field placeholder-tertiary text-sm"
+          placeholder="Interest rate"
+        />
+        </div>
+
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="btn-container" mat-dialog-actions>
+      <button class="cancel-btn">
+        Cancel
+      </button>
+      <button class="save-btn">
+        Save Changes
+      </button>
+  </div>
+  </section>
+</main>

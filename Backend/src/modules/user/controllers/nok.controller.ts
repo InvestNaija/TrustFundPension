@@ -32,6 +32,13 @@ export class NokController {
     return this.nokService.findOne(authenticatedUser.id);
   }
 
+  @Get('/admin/:userId')
+  @ApiOperation({ summary: 'Get next of kin details by userid' })
+  @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
+  async findOneById(@Param('userId') userId: string): Promise<NokResponseDto> {
+    return this.nokService.findOne(userId);
+  } 
+
   @Put('')
   @ApiOperation({ summary: 'Update current user\'s next of kin' })
   @ApiResponse({ status: 200, description: 'Next of kin updated successfully', type: NokResponseDto })

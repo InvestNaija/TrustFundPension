@@ -68,6 +68,14 @@ export class PensionController {
     return await this.pensionService.getAccountManager(authenticatedUser.id);
   }
 
+  @Get('admin/account-manager/:userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get pension account details by userid' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Pension account details retrieved successfully' })
+  async getPensionAccountManager(@Param('userId') userId: string): Promise<IApiResponse> {
+    return await this.pensionService.getAccountManager(userId);
+  }
+
   @Get('summary/:rsa_pin')
   @ApiOperation({ summary: 'validate rsa pin' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })

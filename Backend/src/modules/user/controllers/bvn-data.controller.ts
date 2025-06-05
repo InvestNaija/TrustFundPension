@@ -36,4 +36,14 @@ export class BvnDataController {
     return bvnData;
   }
 
+  @Get('/admin/:userId')
+  @ApiOperation({ summary: 'Get BVN data by userid' })
+  @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
+  async findOneById(@Param('userId') userId: string): Promise<BvnDataResponseDto> {
+    const bvnData = await this.bvnDataService.findOne(userId);
+    if (!bvnData) {
+      throw new NotFoundException('BVN data not found');
+    }
+    return bvnData;
+  }
 } 

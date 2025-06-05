@@ -32,6 +32,13 @@ export class EmployerController {
     return this.employerService.findOne(authenticatedUser.id);
   }
 
+  @Get('/admin/:userId')
+  @ApiOperation({ summary: 'Get employer details by userid' })
+  @ApiResponse({ status: 200, description: 'Employer retrieved successfully', type: EmployerResponseDto })
+  async findOneById(@Param('userId') userId: string): Promise<EmployerResponseDto> {
+    return this.employerService.findOne(userId);
+  }
+
   @Put('')
   @ApiOperation({ summary: 'Update current user\'s employer details' })
   @ApiResponse({ status: 200, description: 'Employer updated successfully', type: EmployerResponseDto })

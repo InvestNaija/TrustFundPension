@@ -70,6 +70,15 @@ export class MediaController {
     return this.mediaService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Get media by ID' })
+  @ApiResponse({ status: 200, description: 'Return media by ID', type: Media })
+  @ApiResponse({ status: 404, description: 'Media not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get('admin/:userId')
+  findOneById(@Param('userId') userId: string) {
+    return this.mediaService.findAll(userId);
+  }
+
   @ApiOperation({ summary: 'Update media by ID' })
   @ApiResponse({ status: 200, description: 'Media updated successfully', type: Media })
   @ApiResponse({ status: 404, description: 'Media not found' })

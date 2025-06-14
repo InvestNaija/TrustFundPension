@@ -446,16 +446,33 @@ export class AuthService {
 
     let message: string;
     if (dto.context === 'bvn') {
-      message = `
-      <h2>Hi ${user.firstName},</h2>
-      <p>Your BVN validation code is <strong>${otpCode}</strong></p>
-      <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
-      <p>This token confirms that the BVN you submitted is yours.</p>
-      <p>Please do not share your token with anyone.</p>
-      <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
-    `;
+      if (dto.method === VerificationMethod.EMAIL) {
+        message = `
+          <h2>Hi ${user.firstName},</h2>
+          <p>Your BVN validation code is <strong>${otpCode}</strong></p>
+          <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
+          <p>This token confirms that the BVN you submitted is yours.</p>
+          <p>Please do not share your token with anyone.</p>
+          <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
+        `;
+      } else {
+        message = `Your BVN verification code is: ${otpCode}`;
+      }
+    } else if (dto.context === 'nin') {
+      if (dto.method === VerificationMethod.EMAIL) {
+        message = `
+          <h2>Hi ${user.firstName},</h2>
+          <p>Your NIN verification code is <strong>${otpCode}</strong></p>
+          <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
+          <p>This token confirms that the NIN you submitted is yours.</p>
+          <p>Please do not share your token with anyone.</p>
+          <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
+        `;
+      } else {
+        message = `Your NIN verification code is: ${otpCode}`;
+      }
     } else {
-      message = `Your NIN verification code is: ${otpCode}`;
+      message = `Your verification code is: ${otpCode}`;
     }
     
     if (dto.method === VerificationMethod.EMAIL) {

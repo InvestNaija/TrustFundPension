@@ -335,7 +335,7 @@ export class UserService {
       const existingBvnData = await this.bvnDataService.findOne(userId);
       
       if (existingBvnData) {
-        const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse);
+        const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse.bvn);
         return {
           status: true,
           message: 'BVN details retrieved',
@@ -348,15 +348,15 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      const bvnResponse = await this.verifyMeService.verifyBvn(bvn, user.firstName, user.lastName);
+      const bvnResponse = await this.qoreIdService.verifyBvn(bvn);
 
-      if (bvnResponse.data) {
-        const formattedData = this.formatBvnResponse(bvnResponse.data);
+      if (bvnResponse) {
+        const formattedData = this.formatBvnResponse(bvnResponse.bvn);
         
         await this.bvnDataService.create({
           userId,
           bvn,
-          bvnResponse: bvnResponse.data,
+          bvnResponse: bvnResponse.bvn,
         });
 
         return {
@@ -445,10 +445,16 @@ export class UserService {
     return this.mapToResponseDto(updatedUser);
   }
 
+  async updateFcmToken(userId: string, fcmToken: string): Promise<void> {
+    await this.userRepository.update({ id: userId }, { fcmToken });
+  }
+
   private formatBvnResponse(data: any) {
     const bvnData = data || {};
     const response: any = {
       bvn: bvnData.bvn,
+      firstname: bvnData.firstname,
+      lastname: bvnData.lastname
     };
 
     const phones: string[] = [];

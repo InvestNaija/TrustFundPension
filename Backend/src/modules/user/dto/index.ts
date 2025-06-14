@@ -17,4 +17,5 @@ export * from './excluded-user-props.dto';
 export * from './verify-bvn.dto';
 export * from './verify-nin.dto';
 export * from './change-password.dto'; 
-export * from './list-users.dto'
+export * from './list-users.dto';
+export * from './update-fcm-token.dto';

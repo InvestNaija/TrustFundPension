@@ -475,7 +475,7 @@ export class PensionService {
 
   async completeOnboarding(userId: string): Promise<IApiResponse> {
     try {
-      const user = await this.userService.findOne(userId);
+      const user = await this.userService.findOneUser(userId);
       if (!user) {
         throw new BadRequestException('User not found');
       }

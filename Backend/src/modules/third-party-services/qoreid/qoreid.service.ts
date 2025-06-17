@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
-import { IQoreIdNinResponse } from './types';
+import { IQoreIdNinResponse, IQoreIdBvnResponse } from './types';
 
 interface TokenData {
   accessToken: string;
@@ -89,6 +89,32 @@ export class QoreIdService {
         throw error;
       }
       throw new UnprocessableEntityException('Could not verify NIN');
+    }
+  }
+
+  async verifyBvn(bvn: string): Promise<IQoreIdBvnResponse> {
+    try {
+      const tokenData = await this.ensureValidToken();
+
+      const url = `${envConfig.QOREID_BASE_URL}/v1/ng/identities/bvn-premium/${bvn}`;
+      const response = await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        headers: tokenData.headers,
+      });
+
+      if (!response || !response.bvn) {
+        this.logger.error('Invalid BVN response from QoreID');
+        throw new UnprocessableEntityException('BVN verification failed');
+      }
+
+      return response;
+    } catch (error) {
+      this.logger.error('Error verifying BVN:', error);
+      if (error instanceof UnprocessableEntityException) {
+        throw error;
+      }
+      throw new UnprocessableEntityException('Could not verify BVN');
     }
   }
 }

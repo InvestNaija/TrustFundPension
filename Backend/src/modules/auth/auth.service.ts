@@ -37,6 +37,8 @@ import {
   ISmsRequest,
 } from '../third-party-services/trustfund/types';
 import { ReferralService } from '../referral/services';
+import { UserRoleRepository } from '../user/repositories/user-role.repository';
+import { UserRole } from '../user/entities';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +46,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly userRoleRepository: UserRoleRepository,
     private readonly jwtService: JwtService,
     private readonly trustFundService: TrustFundService,
     private readonly referralService: ReferralService,
@@ -80,6 +83,12 @@ export class AuthService {
       password: hashedPassword,
       account_type: dto.accountType || undefined,
     });
+
+    // Assign CLIENT role to the user
+    const userRole = new UserRole();
+    userRole.userId = user.id;
+    userRole.roleId = '403e5c43-a8e1-42c4-b018-87260ce8ac1f'; // CLIENT role ID
+    await this.userRoleRepository.save(userRole);
 
     // Generate referral code for the new user
     const referralResponse = await this.referralService.generateAndCreateReferral(user.id);

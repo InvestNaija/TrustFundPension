@@ -6,7 +6,8 @@ import { MediaRepository } from '../repositories';
 import { UPLOAD_TYPE } from 'src/core/constants';
 import { IApiResponse } from 'src/core/types';
 import { User } from '../../../modules/user/entities/user.entity';
-import { CloudinaryService } from '../../third-party-services/cloudinary';
+// import { CloudinaryService } from '../../third-party-services/cloudinary';
+import { TrustFundService } from '../../third-party-services/trustfund';
 
 @Injectable()
 export class MediaService {
@@ -15,7 +16,8 @@ export class MediaService {
   constructor(
     @InjectRepository(Media)
     private readonly mediaRepository: MediaRepository,
-    private readonly cloudinaryService: CloudinaryService
+    // private readonly cloudinaryService: CloudinaryService
+    private readonly trustFundService: TrustFundService
   ) {}
 
   async create(createMediaDto: CreateMediaDto): Promise<IApiResponse> {
@@ -199,9 +201,10 @@ export class MediaService {
   async fileUpload(data: CreateMediaDto & { file: Express.Multer.File }) {
     try {
       // Upload to Cloudinary using the service
-      const result = await this.cloudinaryService.upload(data.file);
+      // const result = await this.cloudinaryService.upload(data.file);
+      const result = await this.trustFundService.sendFiles(data.file);
 
-      if (!result.success || !result.data?.url) {
+      if (!result.success || !result.publicUrl) {
         throw new UnprocessableEntityException(result.message || 'Could not upload file');
       }
 
@@ -209,7 +212,7 @@ export class MediaService {
       const media = new Media();
       media.user = { id: data.user } as User;
       media.upload_type = data.upload_type;
-      media.file_url = result.data.url;
+      media.file_url = result.publicUrl;
       media.file_type = data.file.mimetype;
       media.file_size = data.file.size;
 

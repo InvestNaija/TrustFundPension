@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException, BadRequestException, Logger } from '@nestjs/common';
 import { TrustFundService } from '../../third-party-services/trustfund';
 import { UserService } from '../../user/services/user.service';
 import {
@@ -22,6 +22,8 @@ import { BVNData } from '../../user/entities';
 
 @Injectable()
 export class PensionService {
+  private readonly logger = new Logger(PensionService.name);
+
   constructor(
     private readonly trustFundService: TrustFundService,
     private readonly userService: UserService,
@@ -345,6 +347,37 @@ export class PensionService {
       });
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate embassy letter');
+    }
+  }
+
+  async getEmbassyLetter(userId: string, embassyId: number): Promise<Buffer> {
+    try {
+      const user = await this.userService.findOne(userId);
+      if (!user) {
+        throw new UnprocessableEntityException('User not found');
+      }
+
+      return await this.trustFundService.getEmbassyLetter({
+        pin: user.pen,
+        embassyId
+      });
+    } catch (error) {
+      this.logger.error('Error generating embassy letter:', error);
+      throw new UnprocessableEntityException('Could not generate embassy letter');
+    }
+  }
+
+  async getEmbassy(): Promise<IApiResponse> {
+    try {
+      const embassies = await this.trustFundService.getEmbassy();
+      return {
+        status: true,
+        message: 'Embassies retrieved successfully',
+        data: embassies
+      };
+    } catch (error) {
+      this.logger.error('Error getting embassies:', error);
+      throw new UnprocessableEntityException('Could not get embassies');
     }
   }
 

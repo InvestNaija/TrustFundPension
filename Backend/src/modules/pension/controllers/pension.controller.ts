@@ -127,14 +127,35 @@ export class PensionController {
     res.end(buffer);
   }
 
+  // @Get('embassy-letter')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: 'Generate embassy letter PDF' })
+  // @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
+  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  // @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
+  // async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+  //  return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+  // }
+
   @Get('embassy-letter')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate embassy letter PDF' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
-  async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
-   return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+  async generateEmbassyLetterUser(
+    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
+    @Query('embassyId') embassyId: number
+  ) {
+    return await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId);
+  }
+
+  @Get('embassy')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get list of all embassies' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Embassies retrieved successfully' })
+  async getEmbassy(): Promise<IApiResponse> {
+    return await this.pensionService.getEmbassy();
   }
 
   @Post('fund-transfer')

@@ -209,3 +209,17 @@ export interface IUnremittedContributionsRequest {
 export interface IWelcomeLetterRequest {
   pin: string;
 }
+
+export interface IEmbassyLetterRequest {
+  pin: string;
+  embassyId: number;
+}
+
+export interface IEmbassy {
+  NO: number;
+  Name: string;
+}
+
+export interface IFileUploadRequest {
+  file: File;
+}

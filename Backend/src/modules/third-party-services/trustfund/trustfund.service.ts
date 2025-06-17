@@ -19,6 +19,9 @@ import {
   IGenerateReportRequest,
   IWelcomeLetterRequest,
   IUnremittedContributionsRequest,
+  IEmbassyLetterRequest,
+  IEmbassy,
+  IFileUploadRequest,
 } from './types';
 
 @Injectable()
@@ -131,6 +134,74 @@ export class TrustFundService {
       throw new UnprocessableEntityException('Could not get contributions');
     }
   }
+
+  async getEmbassyLetter(data: IEmbassyLetterRequest):  Promise<Buffer> {
+    try {
+      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}embassy/embassy-letter`;
+      const queryParams = new URLSearchParams({
+        PIN: data.pin,
+        EmbassyID: data.embassyId.toString()
+      });
+      
+      const url = `${baseUrl}?${queryParams.toString()}`;
+      return await this.httpRequest.makeRequest({
+        method: 'GET',
+        url,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer'
+      }).then(letterResponse => Buffer.from(letterResponse));
+    } catch (error) {
+      this.logger.error('Error getting contributions:', error);
+      throw new UnprocessableEntityException('Could not get embassey letter');
+    }
+  }
+
+  async getEmbassy(): Promise<IEmbassy[]> {
+    try {
+      const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/embassy/embassylist`;
+      return await this.httpRequest.makeRequest({
+        method: 'GET',
+        url,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+    } catch (error) {
+      this.logger.error('Error getting embassy list:', error);
+      throw new UnprocessableEntityException('Could not get embassy list');
+    }
+  }
+
+  async sendFiles(file: Express.Multer.File): Promise<{
+    success: boolean;
+    message: string;
+    fileName: string;
+    relativePath: string;
+    publicUrl: string;
+  }> {
+    try {
+      const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Imageupload/upload`;
+      const formData = new FormData();
+      const blob = new Blob([file.buffer], { type: file.mimetype });
+      formData.append('image', blob, file.originalname);
+
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      });
+    } catch (error) {
+      this.logger.error('Error uploading file:', error);
+      throw new UnprocessableEntityException('Could not upload file');
+    }
+  }
+
+
 
   async getAccountManager(data: IAccountManagerRequest): Promise<IAccountManager[]> {
     try {

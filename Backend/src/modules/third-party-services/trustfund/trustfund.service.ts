@@ -269,7 +269,7 @@ export class TrustFundService {
           data,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': response.authorization
+            'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
           },
         });
       });

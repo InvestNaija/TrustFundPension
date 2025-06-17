@@ -40,7 +40,9 @@ export class NokService {
 
   async findAll(): Promise<NokResponseDto[]> {
     try {
-      const noks = await this.nokRepository.find();
+      const noks = await this.nokRepository.find({
+        relations: ['addresses']
+      });
       return noks.map(nok => this.mapToResponseDto(nok));
     } catch (error) {
       this.logger.error(`Error finding all next of kin: ${error.message}`);
@@ -52,14 +54,12 @@ export class NokService {
     try {
       const nok = await this.nokRepository.findOne({ 
         where: { userId },
-        order: { createdAt: 'DESC' }
+        order: { createdAt: 'DESC' },
+        relations: ['addresses']
       });
       if (!nok) {
         throw new NotFoundException(`Next of kin not found`);
       }
-      const addresses = await this.addressRepository.find({ where: { commonId: nok.id, commonType: 'nok' } });
-      nok.addresses = addresses;
-
       return this.mapToResponseDto(nok);
     } catch (error) {
       this.logger.error(`Error finding next of kin: ${error.message}`);

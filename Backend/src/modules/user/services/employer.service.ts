@@ -82,13 +82,6 @@ export class EmployerService {
         throw new NotFoundException(`Employer for user ID ${userId} not found`);
     }
 
-    if (!employer.addresses || employer.addresses.length === 0) {
-      const addresses = await this.addressRepository.find({
-        where: { commonId: employer.id, commonType: 'employer' },
-      });
-      employer.addresses = addresses;
-    }
-
     return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);

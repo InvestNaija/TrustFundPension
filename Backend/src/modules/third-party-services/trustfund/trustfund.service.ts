@@ -137,7 +137,7 @@ export class TrustFundService {
 
   async getEmbassyLetter(data: IEmbassyLetterRequest):  Promise<Buffer> {
     try {
-      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}embassy/embassy-letter`;
+      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/embassy/embassy-letter`;
       const queryParams = new URLSearchParams({
         PIN: data.pin,
         EmbassyID: data.embassyId.toString()

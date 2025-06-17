@@ -145,9 +145,16 @@ export class PensionController {
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
   async generateEmbassyLetterUser(
     @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Query('embassyId') embassyId: number
+    @Query('embassyId') embassyId: number,
+    @Res() res: Response
   ) {
-    return await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId);
+    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=unremitted-contributions.pdf',
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
   }
 
   @Get('embassy')

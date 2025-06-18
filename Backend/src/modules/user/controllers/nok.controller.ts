@@ -28,14 +28,14 @@ export class NokController {
   @Get('')
   @ApiOperation({ summary: 'Get current user\'s next of kin' })
   @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<NokResponseDto> {
+  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<NokResponseDto | { status: string, message: string, data: any }> {
     return this.nokService.findOne(authenticatedUser.id);
   }
 
   @Get('/admin/:userId')
   @ApiOperation({ summary: 'Get next of kin details by userid' })
   @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
-  async findOneById(@Param('userId') userId: string): Promise<NokResponseDto> {
+  async findOneById(@Param('userId') userId: string): Promise<NokResponseDto | { status: string, message: string, data: any }> {
     return this.nokService.findOne(userId);
   } 
 

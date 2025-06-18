@@ -50,7 +50,7 @@ export class NokService {
     }
   }
 
-  async findOne(userId: string): Promise<NokResponseDto> {
+  async findOne(userId: string): Promise<NokResponseDto | { status: string, message: string, data: any }> {
     try {
       const nok = await this.nokRepository.findOne({ 
         where: { userId },
@@ -58,7 +58,11 @@ export class NokService {
         relations: ['addresses']
       });
       if (!nok) {
-        throw new NotFoundException(`Next of kin not found`);
+        return {
+          status: 'success',
+          message: 'Next of kin not found',
+          data: []
+        }
       }
       return this.mapToResponseDto(nok);
     } catch (error) {

@@ -28,14 +28,14 @@ export class EmployerController {
   @Get('')
   @ApiOperation({ summary: 'Get current user\'s employer details' })
   @ApiResponse({ status: 200, description: 'Employer retrieved successfully', type: EmployerResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<EmployerResponseDto> {
+  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<EmployerResponseDto | { status: string, message: string, data: any }> {
     return this.employerService.findOne(authenticatedUser.id);
   }
 
   @Get('/admin/:userId')
   @ApiOperation({ summary: 'Get employer details by userid' })
   @ApiResponse({ status: 200, description: 'Employer retrieved successfully', type: EmployerResponseDto })
-  async findOneById(@Param('userId') userId: string): Promise<EmployerResponseDto> {
+  async findOneById(@Param('userId') userId: string): Promise<EmployerResponseDto | { status: string, message: string, data: any }> {
     return this.employerService.findOne(userId);
   }
 

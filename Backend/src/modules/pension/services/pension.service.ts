@@ -512,17 +512,35 @@ export class PensionService {
       const nokAddress = nok.addresses?.[0];
       const employerAddress = employer.addresses?.[0];
 
+      let formattedDob;
+      if (user.dob) {
+        const yyyyMMddRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (yyyyMMddRegex.test(user.dob)) {
+          formattedDob = user.dob;
+        } else {
+          const [day, month, year] = user.dob.split('-');
+          if (day && month && year) {
+            formattedDob = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          } else {
+            throw new BadRequestException('Invalid date of birth format. Expected DD-MM-YYYY or YYYY-MM-DD');
+          }
+        }
+      } else {
+        throw new BadRequestException('Date of birth is required');
+      }
+
       const onboardingRequest: ICustomerOnboardingRequest = {
         formRefno: `ONB-${Date.now()}`,
         schemeId: '1',
-        ssn: '1',
+        ssn: user.nin,
         title: user.gender.toLowerCase() === 'male' ? 'Mr' : 'Mrs',
         surname: user.lastName,
         firstname: user.firstName,
         othernames: user.middleName || '',
-        gender: user.gender,
-        dateOfBirth: user.dob,
-        maritalStatusCode: 'Single',
+        gender: user.gender.toLowerCase() === 'male' ? 'm' : 'f',
+        dateOfBirth: formattedDob,
+        // TODO: Receive marital status from customer
+        maritalStatusCode: 'MB',
         mobilePhone: user.phone,
         email: user.email,
         permanentAddress: bvnData.bvnResponse.residential_address || '',
@@ -550,11 +568,11 @@ export class PensionService {
         nokTitle: nok.gender.toLowerCase() === 'male' ? 'Mr' : 'Mrs',
         nokName: nok.firstName + ' ' + nok.lastName,
         nokSurname: nok.lastName,
-        nokGender: nok.gender,
+        nokGender: nok.gender.toLowerCase() === 'male' ? 'm' : 'f',
         nokRelationship: nok.relationship,
         nokLocation: nokAddress.streetName || '',
         nokCountry: nokAddress.countryCode || '',
-        nokStatecode: nokAddress.state || '',
+        nokStatecode: nokAddress.state,
         nokLga: nokAddress.lgaCode || '',
         nokCity: nokAddress.city || '',
         nokOthername: nok.middleName || '',
@@ -567,8 +585,8 @@ export class PensionService {
         pictureImage: '',
         formImage: '',
         signatureImage: '',
-        placeOfBirth: bvnData.bvnResponse.place_of_birth || '',
-        nationalityCode: 'NGA',
+        placeOfBirth: bvnData.bvnResponse.place_of_birth,
+        nationalityCode: 'NG',
         stateOfOrigin: bvnData.bvnResponse.state_of_origin || '',
         lgaCode: bvnData.bvnResponse.lga_of_origin || '',
         permCountry: 'NG',
@@ -583,16 +601,24 @@ export class PensionService {
 
       const response = await this.trustFundService.customerOnboarding(onboardingRequest);
 
-      await this.userService.update(userId, {
-        isOnboarded: true,
-        onboardingDate: new Date(),
-      });
+      if (response.status === 'success') {
+        await this.userService.update(userId, {
+          isOnboarded: true,
+          onboardingDate: new Date(),
+        });
 
-      return {
-        status: true,
-        message: 'Customer onboarding completed successfully',
-        data: response,
-      };
+        return {
+          status: true,
+          message: 'Customer onboarding completed successfully',
+          data: response,
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Failed to complete customer onboarding',
+          data: response,
+        };
+      }
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;

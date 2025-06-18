@@ -78,15 +78,15 @@ export class EmployerService {
         relations: ['addresses']
       });
 
-    if (!employer) {
+      if (!employer) {
         return {
           status: 'success',
           message: 'Employer not found',
           data: []
-        }
-    }
+        };
+      }
 
-    return this.mapToResponseDto(employer);
+      return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);
       throw error;

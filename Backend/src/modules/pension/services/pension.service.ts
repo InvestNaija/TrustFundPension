@@ -500,12 +500,12 @@ export class PensionService {
       }
 
       const nok = user.noks?.[0];
-      if (!nok.addresses?.[0]) {
+      if (!nok || !nok.addresses?.[0]) {
         throw new BadRequestException('Next of Kin address is required');
       }
 
       const employer = user.employers?.[0];
-      if (!employer.addresses?.[0]) {
+      if (!employer || !employer.addresses?.[0]) {
         throw new BadRequestException('Employer address is required');
       }
 
@@ -540,7 +540,7 @@ export class PensionService {
         gender: user.gender.toLowerCase() === 'male' ? 'm' : 'f',
         dateOfBirth: formattedDob,
         // TODO: Receive marital status from customer
-        maritalStatusCode: 'MB',
+        maritalStatusCode: 'MD',
         mobilePhone: user.phone,
         email: user.email,
         permanentAddress: bvnData.bvnResponse.residential_address || '',

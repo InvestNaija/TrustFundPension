@@ -70,7 +70,7 @@ export class EmployerService {
     }
   }
 
-  async findOne(userId: string): Promise<EmployerResponseDto> {
+  async findOne(userId: string): Promise<EmployerResponseDto | { status: string, message: string, data: any }> {
     try {
       const employer = await this.employerRepository.findOne({ 
         where: { userId }, 
@@ -79,7 +79,11 @@ export class EmployerService {
       });
 
     if (!employer) {
-        throw new NotFoundException(`Employer for user ID ${userId} not found`);
+        return {
+          status: 'success',
+          message: 'Employer not found',
+          data: []
+        }
     }
 
     return this.mapToResponseDto(employer);

@@ -21,12 +21,16 @@ export class BvnDataService {
     return this.mapToResponseDto(savedBvnData);
   }
 
-  async findOne(userId: string): Promise<BvnDataResponseDto | null> {
+  async findOne(userId: string): Promise<BvnDataResponseDto | { status: string, message: string, data: any }> {
     try {
       const bvnData = await this.bvnDataRepository.findOne({ 
         where: { userId } 
       });
-      return bvnData ? this.mapToResponseDto(bvnData) : null;
+      return bvnData ? this.mapToResponseDto(bvnData) : {
+        status: 'success',
+        message: 'BVN data not found',
+        data: []
+      };
     } catch (error) {
       this.logger.error(`Error finding BVN data: ${error.message}`);
       throw error;

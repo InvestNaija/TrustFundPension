@@ -334,8 +334,8 @@ export class UserService {
     try {
       const existingBvnData = await this.bvnDataService.findOne(userId);
       
-      if (existingBvnData) {
-        const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse.bvn);
+      if (existingBvnData && 'bvnResponse' in existingBvnData) {
+        const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse);
         return {
           status: true,
           message: 'BVN details retrieved',
@@ -395,7 +395,7 @@ export class UserService {
   async verifyBvn(bvn: string, userId: string): Promise<void> {
     try {
       const existingBvnData = await this.bvnDataService.findOne(userId);
-      if (!existingBvnData) {
+      if (!existingBvnData || !('bvnResponse' in existingBvnData)) {
         throw new UnprocessableEntityException('BVN data not found. Please get BVN details first.');
       }
 

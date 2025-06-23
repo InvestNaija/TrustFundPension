@@ -28,7 +28,7 @@ export class BvnDataController {
   @Get('')
   @ApiOperation({ summary: 'Get current user\'s BVN data' })
   @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<BvnDataResponseDto> {
+  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<BvnDataResponseDto | { status: string, message: string, data: any }> {
     const bvnData = await this.bvnDataService.findOne(authenticatedUser.id);
     if (!bvnData) {
       throw new NotFoundException('BVN data not found');

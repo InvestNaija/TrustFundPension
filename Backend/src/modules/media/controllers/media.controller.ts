@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterc
 import { MediaService } from '../services';
 import { CreateMediaDto, UpdateMediaDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from '../../../core/auth/guards/admin-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -74,6 +75,7 @@ export class MediaController {
   @ApiResponse({ status: 200, description: 'Return media by ID', type: Media })
   @ApiResponse({ status: 404, description: 'Media not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AdminAuthGuard)
   @Get('admin/:userId')
   findOneById(@Param('userId') userId: string) {
     return this.mediaService.findAll(userId);

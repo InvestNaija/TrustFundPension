@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BvnDataService } from '../services';
 import { CreateBvnDataDto, UpdateBvnDataDto, BvnDataResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from '../../../core/auth/guards/admin-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
@@ -37,6 +38,7 @@ export class BvnDataController {
   }
 
   @Get('/admin/:userId')
+  @UseGuards(AdminAuthGuard)
   @ApiOperation({ summary: 'Get BVN data by userid' })
   @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
   async findOneById(@Param('userId') userId: string): Promise<BvnDataResponseDto | { status: string, message: string, data: any }> {

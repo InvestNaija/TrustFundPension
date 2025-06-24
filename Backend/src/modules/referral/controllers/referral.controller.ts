@@ -2,6 +2,7 @@ import { Controller, Post, Get, Body, Req, UseGuards, Patch, Param, Delete } fro
 import { ReferralService } from '../services';
 import { CreateReferralDto, UpdateReferralDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from '../../../core/auth/guards/admin-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -53,6 +54,7 @@ export class ReferralController {
   @ApiOperation({ summary: 'Get all referrals for a specific user' })
   @ApiResponse({ status: 200, description: 'Return all referrals for a specific user', type: [Referral] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(AdminAuthGuard)
   @Get('admin/:userId')
   findAllByUserId(@Param('userId') userId: string) {
     return this.referralService.findAll(userId);

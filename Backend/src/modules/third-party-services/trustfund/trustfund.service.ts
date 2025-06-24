@@ -1,7 +1,6 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
-import { IApiResponse } from 'src/core/types';
 import {
   IEmailRequest,
   IEmailResponse,
@@ -21,7 +20,11 @@ import {
   IUnremittedContributionsRequest,
   IEmbassyLetterRequest,
   IEmbassy,
-  IFileUploadRequest,
+  ISignedNotFundedDto,
+  IRSARegisteredYearFundedDto,
+  IRSANotFundedByEndLastYearFundedThisYearDto,
+  IRSANotFundedAtLeastFourYrsDto,
+  IFundPricesPercentageGrowthDuringYearDto
 } from './types';
 
 @Injectable()
@@ -393,5 +396,30 @@ export class TrustFundService {
       this.logger.error('Error generating embassy letter:', error);
       throw new UnprocessableEntityException('Could not generate embassy letter');
     }
+  }
+
+  async getSignedNotFunded(): Promise<ISignedNotFundedDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/Signed-NotFunded`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSARegisteredYearFunded(): Promise<IRSARegisteredYearFundedDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSARegisteredYear-Funded`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSANotFundedByEndLastYearFundedThisYear(): Promise<IRSANotFundedByEndLastYearFundedThisYearDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSANotFunded-By31DecLastYear-FundedAtLeastOnceThisyear`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSANotFundedAtLeastFourYrs(): Promise<IRSANotFundedAtLeastFourYrsDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSANotFunded-AtLeastFourYrs`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getFundPricesPercentageGrowthDuringYear(): Promise<IFundPricesPercentageGrowthDuringYearDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/FundPricesPercentageGrowth-During-Year`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
   }
 }

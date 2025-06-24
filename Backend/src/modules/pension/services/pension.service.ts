@@ -473,6 +473,31 @@ export class PensionService {
     };
   }
 
+  async getSignedNotFunded(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getSignedNotFunded();
+    return { status: true, message: 'Data fetched successfully', data };
+  }
+  
+  async getRSARegisteredYearFunded(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getRSARegisteredYearFunded();
+    return { status: true, message: 'Data fetched successfully', data };
+  }
+  
+  async getRSANotFundedByEndLastYearFundedThisYear(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getRSANotFundedByEndLastYearFundedThisYear();
+    return { status: true, message: 'Data fetched successfully', data };
+  }
+  
+  async getRSANotFundedAtLeastFourYrs(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getRSANotFundedAtLeastFourYrs();
+    return { status: true, message: 'Data fetched successfully', data };
+  }
+  
+  async getFundPricesPercentageGrowthDuringYear(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getFundPricesPercentageGrowthDuringYear();
+    return { status: true, message: 'Data fetched successfully', data };
+  }
+
   async completeOnboarding(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOneUser(userId);

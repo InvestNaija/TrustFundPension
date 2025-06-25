@@ -11,13 +11,13 @@ import { Referral } from '../entities/referral.entity';
 @ApiTags('Referrals')
 @ApiBearerAuth()
 @Controller('referrals')
-@UseGuards(JwtAuthGuard)
 export class ReferralController {
   constructor(private readonly referralService: ReferralService) {}
 
   @ApiOperation({ summary: 'Generate a new referral code for authenticated user' })
   @ApiResponse({ status: 201, description: 'Referral code generated successfully', type: Referral })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Post('generate')
   generateReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.generateAndCreateReferral(authenticatedUser.id);
@@ -26,6 +26,7 @@ export class ReferralController {
   @ApiOperation({ summary: 'Get referral code for authenticated user' })
   @ApiResponse({ status: 200, description: 'Return user referral code', type: Referral })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Get('my-code')
   getMyReferralCode(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.getUserReferralCode(authenticatedUser.id);
@@ -35,6 +36,7 @@ export class ReferralController {
   @ApiResponse({ status: 201, description: 'Referral created successfully', type: Referral })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Body() createReferralDto: CreateReferralDto) {
     return this.referralService.create({
@@ -46,6 +48,7 @@ export class ReferralController {
   @ApiOperation({ summary: 'Get all referrals for authenticated user' })
   @ApiResponse({ status: 200, description: 'Return all referrals', type: [Referral] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.findAll(authenticatedUser.id);
@@ -73,6 +76,7 @@ export class ReferralController {
   @ApiResponse({ status: 200, description: 'Referral updated successfully', type: Referral })
   @ApiResponse({ status: 404, description: 'Referral not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReferralDto: UpdateReferralDto, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.update(id, updateReferralDto, authenticatedUser.id);
@@ -82,6 +86,7 @@ export class ReferralController {
   @ApiResponse({ status: 200, description: 'Referral deleted successfully' })
   @ApiResponse({ status: 404, description: 'Referral not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.remove(id, authenticatedUser.id);

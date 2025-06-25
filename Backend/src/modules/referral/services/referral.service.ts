@@ -109,14 +109,16 @@ export class ReferralService {
     };
   }
 
-  async findOne(id: string): Promise<IApiResponse> {
+  async findOne(code: string): Promise<IApiResponse> {
     const referral = await this.referralRepository.findOne({
-      where: { id },
-      relations: ['owner', 'referrer'],
+      where: [
+        { code},
+      ],
+      relations: ['owner'],
     });
 
     if (!referral) {
-      throw new NotFoundException(`Referral with ID ${id} not found`);
+      throw new NotFoundException(`Referral with Code ${code}} not found`);
     }
 
     return {

@@ -37,11 +37,31 @@ export class UserRoleService {
 
   async findOne(id: string): Promise<UserRoleResponseDto> {
     try {
-      const userRole = await this.userRoleRepository.findOne({ where: { id } });
+      const userRole = await this.userRoleRepository.findOne({ where: { id }, relations: [
+        'roles'
+      ], });
       if (!userRole) {
         throw new NotFoundException(`User role with ID ${id} not found`);
       }
       return this.mapToResponseDto(userRole);
+    } catch (error) {
+      this.logger.error(`Error finding user role: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async findOneAuthAdmin(id: string): Promise<UserRole> {
+    try {
+      const userRole = await this.userRoleRepository.findOne({ 
+        where: { id }, 
+        relations: [
+        'roles'
+      ] 
+    });
+      if (!userRole) {
+        throw new NotFoundException(`User role with ID ${id} not found`);
+      }
+      return userRole;
     } catch (error) {
       this.logger.error(`Error finding user role: ${error.message}`);
       throw error;

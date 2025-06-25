@@ -1,6 +1,6 @@
 import { IsString, IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { NotificationType } from '../entities/notification.entity';
+import { NotificationType, NotificationStatus } from '../entities/notification.entity';
 
 export class CreateNotificationDto {
   @ApiProperty({ description: 'Title of the notification' })
@@ -14,6 +14,11 @@ export class CreateNotificationDto {
   @ApiProperty({ description: 'Type of notification', enum: NotificationType })
   @IsEnum(NotificationType)
   type: NotificationType;
+
+  @ApiProperty({ description: 'Status of notification', enum: NotificationStatus, default: NotificationStatus.PENDING })
+  @IsOptional()
+  @IsEnum(NotificationStatus)
+  status?: NotificationStatus;
 
   @ApiProperty({ description: 'User ID to send notification to', required: false })
   @IsOptional()

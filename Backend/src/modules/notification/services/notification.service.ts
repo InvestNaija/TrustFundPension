@@ -34,7 +34,10 @@ export class NotificationService implements OnModuleInit {
   }
 
   async createNotification(dto: CreateNotificationDto): Promise<Notification> {
-    const notification = this.notificationRepository.create(dto);
+    const notification = this.notificationRepository.create({
+      ...dto,
+      status: dto.status || NotificationStatus.PENDING,
+    });
     return await this.notificationRepository.save(notification);
   }
 
@@ -91,7 +94,9 @@ export class NotificationService implements OnModuleInit {
     listUsersDto.page = 1;
     listUsersDto.limit = 1000;
     
-    const { data: users } = await this.userService.listUsers(listUsersDto);
+    const response = await this.userService.listUsers(listUsersDto);
+    const users = response.data.data;
+    
     const notifications = await Promise.all(
       users.map(user => 
         this.createNotification({

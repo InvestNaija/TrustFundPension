@@ -111,8 +111,11 @@ export class ReferralService {
 
   async findOne(id: string): Promise<IApiResponse> {
     const referral = await this.referralRepository.findOne({
-      where: { id },
-      relations: ['owner', 'referrer'],
+      where: [
+        { id },
+        { code: id },
+      ],
+      relations: ['owner'],
     });
 
     if (!referral) {

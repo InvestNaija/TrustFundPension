@@ -82,4 +82,9 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   bvn?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  fcmToken?: string;
 } 

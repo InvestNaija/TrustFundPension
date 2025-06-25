@@ -22,6 +22,10 @@ export class LoginDto {
   @IsString()
   password: string;
 
+  @IsOptional()
+  @IsString()
+  fcmToken?: string;
+
   validateLoginMethod(): void {
     const methods = [this.email, this.rsaPin, this.phone].filter(Boolean);
     if (methods.length !== 1) {

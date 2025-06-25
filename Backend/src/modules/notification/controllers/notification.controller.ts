@@ -23,7 +23,7 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post()
-  @Roles([USER_ROLE.ADMIN])
+  // @Roles([USER_ROLE.ADMIN])
   @ApiOperation({ summary: 'Create and send a notification' })
   @ApiResponse({ status: 201, description: 'Notification created and sent successfully' })
   async createNotification(@Body() dto: CreateNotificationDto) {
@@ -31,7 +31,7 @@ export class NotificationController {
   }
 
   @Post('send-to-user/:userId')
-  @Roles([USER_ROLE.ADMIN])
+  // @Roles([USER_ROLE.ADMIN])
   @ApiOperation({ summary: 'Send notification to a specific user' })
   @ApiResponse({ status: 200, description: 'Notification sent successfully' })
   async sendNotificationToUser(
@@ -42,7 +42,7 @@ export class NotificationController {
   }
 
   @Post('send-to-all')
-  @Roles([USER_ROLE.ADMIN])
+  // @Roles([USER_ROLE.ADMIN])
   @ApiOperation({ summary: 'Send notification to all users' })
   @ApiResponse({ status: 200, description: 'Notifications sent successfully' })
   async sendNotificationToAllUsers(@Body() dto: CreateNotificationDto) {

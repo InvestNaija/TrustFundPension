@@ -63,13 +63,13 @@ export class ReferralController {
     return this.referralService.findAll(userId);
   } 
 
-  @ApiOperation({ summary: 'Get referral by ID' })
+  @ApiOperation({ summary: 'Get referral by refferal code' })
   @ApiResponse({ status: 200, description: 'Return referral by ID', type: Referral })
   @ApiResponse({ status: 404, description: 'Referral not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.referralService.findOne(id);
+  @Get(':code')
+  findOne(@Param('code') code: string) {
+    return this.referralService.findOne(code);
   }
 
   @ApiOperation({ summary: 'Update referral by ID' })

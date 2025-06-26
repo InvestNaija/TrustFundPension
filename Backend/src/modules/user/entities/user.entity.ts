@@ -38,7 +38,7 @@ export class User extends AbstractEntity {
   @Column({ name: 'gender' })
   gender: string;
   
-  @Column({ name: 'phone' })
+  @Column({ name: 'phone', unique: true })
   phone: string;
   
   @Column({ nullable: true })

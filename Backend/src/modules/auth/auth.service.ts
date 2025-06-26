@@ -56,6 +56,12 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(dto.email);
 
     if (existingUser) {
+      if (!existingUser.password) {
+        throw new UnprocessableEntityException(
+          'This email address already exists. Please update your password to continue.',
+        );
+      }
+      
       throw new ConflictException(
         'A user with this email address already exists. Please use a different email address.',
       );

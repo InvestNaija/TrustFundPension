@@ -137,6 +137,11 @@ spec:
                 secretKeyRef:
                   name: common.depl
                   key: FIREBASE_CLIENT_EMAIL
+            - name: FIREBASE_PENSION_CHANNEL
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: FIREBASE_PENSION_CHANNEL
             - name: FIREBASE_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:

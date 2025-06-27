@@ -34,7 +34,6 @@ export class NokController {
   }
 
   @Get('/admin/:userId')
-  @UseGuards(AdminAuthGuard)
   @ApiOperation({ summary: 'Get next of kin details by userid' })
   @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
   async findOneById(@Param('userId') userId: string): Promise<NokResponseDto | { status: string, message: string, data: any }> {

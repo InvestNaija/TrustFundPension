@@ -34,7 +34,6 @@ export class EmployerController {
   }
 
   @Get('/admin/:userId')
-  @UseGuards(AdminAuthGuard)
   @ApiOperation({ summary: 'Get employer details by userid' })
   @ApiResponse({ status: 200, description: 'Employer retrieved successfully', type: EmployerResponseDto })
   async findOneById(@Param('userId') userId: string): Promise<EmployerResponseDto | { status: string, message: string, data: any }> {

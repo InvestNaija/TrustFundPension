@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user';
 import { ThirdPartyServicesModule } from '../third-party-services';
 import { ReferralModule } from '../referral';
+import { NotificationModule } from '../notification/notification.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRole } from '../user/entities';
 import { UserRoleRepository } from '../user/repositories/user-role.repository';
@@ -19,7 +20,8 @@ import { UserRoleRepository } from '../user/repositories/user-role.repository';
     TypeOrmModule.forFeature([UserRole]),
     UserModule,
     ThirdPartyServicesModule,
-    ReferralModule
+    ReferralModule,
+    NotificationModule
   ],
   controllers: [AuthController],
   providers: [AuthService, UserRoleRepository],

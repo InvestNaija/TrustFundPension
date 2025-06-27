@@ -1,4 +1,4 @@
-FROM node:20-alpine3.20
+FROM node:20
 
 ENV CI=true
 ENV WDS_SOCKET_PORT=0

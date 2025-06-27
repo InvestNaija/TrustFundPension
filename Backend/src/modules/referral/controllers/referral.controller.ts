@@ -57,7 +57,6 @@ export class ReferralController {
   @ApiOperation({ summary: 'Get all referrals for a specific user' })
   @ApiResponse({ status: 200, description: 'Return all referrals for a specific user', type: [Referral] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @UseGuards(AdminAuthGuard)
   @Get('admin/:userId')
   findAllByUserId(@Param('userId') userId: string) {
     return this.referralService.findAll(userId);

@@ -5,12 +5,15 @@ import { Notification, NotificationStatus } from '../entities/notification.entit
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UserService } from '../../user/services/user.service';
 import * as admin from 'firebase-admin';
+import * as FCM from 'fcm-notification';
 import { envConfig } from '../../../core/config';
 import { ListUsersDto } from '../../user/dto';
 
 @Injectable()
 export class NotificationService implements OnModuleInit {
   private readonly logger = new Logger(NotificationService.name);
+  private fcm: FCM;
+  private firebaseAdmin: any;
 
   constructor(
     @InjectRepository(Notification)
@@ -20,17 +23,41 @@ export class NotificationService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      admin.initializeApp({
+      this.firebaseAdmin = admin.initializeApp({
         credential: admin.credential.cert({
           projectId: envConfig.FIREBASE_PROJECT_ID,
           clientEmail: envConfig.FIREBASE_CLIENT_EMAIL,
           privateKey: envConfig.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
         }),
       });
+      this.fcm = new FCM({
+        projectId: envConfig.FIREBASE_PROJECT_ID,
+        clientEmail: envConfig.FIREBASE_CLIENT_EMAIL,
+        privateKey: envConfig.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      });
       this.logger.log('Firebase Admin initialized successfully');
     } catch (error) {
       this.logger.error('Failed to initialize Firebase Admin:', error);
     }
+  }
+
+  async registerFcmTokenToChannel(deviceToken: string) {
+    if (!envConfig.FIREBASE_PENSION_CHANNEL) {
+      throw new Error('FIREBASE_PENSION_CHANNEL environment variable is not configured');
+    }
+    await this.subscribeToTopic({deviceToken: deviceToken, topic: envConfig.FIREBASE_PENSION_CHANNEL});
+  }
+
+  private async subscribeToTopic({deviceToken, topic}: {deviceToken: string, topic: string}) {
+    return this.fcm.subscribeToTopic([deviceToken], topic, (err, resp) => {
+      if(err){
+        console.log('Yayyyyyy!!', JSON.stringify(err.errors))
+        return
+      }else{
+        console.log('Sent successfully')
+      }
+    })
+    // return admin.messaging().subscribeToTopic(deviceToken, topic)
   }
 
   async createNotification(dto: CreateNotificationDto): Promise<Notification> {
@@ -41,6 +68,18 @@ export class NotificationService implements OnModuleInit {
     return await this.notificationRepository.save(notification);
   }
 
+  private sendNotificationToATopic(payload: any) {
+    try {
+    return this.firebaseAdmin.messaging().send({
+      topic: envConfig.FIREBASE_PENSION_CHANNEL,
+        ...payload
+      })
+    } catch (error) {
+      this.logger.error('Failed to send notification to a topic:', error);
+      throw error;
+    }
+  }
+
   async sendNotification(notification: Notification): Promise<void> {
     try {
       if (!notification.fcmToken) {
@@ -48,16 +87,15 @@ export class NotificationService implements OnModuleInit {
         return;
       }
 
-      const message: admin.messaging.Message = {
+      const message: any = {
         notification: {
           title: notification.title,
           body: notification.body,
         },
-        token: notification.fcmToken,
         data: notification.data ? { data: notification.data } : undefined,
       };
 
-      await admin.messaging().send(message);
+      await this.sendNotificationToATopic(message);
       
       await this.notificationRepository.update(notification.id, {
         status: NotificationStatus.SENT,

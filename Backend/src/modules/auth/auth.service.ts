@@ -39,6 +39,7 @@ import {
 import { ReferralService } from '../referral/services';
 import { UserRoleRepository } from '../user/repositories/user-role.repository';
 import { UserRole } from '../user/entities';
+import { NotificationService } from '../notification/services/notification.service';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +51,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly trustFundService: TrustFundService,
     private readonly referralService: ReferralService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
@@ -244,6 +246,7 @@ export class AuthService {
 
     if (dto.fcmToken) {
       await this.userService.update(user.id, { fcmToken: dto.fcmToken });
+      await this.notificationService.registerFcmTokenToChannel(dto.fcmToken);
     }
 
     const tokens = await this.generateJwtTokens({
@@ -390,6 +393,8 @@ export class AuthService {
 
     // Update user password and clear OTP
     await this.userService.update(user.id, {
+      isEmailVerified: email ? true : user.isEmailVerified,
+      isPhoneVerified: phone ? true : user.isPhoneVerified,
       password: hashedPassword,
       passwordChangedAt: new Date(),
     });

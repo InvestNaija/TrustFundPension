@@ -97,4 +97,22 @@ export class ReferenceDataController {
   async getMaritalStatus(): Promise<ReferenceDataItem[]> {
     return this.referenceDataService.getMaritalStatus();
   }
+
+  @Get('nok-relationships')
+  @ApiOperation({ summary: 'Get all NOK relationships' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'List of NOK relationships with codes and descriptions',
+    type: [Object],
+    schema: {
+      example: [
+        { transId: '7', description: 'BROTHER' },
+        { transId: '10', description: 'SISTER' }
+      ]
+    }
+  })
+  async getNOKRelationships(): Promise<ReferenceDataItem[]> {
+    return this.referenceDataService.getNOKRelationships();
+  }
+  
 } 

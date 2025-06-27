@@ -56,14 +56,25 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(dto.email);
 
     if (existingUser) {
+      if (!existingUser.password) {
+        throw new UnprocessableEntityException(
+          'This email address already exists. Please update your password to continue.',
+        );
+      }
+      
       throw new ConflictException(
         'A user with this email address already exists. Please use a different email address.',
       );
     }
 
-    const hashedPassword = await hashPassword(dto.password);
-    if (!hashedPassword) {
-      throw new BadRequestException('Failed to hash password');
+    let hashedPassword: string | undefined;  
+    if (dto.password) {
+      hashedPassword = await hashPassword(dto.password);
+      if (!hashedPassword) {
+        throw new BadRequestException('Failed to hash password');
+      }
+    } else {
+      hashedPassword = undefined;
     }
 
     // Validate referral code if provided
@@ -80,7 +91,7 @@ export class AuthService {
     const { referralCode, ...userData } = dto;
     const user = await this.userService.create({
       ...userData,
-      password: hashedPassword,
+      password: hashedPassword || '',
       account_type: dto.accountType || undefined,
     });
 
@@ -229,6 +240,10 @@ export class AuthService {
 
     if (!user.isEmailVerified && !user.isPhoneVerified) {
       throw new BadRequestException('Please verify your account');
+    }
+
+    if (dto.fcmToken) {
+      await this.userService.update(user.id, { fcmToken: dto.fcmToken });
     }
 
     const tokens = await this.generateJwtTokens({

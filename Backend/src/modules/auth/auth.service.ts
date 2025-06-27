@@ -378,10 +378,15 @@ export class AuthService {
     }
 
     let user;
+    let foundByEmail = false;
+    let foundByPhone = false;
+    
     if (email) {
       user = await this.userService.findByEmail(email);
+      foundByEmail = !!user;
     } else if (phone) {
       user = await this.userService.findByPhone(phone);
+      foundByPhone = !!user;
     }
 
     if (!user) {
@@ -391,10 +396,10 @@ export class AuthService {
     // Hash new password
     const hashedPassword = await hashPassword(password);
 
-    // Update user password and clear OTP
+    // Update user password and verification status
     await this.userService.update(user.id, {
-      isEmailVerified: email ? true : user.isEmailVerified,
-      isPhoneVerified: phone ? true : user.isPhoneVerified,
+      isEmailVerified: foundByEmail ? true : user.isEmailVerified,
+      isPhoneVerified: foundByPhone ? true : user.isPhoneVerified,
       password: hashedPassword,
       passwordChangedAt: new Date(),
     });

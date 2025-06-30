@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { IApiResponse } from 'src/core/types';
+import { AdminAuthGuard } from 'src/core/auth/guards/admin-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -21,6 +22,7 @@ export class UserController {
   }
 
   @Get('/all')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get paginated list of courses' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully',type: ListUsersResponseDto })
   listUsers(@Query() query: ListUsersDto): Promise<IApiResponse> {

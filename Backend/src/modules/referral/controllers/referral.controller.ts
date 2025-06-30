@@ -57,6 +57,7 @@ export class ReferralController {
   @ApiOperation({ summary: 'Get all referrals for a specific user' })
   @ApiResponse({ status: 200, description: 'Return all referrals for a specific user', type: [Referral] })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @Get('admin/:userId')
   findAllByUserId(@Param('userId') userId: string) {
     return this.referralService.findAll(userId);
@@ -85,7 +86,7 @@ export class ReferralController {
   @ApiResponse({ status: 200, description: 'Referral deleted successfully' })
   @ApiResponse({ status: 404, description: 'Referral not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
     return this.referralService.remove(id, authenticatedUser.id);

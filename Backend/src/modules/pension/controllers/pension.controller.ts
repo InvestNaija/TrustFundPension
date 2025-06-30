@@ -192,12 +192,12 @@ export class PensionController {
     res.end(buffer);
   }
 
-  @Post('onboarding')
+  @Post('admin/onboarding/:userId')
   @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarding completed successfully' })
-  async customerOnboarding(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
-    return await this.pensionService.completeOnboarding(authenticatedUser.id);
+  async customerOnboarding(@Param('userId') userId: string): Promise<IApiResponse> {
+    return await this.pensionService.completeOnboarding(userId);
   }
 
   @Get('admin/signed-not-funded')

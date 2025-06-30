@@ -39,6 +39,7 @@ import {
 import { ReferralService } from '../referral/services';
 import { UserRoleRepository } from '../user/repositories/user-role.repository';
 import { UserRole } from '../user/entities';
+import { NotificationService } from '../notification/services/notification.service';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +51,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly trustFundService: TrustFundService,
     private readonly referralService: ReferralService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
@@ -244,6 +246,7 @@ export class AuthService {
 
     if (dto.fcmToken) {
       await this.userService.update(user.id, { fcmToken: dto.fcmToken });
+      await this.notificationService.registerFcmTokenToChannel(dto.fcmToken);
     }
 
     const tokens = await this.generateJwtTokens({
@@ -375,10 +378,15 @@ export class AuthService {
     }
 
     let user;
+    let foundByEmail = false;
+    let foundByPhone = false;
+    
     if (email) {
       user = await this.userService.findByEmail(email);
+      foundByEmail = !!user;
     } else if (phone) {
       user = await this.userService.findByPhone(phone);
+      foundByPhone = !!user;
     }
 
     if (!user) {
@@ -388,8 +396,10 @@ export class AuthService {
     // Hash new password
     const hashedPassword = await hashPassword(password);
 
-    // Update user password and clear OTP
+    // Update user password and verification status
     await this.userService.update(user.id, {
+      isEmailVerified: foundByEmail ? true : user.isEmailVerified,
+      isPhoneVerified: foundByPhone ? true : user.isPhoneVerified,
       password: hashedPassword,
       passwordChangedAt: new Date(),
     });

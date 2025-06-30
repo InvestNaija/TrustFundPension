@@ -50,17 +50,14 @@ export class UserRoleService {
     }
   }
 
-  async findOneAuthAdmin(id: string): Promise<UserRole> {
+  async findOneAuthAdmin(id: string): Promise<UserRole | null> {
     try {
       const userRole = await this.userRoleRepository.findOne({ 
-        where: { id }, 
+        where: { userId: id, role: { name: 'admin' } }, 
         relations: [
-        'roles'
+        'role'
       ] 
     });
-      if (!userRole) {
-        throw new NotFoundException(`User role with ID ${id} not found`);
-      }
       return userRole;
     } catch (error) {
       this.logger.error(`Error finding user role: ${error.message}`);

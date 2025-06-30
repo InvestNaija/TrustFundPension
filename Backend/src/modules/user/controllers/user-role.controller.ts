@@ -3,10 +3,11 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserRoleService } from '../services';
 import { CreateUserRoleDto, UpdateUserRoleDto, UserRoleResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from 'src/core/auth/guards/admin-auth.guard';
 
 @ApiTags('User Roles')
 @Controller('user-roles')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminAuthGuard)
 export class UserRoleController {
   constructor(private readonly userRoleService: UserRoleService) {}
 

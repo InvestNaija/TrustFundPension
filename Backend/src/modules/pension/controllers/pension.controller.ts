@@ -70,7 +70,7 @@ export class PensionController {
   }
 
   @Get('admin/account-manager/:userId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get pension account details by userid' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Pension account details retrieved successfully' })
   async getPensionAccountManager(@Param('userId') userId: string): Promise<IApiResponse> {
@@ -193,7 +193,7 @@ export class PensionController {
   }
 
   @Post('onboarding')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarding completed successfully' })
   async customerOnboarding(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
@@ -201,6 +201,7 @@ export class PensionController {
   }
 
   @Get('admin/signed-not-funded')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get number of customers signed up but not funded their RSA accounts' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   async getSignedNotFunded() {
@@ -208,6 +209,7 @@ export class PensionController {
   }
 
   @Get('admin/rsa-registered-year-funded')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get RSAs registered this year and funded at least once' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   async getRSARegisteredYearFunded() {
@@ -215,6 +217,7 @@ export class PensionController {
   }
 
   @Get('admin/rsa-not-funded-end-last-year-funded-this-year')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get RSAs not funded by end of last year but funded at least once this year' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   async getRSANotFundedByEndLastYearFundedThisYear() {
@@ -222,6 +225,7 @@ export class PensionController {
   }
 
   @Get('admin/rsa-not-funded-at-least-four-yrs')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get RSAs not funded in at least four years' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   async getRSANotFundedAtLeastFourYrs() {
@@ -229,6 +233,7 @@ export class PensionController {
   }
 
   @Get('admin/fund-prices-percentage-growth-during-year')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get percentage growth in unit values of the funds during the period' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   async getFundPricesPercentageGrowthDuringYear() {

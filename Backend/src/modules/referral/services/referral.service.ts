@@ -6,7 +6,7 @@ import { UserService } from '../../user/services';
 import { User } from '../../user/entities';
 import { ReferralRepository } from '../repositories';
 import { IApiResponse } from 'src/shared/types';
-import { generateReferralCode } from 'src/shared/utils/referral.util';
+import { generateReferralCode, generateUniqueReferralCode } from 'src/shared/utils/referral.util';
 
 @Injectable()
 export class ReferralService {
@@ -43,21 +43,23 @@ export class ReferralService {
       };
     }
 
-    // Generate a unique referral code
-    let referralCode = generateReferralCode();
-    let isUnique = false;
-    
-    while (!isUnique) {
-      // Check if code already exists
-      const existingReferral = await this.referralRepository.findOne({
-        where: { code: referralCode }
-      });
-      if (!existingReferral) {
-        isUnique = true;
-      } else {
-        referralCode = generateReferralCode();
-      }
+    // Get user details for name-based referral code generation
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+
+    // Generate a unique referral code using the improved utility
+    const referralCode = await generateUniqueReferralCode(
+      user.firstName,
+      user.lastName,
+      async (code: string) => {
+        const existing = await this.referralRepository.findOne({
+          where: { code }
+        });
+        return existing ? 1 : 0;
+      }
+    );
 
     // Create the referral
     const referral = await this.referralRepository.save({

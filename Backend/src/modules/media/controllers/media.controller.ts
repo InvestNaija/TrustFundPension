@@ -75,6 +75,7 @@ export class MediaController {
   @ApiResponse({ status: 200, description: 'Return media by ID', type: Media })
   @ApiResponse({ status: 404, description: 'Media not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @Get('admin/:userId')
   findOneById(@Param('userId') userId: string) {
     return this.mediaService.findAll(userId);

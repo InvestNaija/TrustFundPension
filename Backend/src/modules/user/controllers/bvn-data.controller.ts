@@ -38,6 +38,7 @@ export class BvnDataController {
   }
 
   @Get('/admin/:userId')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get BVN data by userid' })
   @ApiResponse({ status: 200, description: 'BVN data retrieved successfully', type: BvnDataResponseDto })
   async findOneById(@Param('userId') userId: string): Promise<BvnDataResponseDto | { status: string, message: string, data: any }> {

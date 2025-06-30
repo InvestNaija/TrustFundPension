@@ -1,9 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
 import { UserService } from '../../../modules/user/services';
 import { UserRoleService } from '../../../modules/user/services';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
-import { UserRole } from 'src/modules/user/entities';
 
 @Injectable()
 export class AdminAuthGuard implements CanActivate {
@@ -15,17 +13,25 @@ export class AdminAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    let user: UserRole | null = null;
-
     const authenticatedUser = request.user as IDecodedJwtToken;
-    if (authenticatedUser?.id) {
-      user = await this.userRoleService.findOneAuthAdmin(authenticatedUser.id);
-      if(user.role.name == 'admin') return true
+    
+    if (!authenticatedUser?.id) {
+      throw new UnauthorizedException('Authentication required');
     }
 
-    if (!user) {
-      throw new UnauthorizedException('User not found');
+    try {
+      const user = await this.userRoleService.findOneAuthAdmin(authenticatedUser.id);
+      
+      if (!user) {
+        throw new UnauthorizedException('Admin access required');
+      }
+
+      return true;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Failed to verify admin access');
     }
-    return false;
   }
 }

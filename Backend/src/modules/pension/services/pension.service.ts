@@ -752,7 +752,7 @@ export class PensionService {
           data: response,
         };
       } else {
-        throw new BadRequestException(response.errorMessages || 'Onboarding failed');
+        throw new BadRequestException(response.errorMessages || 'Service unavailable, please try again later');
       }
     } catch (error) {
       if (error instanceof BadRequestException) {

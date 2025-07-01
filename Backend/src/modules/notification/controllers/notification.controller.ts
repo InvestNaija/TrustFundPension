@@ -51,18 +51,19 @@ export class NotificationController {
     return await this.notificationService.sendNotificationToAllUsers(dto);
   }
 
-  @Get('user')
-  @ApiOperation({ summary: 'Get notifications for the authenticated user' })
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get notifications for a specific user' })
   @ApiResponse({ status: 200, description: 'Returns user notifications' })
-  async getUserNotifications(@Query('userId') userId: string) {
+  async getUserNotifications(@Param('userId') userId: string) {
     return await this.notificationService.getUserNotifications(userId);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a notification by ID' })
-  @ApiResponse({ status: 200, description: 'Returns the notification' })
-  async getNotification(@Param('id') id: string) {
-    return await this.notificationService.getNotification(id);
+  @Patch('user/:userId/read-all')
+  @ApiOperation({ summary: 'Mark all notifications as read for a user' })
+  @ApiResponse({ status: 200, description: 'All notifications marked as read' })
+  async markAllNotificationsAsRead(@Param('userId') userId: string) {
+    await this.notificationService.markAllNotificationsAsRead(userId);
+    return { message: 'All notifications marked as read' };
   }
 
   @Get()
@@ -70,6 +71,13 @@ export class NotificationController {
   @ApiResponse({ status: 200, description: 'Returns all notifications' })
   async getAllNotifications(@Query() query: any) {
     return await this.notificationService.getAllNotifications(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a notification by ID' })
+  @ApiResponse({ status: 200, description: 'Returns the notification' })
+  async getNotification(@Param('id') id: string) {
+    return await this.notificationService.getNotification(id);
   }
 
   @Patch(':id')
@@ -92,13 +100,5 @@ export class NotificationController {
   async markNotificationAsRead(@Param('id') id: string) {
     await this.notificationService.markNotificationAsRead(id);
     return { message: 'Notification marked as read' };
-  }
-
-  @Patch('user/:userId/read-all')
-  @ApiOperation({ summary: 'Mark all notifications as read for a user' })
-  @ApiResponse({ status: 200, description: 'All notifications marked as read' })
-  async markAllNotificationsAsRead(@Param('userId') userId: string) {
-    await this.notificationService.markAllNotificationsAsRead(userId);
-    return { message: 'All notifications marked as read' };
   }
 } 

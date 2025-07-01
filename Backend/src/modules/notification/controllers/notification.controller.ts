@@ -20,7 +20,6 @@ import { UpdateNotificationDto } from '../dto/update-notification.dto';
 
 @ApiTags('Notifications')
 @Controller('notifications')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
@@ -51,6 +50,7 @@ export class NotificationController {
     return await this.notificationService.sendNotificationToAllUsers(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get notifications for a specific user' })
   @ApiResponse({ status: 200, description: 'Returns user notifications' })

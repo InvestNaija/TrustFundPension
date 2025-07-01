@@ -13,7 +13,7 @@ import { UserResponseDto } from '../dto/user-response.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { VerifyMeService } from '../../third-party-services/verifyme/verifyme.service';
 import { QoreIdService } from '../../third-party-services/qoreid/qoreid.service';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { BVNData, UserRole } from '../entities';
 import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
@@ -263,7 +263,7 @@ export class UserService {
   }
 
   async findByPhone(phone: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { phone } });
+    return this.userRepository.findOne({ where: { phone: Like(`%${phone}%`) } });
   }
 
   async findByRsaPin(rsaPin: string): Promise<any | null> {

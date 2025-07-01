@@ -82,8 +82,7 @@ export class ReferenceDataService {
     try {
       const response = await this.httpRequestService.makeRequest({
         method: 'GET',
-        // TODO - Update this to use an env variable
-        url: `http://217.14.92.87/api/get_relationships.php`,
+        url: `${envConfig.TRUSTFUND_URL}api/get_relationships.php`,
       });
       return response || [];
     } catch (error) {

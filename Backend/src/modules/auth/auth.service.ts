@@ -227,7 +227,8 @@ export class AuthService {
     } else if (dto.rsaPin) {
       user = await this.userService.findByRsaPin(dto.rsaPin);
     } else if (dto.phone) {
-      user = await this.userService.findByPhone(dto.phone);
+      const phone = dto.phone.slice(-10)
+      user = await this.userService.findByPhone(phone);
     }
 
     if (!user) {

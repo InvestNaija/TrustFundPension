@@ -7,6 +7,7 @@ import {
   UseGuards,
   Patch,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationService } from '../services/notification.service';
@@ -15,6 +16,7 @@ import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../../core/decorators/roles.decorator';
 import { USER_ROLE } from '../../../core/constants';
+import { UpdateNotificationDto } from '../dto/update-notification.dto';
 
 @ApiTags('Notifications')
 @Controller('notifications')
@@ -54,6 +56,34 @@ export class NotificationController {
   @ApiResponse({ status: 200, description: 'Returns user notifications' })
   async getUserNotifications(@Query('userId') userId: string) {
     return await this.notificationService.getUserNotifications(userId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a notification by ID' })
+  @ApiResponse({ status: 200, description: 'Returns the notification' })
+  async getNotification(@Param('id') id: string) {
+    return await this.notificationService.getNotification(id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all notifications' })
+  @ApiResponse({ status: 200, description: 'Returns all notifications' })
+  async getAllNotifications(@Query() query: any) {
+    return await this.notificationService.getAllNotifications(query);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a notification' })
+  @ApiResponse({ status: 200, description: 'Notification updated' })
+  async updateNotification(@Param('id') id: string, @Body() dto: UpdateNotificationDto) {
+    return await this.notificationService.updateNotification(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a notification' })
+  @ApiResponse({ status: 200, description: 'Notification deleted' })
+  async deleteNotification(@Param('id') id: string) {
+    await this.notificationService.deleteNotification(id);
   }
 
   @Patch(':id/read')

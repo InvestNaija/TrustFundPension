@@ -34,75 +34,16 @@ $trust-fund-admin-theme: mat.define-theme((
 
 // Comment out the line below if you want to use the deprecated `color` inputs.
 // @include mat.color-variants-backwards-compatibility($trust-fund-admin-theme);
+// regular style toast
+@import 'ngx-toastr/toastr';
+
+
 @import "tailwindcss";
 @import "assets/styles/_themes.scss";
 @import "assets/styles/_utilities.scss";
 
 html, body { height: 100%; width: 100%; }
 body { margin: 0; padding: 0; font-family: "Inter", "Helvetica Neue", sans-serif !important; }
-
-.header1 {
-  @apply text-primary font-semibold not-italic text-[20px] leading-[24px] tracking-[0.2px] mb-0
-}
-
-.header2 {
-  @apply text-primary font-bold not-italic text-[32px] leading-[40px] tracking-[-0.32px] mb-0
-}
-
-.input-field {
-  @apply bg-white border border-secondary text-primary font-normal text-base rounded-lg leading-[24px] tracking-[0.32px] focus:outline focus:outline-tertiary focus:border-tertiary block p-[12px] sm:p-[12px]  md:p-[12px] xl:p-[12px] lg:p-[12px] w-full
-}
-
-.label {
-  @apply text-primary text-sm leading-[22px] font-medium
-}
-
-.label2 {
-  @apply text-primary text-sm leading-[22px] font-semibold
-}
-
-.tab--btn {
-  @apply border border-white bg-white rounded-lg text-primary
-}
-
-.filter {
-  @apply rounded-lg border border-[#F0F0F0] bg-white p-[8px] text-xs leading-[18px] tracking-[0.12px] font-medium text-[#737477]
-}
-
-.tab-active {
-  @apply text-primary border-b-2 border-primary
-}
-
-.success {
-  @apply bg-[#F0FBEF] text-[#3FB42D]
-}
-
-.pending {
-  @apply text-[#EC9E00] bg-[#FFF8E6]
-}
-
-.rejected {
-   @apply  text-[#E01529] bg-[#FDECEE]
-}
-
-.transferred {
-  @apply text-[#0087B8] bg-[#EBFAFF]
-}
-
-.cancel-btn {
-  @apply cursor-pointer border border-[#F5F5F5] rounded-lg bg-[#F5F5F5]  p-[8px] text-primary text-xs font-medium leading-[18px] tracking-[0.12px] outline-none
-}
-
-.save-btn {
-  @apply cursor-pointer ml-3 border border-[#013355] rounded-lg bg-[#013355] p-[8px] text-white text-xs font-medium leading-[18px] tracking-[0.12px] outline-none
-}
-
-.approved-btn {
-  @apply cursor-pointer ml-3 border border-[#0D9DFD] rounded-lg bg-[#0D9DFD] p-[8px] text-[#D7EFFF] text-xs font-medium leading-[18px] tracking-[0.12px] outline-none
-}
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
 .mat-mdc-dialog-title::before {
@@ -130,6 +71,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .snack-bar {
   font-size: 24px;
 
+  color: #fff !important;
+
 }
 
 .mat-mdc-snack-bar-container .mdc-snackbar__surface {
@@ -138,6 +81,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding: 0px 16px !important;
   max-width: 100% !important;
   min-width: 100% !important;
+
+  color: #fff !important;
 }
 
 .mdc-snackbar__label {
@@ -150,7 +95,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding-top: 14px;
   padding-bottom: 14px;
 
-  color: #fff;
+  color: #fff !important;
   font-size: 14px !important;
   font-style: normal !important;
   font-weight: 500 !important;
@@ -169,14 +114,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
   &.error {
     --mdc-snackbar-container-color: red !important;
-    --mat-mdc-snack-bar-button-color: #fff;
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-mdc-snack-bar-button-color:  !important;
+    --mdc-snackbar-supporting-text-color: #fff !important;
+    color: #fff !important;
   }
 
   &.success {
     --mdc-snackbar-container-color: green !important;
-    --mat-mdc-snack-bar-button-color: #fff;
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-mdc-snack-bar-button-color: #fff !important;
+    --mdc-snackbar-supporting-text-color: #fff !important;
+
   }
 }
 // snackbar
@@ -184,4 +131,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .error {
   color: var(--red) !important;
   font-size: 12px !important;
+}
+
+.p-editor .p-editor-toolbar.ql-snow {
+    border: 1px solid #D5D6D7 !important;
+    // border-radius: 8px !important;
+}
+
+.p-editor .p-editor-content.ql-snow {
+        border: 1px solid #D5D6D7 !important;
+        // border-radius: 8px !important;
+        // border-end-end-radius: 8px !important;
+        // border-end-start-radius: 8px !important;
+}
+
+.p-editor .p-editor-content .ql-editor {
+    background: var(--p-editor-content-background);
+    color: var(--p-editor-content-color);
+    border-end-end-radius: 8px !important;
+    border-end-start-radius: 8px !important;
 }

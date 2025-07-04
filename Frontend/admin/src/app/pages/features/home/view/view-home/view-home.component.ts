@@ -12,11 +12,13 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs';
 import { HomeService } from '@app/_shared/services/api/home.service';
 import { SharedModule } from '@app/_shared/shared.module';
+import { LoaderComponent } from '@app/_shared/ui/components/loader/loader.component';
+import { ApplicationContextService } from '@app/_shared/services/common/application-context.service';
 
 @Component({
   selector: 'app-view-home',
   standalone: true,
-   imports: [SharedModule, AllComponent, TransferredComponent, PendingComponent, ApprovedComponent, RejectedComponent, PaginationFooterComponent],
+   imports: [SharedModule, AllComponent, TransferredComponent, PendingComponent, ApprovedComponent, RejectedComponent, PaginationFooterComponent, MaterialModule, LoaderComponent],
   templateUrl: './view-home.component.html',
   styleUrls: ['./view-home.component.css']
 })
@@ -30,23 +32,29 @@ export class ViewHomeComponent implements OnInit {
   displayedItems: any[] = [];
   totalUser: any;
 
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   searchForm: FormGroup;
   filterFormFieldGroup: FormGroup;
 
   userListArray:any[] = [];
+  approvedList: any[] = [];
+  pendingList: any[] = [];
+  userInfo: any;
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private fb: FormBuilder,
-    private homeService: HomeService
+    private homeService: HomeService,
+    private appContext: ApplicationContextService
   ) {
+
     this.searchForm = this.fb.group({
       search: '',
       limit: 10,
     });
+
     this.filterFormFieldGroup = this.fb.group({
       employee_type: '',
       branch: '',
@@ -58,7 +66,7 @@ export class ViewHomeComponent implements OnInit {
 
   ngOnInit() {
     this.currentTab = (window.location.href).split('/')[6];
-
+    this.getUserInformation();
     this.searchForm.valueChanges
     .pipe(
       startWith(this.searchForm.value), // Emit the initial form values
@@ -78,6 +86,15 @@ export class ViewHomeComponent implements OnInit {
         this.userListArray = userData?.data?.data;
         this.currentPage = userData.data?.meta?.page;
         this.totalItems = userData.data?.meta?.itemCount;
+
+        this.approvedList = this.userListArray?.filter((data) => {
+          return data.pen;
+        });
+
+        this.pendingList = this.userListArray?.filter((data) => {
+          return !data.pen;
+        });
+
         this.updateDisplayedItems();
         this.isLoading = false; // Set isLoading to false after the data is received
       },
@@ -87,6 +104,16 @@ export class ViewHomeComponent implements OnInit {
       }
     );
 
+  }
+
+    getUserInformation() {
+    this.appContext.getUserInformation().subscribe((response: any) => {
+        if (response) {
+          this.userInfo = response;
+        }
+      },
+      (error: any) => {},
+    );
   }
 
 

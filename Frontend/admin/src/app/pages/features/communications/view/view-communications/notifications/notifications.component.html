@@ -7,67 +7,36 @@
                  <span class="text-tertiary text-xs leading-[18px] tracking-[0.12px] font-medium">Manage your push notifications here</span>
                 </div>
                 <mat-divider class="text-[#F0F0F0]"></mat-divider>
+                   @if(!isLoading) {
                 <div class="body-container mt-[40px]">
-                   <div class="flex justify-between items-center">
+                       @for (notification of notificationList; track notification.id) {
+                   <div class="flex justify-between items-center mb-[24px]">
                           <div class="flex flex-col">
-                            <span class="text-xs leading-[22px] text-tertiary font-normal">01 April 2025 . 10:00AM</span>
-                            <span class="text-sm font-semibold leading-[22px] text-primary">Retirement made easy and simple</span>
-                            <span class="text-sm leading-[22px] text-tertiary font-normal">Start your voluntary contributions today and retire in peace.</span>
+                            <span class="text-xs leading-[22px] text-tertiary font-normal">{{notification?.createdAt | date}}</span>
+                            <span class="text-sm font-semibold leading-[22px] text-primary">{{notification?.title}}</span>
+                            <span class="text-sm leading-[22px] text-tertiary font-normal">{{notification?.body}}</span>
                           </div>
                           <div>
                             <span>
-                              <svg (click)="openNotificationsDialog({})" class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                              <svg (click)="openNotificationsDialog(notification)" class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                               <path d="M10 6H6C5.46957 6 4.96086 6.21071 4.58579 6.58579C4.21071 6.96086 4 7.46957 4 8V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H16C16.5304 20 17.0391 19.7893 17.4142 19.4142C17.7893 19.0391 18 18.5304 18 18V14M14 4H20M20 4V10M20 4L10 14" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                               </svg></span>
                           </div>
                    </div>
+                  }
 
-                   <div class="flex justify-between items-center mt-[24px]">
-                    <div class="flex flex-col">
-                      <span class="text-xs leading-[22px] text-tertiary font-normal">01 April 2025 . 10:00AM</span>
-                      <span class="text-sm font-semibold leading-[22px] text-primary">Refer and earn</span>
-                      <span class="text-sm leading-[22px] text-tertiary font-normal">Get a new customer to join and transact</span>
-                    </div>
-                    <div>
-                      <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M10 6H6C5.46957 6 4.96086 6.21071 4.58579 6.58579C4.21071 6.96086 4 7.46957 4 8V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H16C16.5304 20 17.0391 19.7893 17.4142 19.4142C17.7893 19.0391 18 18.5304 18 18V14M14 4H20M20 4V10M20 4L10 14" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg></span>
-                    </div>
-             </div>
-
-
-             <div class="flex justify-between items-center mt-[24px]">
-              <div class="flex flex-col">
-                <span class="text-xs leading-[22px] text-tertiary font-normal">01 April 2025 . 10:00AM</span>
-                <span class="text-sm font-semibold leading-[22px] text-primary">Get to know our services</span>
-                <span class="text-sm leading-[22px] text-tertiary font-normal">Speak with Tiva or our costumer representatives</span>
-              </div>
-              <div>
-                <span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M10 6H6C5.46957 6 4.96086 6.21071 4.58579 6.58579C4.21071 6.96086 4 7.46957 4 8V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H16C16.5304 20 17.0391 19.7893 17.4142 19.4142C17.7893 19.0391 18 18.5304 18 18V14M14 4H20M20 4V10M20 4L10 14" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg></span>
-              </div>
-       </div>
-
-
-
-       <div class="flex justify-between items-center mt-[24px]">
-        <div class="flex flex-col">
-          <span class="text-xs leading-[22px] text-tertiary font-normal">01 April 2025 . 10:00AM</span>
-          <span class="text-sm font-semibold leading-[22px] text-primary">Happy new year</span>
-          <span class="text-sm leading-[22px] text-tertiary font-normal">We are located across al 36 states of the federation including FCT</span>
-        </div>
-        <div>
-          <span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M10 6H6C5.46957 6 4.96086 6.21071 4.58579 6.58579C4.21071 6.96086 4 7.46957 4 8V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H16C16.5304 20 17.0391 19.7893 17.4142 19.4142C17.7893 19.0391 18 18.5304 18 18V14M14 4H20M20 4V10M20 4L10 14" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg></span>
-        </div>
- </div>
+    <div fxLayout="row" fxLayoutAlign="start center" class="mt-2">
+                    <app-pagination-footer [currentPage]="currentPage" [totalPages]="totalItems" (pageChange)="onPageChange($event)"
+                      [selectedItemsPerPage]="itemsPerPage" (selectedItems)="updateSelectedItemsPerPage($event)"></app-pagination-footer>
+                  </div>
                 </div>
+                         } @else {
+                    <div class="flex justify-center">
+      <app-loader></app-loader>
+    </div>
+              }
          </div>
+
     </div>
   </section>
   </main>

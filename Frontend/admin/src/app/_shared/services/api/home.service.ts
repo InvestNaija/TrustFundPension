@@ -6,10 +6,8 @@ import { environment } from '@environments/environment';
   providedIn: 'root'
 })
 export class HomeService {
+
 private http = inject(HttpClient);
-constructor() { }
-
-
 
 getAllUSers = (userData: any) => {
   let params = new HttpParams();
@@ -25,6 +23,41 @@ getAllUSers = (userData: any) => {
         });
 }
 
+
+getPensionDetails = (id: string) => {
+      return this.http
+         .get<any>(`${environment.baseUrl}/pension/admin/account-manager/${id}`);
+}
+
+getEmployerDetails = (id: string) => {
+  return this.http
+     .get<any>(`${environment.baseUrl}/employers/admin/${id}`);
+}
+
+getNOKDetails = (id: string) => {
+  return this.http
+     .get<any>(`${environment.baseUrl}/noks/admin/${id}`);
+}
+
+getMediaDetails = (id: string) => {
+  return this.http
+     .get<any>(`${environment.baseUrl}/media/admin/${id}`);
+}
+
+getBVN = (id: string) => {
+  return this.http
+     .get<any>(`${environment.baseUrl}/bvn-data/admin/${id}`);
+}
+
+SendToTrustFund = (data: any) => {
+  return this.http
+     .post<any>(`${environment.baseUrl}/pension/admin/onboarding/${data?.id}`, {});
+}
+
+updateUser = (data: any) => {
+  return this.http
+     .put<any>(`${environment.baseUrl}/users/${data?.id}`, data);
+}
 
 }
 

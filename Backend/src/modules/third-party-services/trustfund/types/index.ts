@@ -209,3 +209,55 @@ export interface IUnremittedContributionsRequest {
 export interface IWelcomeLetterRequest {
   pin: string;
 }
+
+export interface IEmbassyLetterRequest {
+  pin: string;
+  embassyId: number;
+}
+
+export interface IEmbassy {
+  NO: number;
+  Name: string;
+}
+
+export interface IFileUploadRequest {
+  file: File;
+}
+
+export interface ISignedNotFundedDto {
+  Registered: number;
+  NotFunded: number;
+}
+
+export interface IRSARegisteredYearFundedDto {
+  RegisteredThisYear: number;
+  FundedPart: number;
+  TotalFundedAmount: number;
+}
+
+export interface IRSANotFundedByEndLastYearFundedThisYearDto {
+  RegisteredThisYear: number;
+  FundedPart: number;
+  TotalFundedAmountRemitted: number;
+}
+
+export interface IRSANotFundedAtLeastFourYrsDto {
+  RegisteredThisYear: number;
+  FundedPart: number;
+  TotalFundedAmount: number;
+}
+
+export interface IFundPricesPercentageGrowthDuringYearDto {
+  RSAFund1: string;
+  RSAFund2: string;
+  RSAFund3: string;
+  RSAFund4: string;
+  NONINTERESTFUND: string;
+  NONINTERESTFUNDRetiree: string;
+  Fund1Percentagegrowth: number;
+  Fund2Percentagegrowth: number;
+  Fund3Percentagegrowth: number;
+  Fund4Percentagegrowth: number;
+  NONINTERESTundPercentagegrowth: number;
+  NONINTERESTFundRetireePercentageGrowth: number;
+}

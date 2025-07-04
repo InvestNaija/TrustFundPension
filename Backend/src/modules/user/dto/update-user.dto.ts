@@ -82,4 +82,19 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   bvn?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  fcmToken?: string;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isEmailVerified?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  isPhoneVerified?: boolean;
 } 

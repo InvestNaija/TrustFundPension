@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, Patch, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from '../services';
-import { CreateUserDto, ListUsersDto, ListUsersResponseDto, UpdateUserDto, UserResponseDto } from '../dto';
+import { CreateUserDto, ListUsersDto, ListUsersResponseDto, UpdateUserDto, UserResponseDto, UpdateFcmTokenDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { IApiResponse } from 'src/core/types';
+import { AdminAuthGuard } from 'src/core/auth/guards/admin-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -21,6 +22,7 @@ export class UserController {
   }
 
   @Get('/all')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Get paginated list of courses' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully',type: ListUsersResponseDto })
   listUsers(@Query() query: ListUsersDto): Promise<IApiResponse> {
@@ -46,5 +48,16 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'User updated successfully', type: UserResponseDto })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Patch('fcm-token')
+  @ApiOperation({ summary: 'Update user FCM token' })
+  @ApiResponse({ status: 200, description: 'FCM token updated successfully' })
+  async updateFcmToken(
+    @Request() req,
+    @Body() dto: UpdateFcmTokenDto,
+  ) {
+    await this.userService.updateFcmToken(req.user.id, dto.fcmToken);
+    return { message: 'FCM token updated successfully' };
   }
 }

@@ -70,7 +70,7 @@ export class EmployerService {
     }
   }
 
-  async findOne(userId: string): Promise<EmployerResponseDto> {
+  async findOne(userId: string): Promise<EmployerResponseDto | { status: string, message: string, data: any }> {
     try {
       const employer = await this.employerRepository.findOne({ 
         where: { userId }, 
@@ -78,18 +78,15 @@ export class EmployerService {
         relations: ['addresses']
       });
 
-    if (!employer) {
-        throw new NotFoundException(`Employer for user ID ${userId} not found`);
-    }
+      if (!employer) {
+        return {
+          status: 'success',
+          message: 'Employer not found',
+          data: []
+        };
+      }
 
-    if (!employer.addresses || employer.addresses.length === 0) {
-      const addresses = await this.addressRepository.find({
-        where: { commonId: employer.id, commonType: 'employer' },
-      });
-      employer.addresses = addresses;
-    }
-
-    return this.mapToResponseDto(employer);
+      return this.mapToResponseDto(employer);
     } catch (error) {
       this.logger.error(`Error finding employer: ${error.message}`);
       throw error;

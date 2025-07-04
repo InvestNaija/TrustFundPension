@@ -8,3 +8,12 @@ export interface IQoreIdNinResponse {
     emails: string[];
   };
 } 
+
+export interface IQoreIdBvnResponse {
+  bvn: {
+    bvn: string;
+    phone: string;
+    email: string;
+    emails: string[];
+  };
+} 

@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NokService } from '../services';
 import { CreateNokDto, UpdateNokDto, NokResponseDto } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from '../../../core/auth/guards/admin-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 
@@ -28,9 +29,17 @@ export class NokController {
   @Get('')
   @ApiOperation({ summary: 'Get current user\'s next of kin' })
   @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
-  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<NokResponseDto> {
+  async findOne(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<NokResponseDto | { status: string, message: string, data: any }> {
     return this.nokService.findOne(authenticatedUser.id);
   }
+
+  @Get('/admin/:userId')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get next of kin details by userid' })
+  @ApiResponse({ status: 200, description: 'Next of kin retrieved successfully', type: NokResponseDto })
+  async findOneById(@Param('userId') userId: string): Promise<NokResponseDto | { status: string, message: string, data: any }> {
+    return this.nokService.findOne(userId);
+  } 
 
   @Put('')
   @ApiOperation({ summary: 'Update current user\'s next of kin' })

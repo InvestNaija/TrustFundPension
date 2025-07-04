@@ -5,6 +5,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user';
 import { ThirdPartyServicesModule } from '../third-party-services';
 import { ReferralModule } from '../referral';
+import { NotificationModule } from '../notification/notification.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserRole } from '../user/entities';
+import { UserRoleRepository } from '../user/repositories/user-role.repository';
 
 @Module({
   imports: [
@@ -13,11 +17,13 @@ import { ReferralModule } from '../referral';
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY },
     }),
+    TypeOrmModule.forFeature([UserRole]),
     UserModule,
     ThirdPartyServicesModule,
-    ReferralModule
+    ReferralModule,
+    NotificationModule
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, UserRoleRepository],
 })
 export class AuthModule {}

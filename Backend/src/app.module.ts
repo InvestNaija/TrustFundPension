@@ -16,6 +16,8 @@ import { ReferralModule } from './modules/referral';
 import { ContactUsModule } from './modules/contact-us';
 import { MediaModule } from './modules/media';
 import { BranchModule } from './modules/branch/branch.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { ReferenceDataModule } from './modules/reference-data/reference-data.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { BranchModule } from './modules/branch/branch.module';
     ContactUsModule,
     MediaModule,
     BranchModule,
+    NotificationModule,
+    ReferenceDataModule,
   ],
   controllers: [AppController],
   providers: [AppService],

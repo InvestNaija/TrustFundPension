@@ -11,6 +11,7 @@ import {
   FundTransferResponseDto,
 } from '../dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { AdminAuthGuard } from '../../../core/auth/guards/admin-auth.guard';
 import { AuthenticatedUser } from '../../../core/decorators';
 import { IDecodedJwtToken } from '../../../modules/auth/strategies/types';
 import { IApiResponse } from '../../../core/types';
@@ -68,6 +69,14 @@ export class PensionController {
     return await this.pensionService.getAccountManager(authenticatedUser.id);
   }
 
+  @Get('admin/account-manager/:userId')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get pension account details by userid' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Pension account details retrieved successfully' })
+  async getPensionAccountManager(@Param('userId') userId: string): Promise<IApiResponse> {
+    return await this.pensionService.getAccountManager(userId);
+  }
+
   @Get('summary/:rsa_pin')
   @ApiOperation({ summary: 'validate rsa pin' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Summary retrieved successfully' })
@@ -119,14 +128,42 @@ export class PensionController {
     res.end(buffer);
   }
 
+  // @Get('embassy-letter')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: 'Generate embassy letter PDF' })
+  // @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
+  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  // @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
+  // async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
+  //  return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+  // }
+
   @Get('embassy-letter')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate embassy letter PDF' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
-  async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
-   return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
+  async generateEmbassyLetterUser(
+    @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
+    @Query('embassyId') embassyId: number,
+    @Res() res: Response
+  ) {
+    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=unremitted-contributions.pdf',
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Get('embassy')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get list of all embassies' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Embassies retrieved successfully' })
+  async getEmbassy(): Promise<IApiResponse> {
+    return await this.pensionService.getEmbassy();
   }
 
   @Post('fund-transfer')
@@ -155,11 +192,51 @@ export class PensionController {
     res.end(buffer);
   }
 
-  @Post('onboarding')
-  @UseGuards(JwtAuthGuard)
+  @Post('admin/onboarding/:userId')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
   @ApiOperation({ summary: 'Customer onboarding' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarding completed successfully' })
-  async customerOnboarding(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken): Promise<IApiResponse> {
-    return await this.pensionService.completeOnboarding(authenticatedUser.id);
+  async customerOnboarding(@Param('userId') userId: string): Promise<IApiResponse> {
+    return await this.pensionService.completeOnboarding(userId);
+  }
+
+  @Get('admin/signed-not-funded')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get number of customers signed up but not funded their RSA accounts' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  async getSignedNotFunded() {
+    return await this.pensionService.getSignedNotFunded();
+  }
+
+  @Get('admin/rsa-registered-year-funded')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get RSAs registered this year and funded at least once' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  async getRSARegisteredYearFunded() {
+    return await this.pensionService.getRSARegisteredYearFunded();
+  }
+
+  @Get('admin/rsa-not-funded-end-last-year-funded-this-year')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get RSAs not funded by end of last year but funded at least once this year' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  async getRSANotFundedByEndLastYearFundedThisYear() {
+    return await this.pensionService.getRSANotFundedByEndLastYearFundedThisYear();
+  }
+
+  @Get('admin/rsa-not-funded-at-least-four-yrs')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get RSAs not funded in at least four years' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  async getRSANotFundedAtLeastFourYrs() {
+    return await this.pensionService.getRSANotFundedAtLeastFourYrs();
+  }
+
+  @Get('admin/fund-prices-percentage-growth-during-year')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get percentage growth in unit values of the funds during the period' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+  async getFundPricesPercentageGrowthDuringYear() {
+    return await this.pensionService.getFundPricesPercentageGrowthDuringYear();
   }
 } 

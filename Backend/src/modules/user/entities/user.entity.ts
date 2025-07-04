@@ -6,6 +6,7 @@ import { ACCOUNT_TYPE } from '../../../core/constants';
 import { Referral } from '../../referral/entities';
 import { ContactUs } from '../../contact-us/entities';
 import { Media } from '../../media/entities';
+import { Notification } from '../../notification/entities/notification.entity';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
@@ -37,7 +38,7 @@ export class User extends AbstractEntity {
   @Column({ name: 'gender' })
   gender: string;
   
-  @Column({ name: 'phone' })
+  @Column({ name: 'phone', unique: true })
   phone: string;
   
   @Column({ nullable: true })
@@ -113,6 +114,9 @@ export class User extends AbstractEntity {
   @OneToMany(() => Media, media => media.user)
   media: Media[];
 
+  @OneToMany(() => Notification, notification => notification.user)
+  notifications: Notification[];
+
   @OneToMany(() => Nok, nok => nok.user)
   noks: Nok[];
 
@@ -130,4 +134,7 @@ export class User extends AbstractEntity {
 
   @Column({ name: 'onboarding_date', type: 'timestamptz', nullable: true })
   onboardingDate: Date | null;
+
+  @Column({ nullable: true, name: 'fcm_token' })
+  fcmToken: string;
 }

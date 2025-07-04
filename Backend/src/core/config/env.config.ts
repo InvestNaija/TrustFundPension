@@ -42,10 +42,15 @@ export const envConfig = {
   TRUSTFUND_SMS_SENDER: process.env.TRUSTFUND_SMS_SENDER,
   TRUSTFUND_BASE_URL: process.env.TRUSTFUND_BASE_URL,
   TRUSTFUND_SERVICE_URL: process.env.TRUSTFUND_SERVICE_URL || `https://services.trustfundpensions.com/request_letter`,
+  TRUSTFUND_SERVICE_BASE_URL: process.env.TRUSTFUND_SERVICE_BASE_URL,
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  FIREBASE_PENSION_CHANNEL: process.env.FIREBASE_PENSION_CHANNEL,
 }
 
 export interface IEnvConfig {
@@ -89,11 +94,16 @@ export const envValidationSchema = Joi.object({
   TRUSTFUND_SMS_PASSWORD: Joi.string().required(),
   TRUSTFUND_SMS_SENDER: Joi.string().required(),
   TRUSTFUND_BASE_URL: Joi.string().required(),
+  TRUSTFUND_SERVICE_BASE_URL: Joi.string().required(),
   // TRUSTFUND_SERVICE_URL: Joi.string().required(),
   CLOUDINARY_CLOUD_NAME: Joi.string().required(),
   CLOUDINARY_API_KEY: Joi.string().required(),
   CLOUDINARY_API_SECRET: Joi.string().required(),
   CLOUDINARY_URL: Joi.string().required(),
+  FIREBASE_PROJECT_ID: Joi.string().required(),
+  FIREBASE_CLIENT_EMAIL: Joi.string().required(),
+  FIREBASE_PRIVATE_KEY: Joi.string().required(),
+  FIREBASE_PENSION_CHANNEL: Joi.string().required(),
 });
 
 // import * as dotenv from 'dotenv';

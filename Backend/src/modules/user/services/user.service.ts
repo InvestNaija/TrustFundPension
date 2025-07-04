@@ -13,7 +13,7 @@ import { UserResponseDto } from '../dto/user-response.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { VerifyMeService } from '../../third-party-services/verifyme/verifyme.service';
 import { QoreIdService } from '../../third-party-services/qoreid/qoreid.service';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { BVNData, UserRole } from '../entities';
 import { BvnDataService } from './bvn-data.service';
 import { UserRoleService } from './user-role.service';
@@ -263,7 +263,7 @@ export class UserService {
   }
 
   async findByPhone(phone: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { phone } });
+    return this.userRepository.findOne({ where: { phone: Like(`%${phone}%`) } });
   }
 
   async findByRsaPin(rsaPin: string): Promise<any | null> {
@@ -334,7 +334,7 @@ export class UserService {
     try {
       const existingBvnData = await this.bvnDataService.findOne(userId);
       
-      if (existingBvnData) {
+      if (existingBvnData && 'bvnResponse' in existingBvnData) {
         const formattedData = this.formatBvnResponse(existingBvnData.bvnResponse);
         return {
           status: true,
@@ -348,15 +348,15 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      const bvnResponse = await this.verifyMeService.verifyBvn(bvn, user.firstName, user.lastName);
+      const bvnResponse = await this.qoreIdService.verifyBvn(bvn);
 
-      if (bvnResponse.data) {
-        const formattedData = this.formatBvnResponse(bvnResponse.data);
+      if (bvnResponse) {
+        const formattedData = this.formatBvnResponse(bvnResponse.bvn);
         
         await this.bvnDataService.create({
           userId,
           bvn,
-          bvnResponse: bvnResponse.data,
+          bvnResponse: bvnResponse.bvn,
         });
 
         return {
@@ -395,7 +395,7 @@ export class UserService {
   async verifyBvn(bvn: string, userId: string): Promise<void> {
     try {
       const existingBvnData = await this.bvnDataService.findOne(userId);
-      if (!existingBvnData) {
+      if (!existingBvnData || !('bvnResponse' in existingBvnData)) {
         throw new UnprocessableEntityException('BVN data not found. Please get BVN details first.');
       }
 
@@ -445,10 +445,16 @@ export class UserService {
     return this.mapToResponseDto(updatedUser);
   }
 
+  async updateFcmToken(userId: string, fcmToken: string): Promise<void> {
+    await this.userRepository.update({ id: userId }, { fcmToken });
+  }
+
   private formatBvnResponse(data: any) {
     const bvnData = data || {};
     const response: any = {
       bvn: bvnData.bvn,
+      firstname: bvnData.firstname,
+      lastname: bvnData.lastname
     };
 
     const phones: string[] = [];

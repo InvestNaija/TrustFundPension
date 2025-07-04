@@ -1,7 +1,6 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
-import { IApiResponse } from 'src/core/types';
 import {
   IEmailRequest,
   IEmailResponse,
@@ -19,6 +18,13 @@ import {
   IGenerateReportRequest,
   IWelcomeLetterRequest,
   IUnremittedContributionsRequest,
+  IEmbassyLetterRequest,
+  IEmbassy,
+  ISignedNotFundedDto,
+  IRSARegisteredYearFundedDto,
+  IRSANotFundedByEndLastYearFundedThisYearDto,
+  IRSANotFundedAtLeastFourYrsDto,
+  IFundPricesPercentageGrowthDuringYearDto
 } from './types';
 
 @Injectable()
@@ -132,6 +138,74 @@ export class TrustFundService {
     }
   }
 
+  async getEmbassyLetter(data: IEmbassyLetterRequest):  Promise<Buffer> {
+    try {
+      const baseUrl = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/embassy/embassy-letter`;
+      const queryParams = new URLSearchParams({
+        PIN: data.pin,
+        EmbassyID: data.embassyId.toString()
+      });
+      
+      const url = `${baseUrl}?${queryParams.toString()}`;
+      return await this.httpRequest.makeRequest({
+        method: 'GET',
+        url,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer'
+      }).then(letterResponse => Buffer.from(letterResponse));
+    } catch (error) {
+      this.logger.error('Error getting contributions:', error);
+      throw new UnprocessableEntityException('Could not get embassey letter');
+    }
+  }
+
+  async getEmbassy(): Promise<IEmbassy[]> {
+    try {
+      const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/embassy/embassylist`;
+      return await this.httpRequest.makeRequest({
+        method: 'GET',
+        url,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+    } catch (error) {
+      this.logger.error('Error getting embassy list:', error);
+      throw new UnprocessableEntityException('Could not get embassy list');
+    }
+  }
+
+  async sendFiles(file: Express.Multer.File): Promise<{
+    success: boolean;
+    message: string;
+    fileName: string;
+    relativePath: string;
+    publicUrl: string;
+  }> {
+    try {
+      const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Imageupload/upload`;
+      const formData = new FormData();
+      const blob = new Blob([file.buffer], { type: file.mimetype });
+      formData.append('image', blob, file.originalname);
+
+      return await this.httpRequest.makeRequest({
+        method: 'POST',
+        url,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      });
+    } catch (error) {
+      this.logger.error('Error uploading file:', error);
+      throw new UnprocessableEntityException('Could not upload file');
+    }
+  }
+
+
+
   async getAccountManager(data: IAccountManagerRequest): Promise<IAccountManager[]> {
     try {
       const url = `${envConfig.TRUSTFUND_URL}api/get_agent.php`;
@@ -198,7 +272,7 @@ export class TrustFundService {
           data,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': response.authorization
+            'Authorization': `Basic ${Buffer.from(`${envConfig.TRUSTFUND_USERNAME}:${envConfig.TRUSTFUND_PASSWORD}`).toString('base64')}`
           },
         });
       });
@@ -322,5 +396,30 @@ export class TrustFundService {
       this.logger.error('Error generating embassy letter:', error);
       throw new UnprocessableEntityException('Could not generate embassy letter');
     }
+  }
+
+  async getSignedNotFunded(): Promise<ISignedNotFundedDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/Signed-NotFunded`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSARegisteredYearFunded(): Promise<IRSARegisteredYearFundedDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSARegisteredYear-Funded`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSANotFundedByEndLastYearFundedThisYear(): Promise<IRSANotFundedByEndLastYearFundedThisYearDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSANotFunded-By31DecLastYear-FundedAtLeastOnceThisyear`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getRSANotFundedAtLeastFourYrs(): Promise<IRSANotFundedAtLeastFourYrsDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/RSANotFunded-AtLeastFourYrs`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getFundPricesPercentageGrowthDuringYear(): Promise<IFundPricesPercentageGrowthDuringYearDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/FundPricesPercentageGrowth-During-Year`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
   }
 }

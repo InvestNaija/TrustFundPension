@@ -37,6 +37,9 @@ import {
   ISmsRequest,
 } from '../third-party-services/trustfund/types';
 import { ReferralService } from '../referral/services';
+import { UserRoleRepository } from '../user/repositories/user-role.repository';
+import { UserRole } from '../user/entities';
+import { NotificationService } from '../notification/services/notification.service';
 
 @Injectable()
 export class AuthService {
@@ -44,23 +47,36 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly userRoleRepository: UserRoleRepository,
     private readonly jwtService: JwtService,
     private readonly trustFundService: TrustFundService,
     private readonly referralService: ReferralService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
     const existingUser = await this.userService.findByEmail(dto.email);
 
     if (existingUser) {
+      if (!existingUser.password) {
+        throw new UnprocessableEntityException(
+          'This email address already exists. Please update your password to continue.',
+        );
+      }
+      
       throw new ConflictException(
         'A user with this email address already exists. Please use a different email address.',
       );
     }
 
-    const hashedPassword = await hashPassword(dto.password);
-    if (!hashedPassword) {
-      throw new BadRequestException('Failed to hash password');
+    let hashedPassword: string | undefined;  
+    if (dto.password) {
+      hashedPassword = await hashPassword(dto.password);
+      if (!hashedPassword) {
+        throw new BadRequestException('Failed to hash password');
+      }
+    } else {
+      hashedPassword = undefined;
     }
 
     // Validate referral code if provided
@@ -77,9 +93,15 @@ export class AuthService {
     const { referralCode, ...userData } = dto;
     const user = await this.userService.create({
       ...userData,
-      password: hashedPassword,
+      password: hashedPassword || '',
       account_type: dto.accountType || undefined,
     });
+
+    // Assign CLIENT role to the user
+    const userRole = new UserRole();
+    userRole.userId = user.id;
+    userRole.roleId = '403e5c43-a8e1-42c4-b018-87260ce8ac1f'; // CLIENT role ID
+    await this.userRoleRepository.save(userRole);
 
     // Generate referral code for the new user
     const referralResponse = await this.referralService.generateAndCreateReferral(user.id);
@@ -205,7 +227,8 @@ export class AuthService {
     } else if (dto.rsaPin) {
       user = await this.userService.findByRsaPin(dto.rsaPin);
     } else if (dto.phone) {
-      user = await this.userService.findByPhone(dto.phone);
+      const phone = dto.phone.slice(-10)
+      user = await this.userService.findByPhone(phone);
     }
 
     if (!user) {
@@ -220,6 +243,11 @@ export class AuthService {
 
     if (!user.isEmailVerified && !user.isPhoneVerified) {
       throw new BadRequestException('Please verify your account');
+    }
+
+    if (dto.fcmToken) {
+      await this.userService.update(user.id, { fcmToken: dto.fcmToken });
+      await this.notificationService.registerFcmTokenToChannel(dto.fcmToken);
     }
 
     const tokens = await this.generateJwtTokens({
@@ -351,10 +379,15 @@ export class AuthService {
     }
 
     let user;
+    let foundByEmail = false;
+    let foundByPhone = false;
+    
     if (email) {
       user = await this.userService.findByEmail(email);
+      foundByEmail = !!user;
     } else if (phone) {
       user = await this.userService.findByPhone(phone);
+      foundByPhone = !!user;
     }
 
     if (!user) {
@@ -364,8 +397,10 @@ export class AuthService {
     // Hash new password
     const hashedPassword = await hashPassword(password);
 
-    // Update user password and clear OTP
+    // Update user password and verification status
     await this.userService.update(user.id, {
+      isEmailVerified: foundByEmail ? true : user.isEmailVerified,
+      isPhoneVerified: foundByPhone ? true : user.isPhoneVerified,
       password: hashedPassword,
       passwordChangedAt: new Date(),
     });
@@ -446,16 +481,33 @@ export class AuthService {
 
     let message: string;
     if (dto.context === 'bvn') {
-      message = `
-      <h2>Hi ${user.firstName},</h2>
-      <p>Your BVN validation code is <strong>${otpCode}</strong></p>
-      <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
-      <p>This token confirms that the BVN you submitted is yours.</p>
-      <p>Please do not share your token with anyone.</p>
-      <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
-    `;
+      if (dto.method === VerificationMethod.EMAIL) {
+        message = `
+          <h2>Hi ${user.firstName},</h2>
+          <p>Your BVN validation code is <strong>${otpCode}</strong></p>
+          <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
+          <p>This token confirms that the BVN you submitted is yours.</p>
+          <p>Please do not share your token with anyone.</p>
+          <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
+        `;
+      } else {
+        message = `Your BVN verification code is: ${otpCode}`;
+      }
+    } else if (dto.context === 'nin') {
+      if (dto.method === VerificationMethod.EMAIL) {
+        message = `
+          <h2>Hi ${user.firstName},</h2>
+          <p>Your NIN verification code is <strong>${otpCode}</strong></p>
+          <p>Please enter the code in your Trustfund mobile app to complete your registration process.</p>
+          <p>This token confirms that the NIN you submitted is yours.</p>
+          <p>Please do not share your token with anyone.</p>
+          <p>If you did not initiate this request, please contact our Support Team on ${envConfig.SUPPORT_PHONE} or send an email to ${envConfig.SUPPORT_EMAIL}.</p>
+        `;
+      } else {
+        message = `Your NIN verification code is: ${otpCode}`;
+      }
     } else {
-      message = `Your NIN verification code is: ${otpCode}`;
+      message = `Your verification code is: ${otpCode}`;
     }
     
     if (dto.method === VerificationMethod.EMAIL) {

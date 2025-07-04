@@ -42,6 +42,7 @@
               class="input-field placeholder-tertiary text-sm"
               placeholder="Enter branch name"
               formControlName="name"
+              (keyup)="controlChanged('name')"
             />
             <div class="error-wrapper">
               <span *ngIf="uiErrors.name" class="error ">{{uiErrors.name}}</span>
@@ -57,6 +58,7 @@
               class="input-field placeholder-tertiary text-sm"
               placeholder="Enter email"
               formControlName="email"
+                     (keyup)="controlChanged('email')"
             />
             <div class="error-wrapper">
               <span *ngIf="uiErrors.email" class="error ">{{uiErrors.email}}</span>
@@ -72,6 +74,7 @@
               class="input-field placeholder-tertiary text-sm"
               placeholder="Enter phone number"
               formControlName="phone"
+                     (keyup)="controlChanged('phone')"
             />
             <div class="error-wrapper">
               <span *ngIf="uiErrors.phone" class="error ">{{uiErrors.phone}}</span>
@@ -81,7 +84,7 @@
 
           <div class="form-group flex flex-col gap-1 mb-[24px]">
             <label class="label2">Address <small>(Please pick from the search results...{{container.countdown}})</small></label>
-            <input placeholder="Please wait, loading..." autocorrect="off" matInput autocapitalize="off" spellcheck="off" type="text"   class="input-field placeholder-tertiary text-sm" formControlName="address" #search />
+            <input placeholder="Please wait, loading..." autocorrect="off" matInput autocapitalize="off" spellcheck="off" type="text"   class="input-field placeholder-tertiary text-sm"        (keyup)="controlChanged('address')" formControlName="address" #search />
             <div class="error-wrapper">
               <span *ngIf="uiErrors.address" class="error ">{{uiErrors.address}}</span>
             </div>
@@ -94,8 +97,8 @@
 
   <section>
     <div class="btn-container" mat-dialog-actions>
-      <button class="cancel-btn">Cancel</button>
-      <button (click)="submit()" class="save-btn">
+      <button class="cancel-btn" (click)="closeDialog()">Cancel</button>
+      <button (click)="submit()" class="save-btn" [disabled]="submitting">
         <div class="flex justify-center">
           <span class="" *ngIf="!submitting">Save</span>
           <app-loader2 *ngIf="submitting"></app-loader2>

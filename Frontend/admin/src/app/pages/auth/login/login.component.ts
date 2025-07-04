@@ -9,6 +9,7 @@ import { SharedModule } from '@app/_shared/shared.module';
 import { Loader2Component } from '@app/_shared/ui/components/loader_2/loader.component';
 import { SnackBarComponent } from '@app/_shared/ui/dialogs/snack-bar/snack-bar.component';
 import { ApplicationContextService } from '@app/_shared/services/common/application-context.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +35,8 @@ export class LoginComponent implements OnInit {
      private authService: AuthService,
      private router: Router,
     private appContext: ApplicationContextService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private toastr: ToastrService
    ) { }
 
    ngOnInit() {
@@ -67,11 +69,13 @@ export class LoginComponent implements OnInit {
       (response: any) => {
           this.authService.setToken(response?.data?.tokens);
             this.appContext.userInformation$.next(response.data);
-            this.commonService.snackBar(
-            this.commonService?.snackbarIcon?.success,
-            response?.message,
-            'success'
-          );
+
+          //   this.commonService.snackBar(
+          //   this.commonService?.snackbarIcon?.success,
+          //   response?.message,
+          //   'success'
+          // );
+          this.toastr.success(response?.message);
 
         if (
           this.authService.redirectUrl ||
@@ -90,11 +94,12 @@ export class LoginComponent implements OnInit {
         this.submitting = false;
         let errorMessage = '';
           errorMessage = errResp?.error?.message;
-        this.commonService.snackBar(
-          this.commonService?.snackbarIcon?.error,
-          errorMessage,
-          'error'
-        );
+        this.toastr.error(errorMessage);
+        // this.commonService.snackBar(
+        //   this.commonService?.snackbarIcon?.error,
+        //   errorMessage,
+        //   'error'
+        // );
       }
     );
   };

@@ -1,12 +1,9 @@
 <main class="bg-white">
   <section>
-    <div mat-dialog-title  class="">
+    <div mat-dialog-title class="">
       <div class="title-header flex justify-between items-center">
-        <h2
-          class="text-primary text-[18px] font-semibold  tracking-[0.18px]"
-        >
-        {{data?.create ? 'Notifications' : 'Notifications'}}
-
+        <h2 class="text-primary text-[18px] font-semibold tracking-[0.18px]">
+          {{ data?.create ? "Notifications" : "Notifications" }}
         </h2>
         <div>
           <div
@@ -33,45 +30,56 @@
     </div>
   </section>
 
-  <section >
-    <div class=""  mat-dialog-content>
+  <section>
+    <div class="" mat-dialog-content>
       <div class="form-container pb-[20px]">
-        <div class="form-group flex flex-col gap-1">
-          <label class="label2">Header</label>
-          <input
-          type="text"
-          id="header"
-          class="input-field placeholder-tertiary text-sm"
-          placeholder="Enter title"
-        />
-        </div>
+        <form [formGroup]="notifyForm">
+          <div class="form-group flex flex-col gap-1">
+            <label class="label2">Header</label>
+            <input
+              type="text"
+              id="header"
+              class="input-field placeholder-tertiary text-sm"
+              placeholder="Enter title"
+                formControlName="title"
+              (keyup)="controlChanged('title')"
+            />
+               <div class="error-wrapper">
+              <span *ngIf="uiErrors.title" class="error ">{{uiErrors.tile}}</span>
+            </div>
+          </div>
 
-        <div class="form-group flex flex-col gap-1 mt-[24px]">
-          <label class="label2">Body</label>
-          <textarea id="message" rows="3"
-          type="text"
-          id="header"
-          class="input-field placeholder-tertiary text-sm"
-          placeholder="Enter description"
->
-      </textarea>
-        </div>
+          <div class="form-group flex flex-col gap-1 mt-[24px]">
+            <label class="label2">Body</label>
+            <p-editor  class="placeholder-tertiary text-sm" formControlName="body" [style]="{ height: '150px' }"        placeholder="Enter description"/>
 
-
-
-
+            <!-- <textarea
+              id="message"
+              rows="3"
+              type="text"
+              id="header"
+              class="input-field placeholder-tertiary text-sm"
+              placeholder="Enter description"
+            >
+            </textarea> -->
+                <div class="error-wrapper">
+              <span *ngIf="uiErrors.body" class="error ">{{uiErrors.body}}</span>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </section>
 
   <section>
     <div class="btn-container" mat-dialog-actions>
-      <button class="cancel-btn">
-        Cancel
+      <button class="cancel-btn" (click)="closeDialog()">Cancel</button>
+      <button class="save-btn" (click)="submit()" [disabled]="submitting">
+           <div class="flex justify-center">
+          <span class="" *ngIf="!submitting">Upload Notifications</span>
+          <app-loader2 *ngIf="submitting"></app-loader2>
+          </div>
       </button>
-      <button class="save-btn">
-        Upload Notifications
-      </button>
-  </div>
+    </div>
   </section>
 </main>

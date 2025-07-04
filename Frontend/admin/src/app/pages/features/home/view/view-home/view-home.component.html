@@ -4,7 +4,7 @@
       <h4
         class="text-primary text-2xl font-bold leading-[30px] tracking-[0.48px]"
       >
-        Hi Cyril,
+        Hi {{userInfo?.firstName}},
       </h4>
     </div>
   </section>
@@ -123,108 +123,223 @@
 
       <div class="filter-container">
         <div class="flex flex-row gap-3 items-center">
-          <div class="w-[70%] sm:w-[70%] md:w-full lg:w-full xl:w-full flex justify-center md:justify-center lg:justify-center xl:justify-center">
+          <div
+            class="w-[70%] sm:w-[700%] md:w-full lg:w-full xl:w-full flex justify-center md:justify-center lg:justify-center xl:justify-center"
+          >
             <div class="relative w-full">
-              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                  </svg>
+              <div
+                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+              >
+                <svg
+                  class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
               </div>
-              <input type="search" id="default-search" class="block w-full p-3 ps-10 text-sm text-primary border border-secondary rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 placeholder-tertiary" placeholder="Search users, funds and roles" required />
-          </div>
+              <form [formGroup]="searchForm" class="relative">
+                <div class="relative w-full">
+                  <div
+                    class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                  >
+                    <svg
+                      class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="search"
+                    id="default-search"
+                    formControlName="search"
+                    class="block w-full p-3 ps-10 text-sm text-primary border border-secondary rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 placeholder-tertiary"
+                    placeholder="Search users"
+                    required
+                  />
+                </div>
+              </form>
+            </div>
           </div>
 
           <div class="filter-button">
-            <button class="filter cursor-pointer"
-            [matMenuTriggerFor]="menuFilter"><span class="flex items-center">Filter by <svg class="ml-[6px]" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6673 6L8.00065 10.6667L3.33398 6" stroke="#737477" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg></span></button>
+            <button
+              class="filter cursor-pointer text-nowrap"
+              [matMenuTriggerFor]="menuFilter"
+            >
+              <span class="flex items-center"
+                >Filter by
+                <svg
+                  class="ml-[6px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path
+                    d="M12.6673 6L8.00065 10.6667L3.33398 6"
+                    stroke="#737477"
+                    stroke-width="1.33333"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  /></svg
+              ></span>
+            </button>
           </div>
           <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="2" height="26" viewBox="0 0 2 26" fill="none">
-              <path d="M1 1V25" stroke="#F0F0F0" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="2"
+              height="26"
+              viewBox="0 0 2 26"
+              fill="none"
+            >
+              <path
+                d="M1 1V25"
+                stroke="#F0F0F0"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
           </div>
           <div class="export-button">
-            <button class="filter cursor-pointer"
-            [matMenuTriggerFor]="menuExport"><span class="flex items-center">Export <svg class="ml-[6px]"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2.66602 10.6666V11.3333C2.66602 11.8637 2.87673 12.3724 3.2518 12.7475C3.62687 13.1226 4.13558 13.3333 4.66602 13.3333H11.3327C11.8631 13.3333 12.3718 13.1226 12.7469 12.7475C13.122 12.3724 13.3327 11.8637 13.3327 11.3333V10.6666M10.666 7.99996L7.99935 10.6666M7.99935 10.6666L5.33268 7.99996M7.99935 10.6666V2.66663" stroke="#737477" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg></span></button>
+            <button
+              class="filter cursor-pointer"
+              [matMenuTriggerFor]="menuExport"
+            >
+              <span class="flex items-center"
+                >Export
+                <svg
+                  class="ml-[6px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path
+                    d="M2.66602 10.6666V11.3333C2.66602 11.8637 2.87673 12.3724 3.2518 12.7475C3.62687 13.1226 4.13558 13.3333 4.66602 13.3333H11.3327C11.8631 13.3333 12.3718 13.1226 12.7469 12.7475C13.122 12.3724 13.3327 11.8637 13.3327 11.3333V10.6666M10.666 7.99996L7.99935 10.6666M7.99935 10.6666L5.33268 7.99996M7.99935 10.6666V2.66663"
+                    stroke="#737477"
+                    stroke-width="1.33333"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  /></svg
+              ></span>
+            </button>
           </div>
         </div>
 
         <mat-menu #menuFilter="matMenu">
           <div
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        >
-          <button mat-menu-item class="mb-[20px]">
-            <div class="flex items-center ">
-            <span class="text-sm leading-[22px] text-primary font-[400]">Date</span>
-          </div>
-          </button>
-          <button mat-menu-item class="mb-[20px]">
-            <div class="flex items-center ">
-            <span class="text-sm leading-[22px] text-primary font-[400]">Male</span>
-          </div>
-          </button>
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center">
+                <span class="text-sm leading-[22px] text-primary font-[400]"
+                  >Date</span
+                >
+              </div>
+            </button>
+            <button mat-menu-item class="mb-[20px]">
+              <div class="flex items-center">
+                <span class="text-sm leading-[22px] text-primary font-[400]"
+                  >Male</span
+                >
+              </div>
+            </button>
           </div>
         </mat-menu>
 
         <mat-menu #menuExport="matMenu">
           <div
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        >
-          <button mat-menu-item class="mb-[36px]">
-            <div class="flex items-center ">
-              <span class="">
-                <img
-                [src]="'assets/images/pdf.png'"
-                width="32"
-                height="32"
-                alt="PDF"
-              />
-          </span>
-            <span class="text-sm leading-[20px] text-primary font-[510] ml-[10px]">Export as PDF</span>
-          </div>
-          </button>
-          <button mat-menu-item class="mb-[36px]">
-            <div class="flex items-center ">
-              <span class="">
-                <img
-                [src]="'assets/images/xls.png'"
-                width="32"
-                height="32"
-                alt="PDF"
-              />
-          </span>
-            <span class="text-sm leading-[20px] text-primary font-[510] ml-[10px]">Export as XLSX</span>
-          </div>
-          </button>
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button mat-menu-item class="mb-[36px]">
+              <div class="flex items-center">
+                <span class="">
+                  <img
+                    [src]="'assets/images/pdf.png'"
+                    width="32"
+                    height="32"
+                    alt="PDF"
+                  />
+                </span>
+                <span
+                  class="text-sm leading-[20px] text-primary font-[510] ml-[10px]"
+                  >Export as PDF</span
+                >
+              </div>
+            </button>
+            <button mat-menu-item class="mb-[36px]">
+              <div class="flex items-center">
+                <span class="">
+                  <img
+                    [src]="'assets/images/xls.png'"
+                    width="32"
+                    height="32"
+                    alt="PDF"
+                  />
+                </span>
+                <span
+                  class="text-sm leading-[20px] text-primary font-[510] ml-[10px]"
+                  >Export as XLSX</span
+                >
+              </div>
+            </button>
           </div>
         </mat-menu>
       </div>
     </div>
-
+    @if(!isLoading) {
     <div class="table-container mt-[26px] pb-[20px]">
-        @if (currentTab === 'all')
-        {
-          <app-all [allList]="userListArray" />
-        } @else if (currentTab === 'approved')
-        {
-          <app-approved />
-        } @else if (currentTab === 'pending') {
-          <app-pending />
-        } @else if (currentTab === 'rejected') {
-          <app-rejected />
-        } @else if (currentTab === 'transferred') {
-          <app-transferred />
-        }
-        <div fxLayout="row" fxLayoutAlign="start center" class="mt-2">
-          <app-pagination-footer [currentPage]="currentPage" [totalPages]="totalItems" (pageChange)="onPageChange($event)"
-            [selectedItemsPerPage]="itemsPerPage" (selectedItems)="updateSelectedItemsPerPage($event)"></app-pagination-footer>
-        </div>
+      @if (currentTab === 'all') {
+      <app-all [allList]="userListArray" />
+      } @else if (currentTab === 'approved') {
+      <app-approved [approvedList]="approvedList" />
+      } @else if (currentTab === 'pending') {
+      <app-pending [pendingList]="pendingList" />
+      } @else if (currentTab === 'rejected') {
+      <app-rejected />
+      } @else if (currentTab === 'transferred') {
+      <app-transferred />
+      }
+      <div fxLayout="row" fxLayoutAlign="start center" class="mt-2">
+        <app-pagination-footer
+          [currentPage]="currentPage"
+          [totalPages]="totalItems"
+          (pageChange)="onPageChange($event)"
+          [selectedItemsPerPage]="itemsPerPage"
+          (selectedItems)="updateSelectedItemsPerPage($event)"
+        ></app-pagination-footer>
+      </div>
     </div>
+  } @else {
+    <div class="flex justify-center">
+      <app-loader></app-loader>
+    </div>
+
+    }
   </section>
 </main>
+

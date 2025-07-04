@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommunicationsService } from '@app/_shared/services/api/communications.service';
 import { Loader2Component } from '@app/_shared/ui/components/loader_2/loader.component';
 import { SharedModule } from '@app/_shared/shared.module';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-branch-locator-details',
   standalone: true,
@@ -39,10 +40,9 @@ export class BranchLocatorDetailsComponent implements OnInit {
     public dialogRef: MatDialogRef<BranchLocatorDetailsComponent>,
     private gMapService: GMapService,
     private renderer: Renderer2,
-    private http: HttpClient,
     private fb: FormBuilder,
-    private aRoute: ActivatedRoute,
-    private commService: CommunicationsService
+    private commService: CommunicationsService,
+    private toastr: ToastrService
   ) {
     let interval = setInterval(() => {
       this.container.countdown--;
@@ -131,11 +131,12 @@ export class BranchLocatorDetailsComponent implements OnInit {
       (response: any) => {
         this.submitting = false;
         //  this.authService.email$.next(fd.email);
-        this.commonService.snackBar(
-          this.commonService?.snackbarIcon?.success,
-          'Branch added successfully',
-          'success'
-        );
+        // this.commonService.snackBar(
+        //   this.commonService?.snackbarIcon?.success,
+        //   'Branch added successfully',
+        //   'success'
+        // );
+         this.toastr.success("Branch added successfully");
         this.dialogRef.close();
       },
       (errResp: any) => {
@@ -143,11 +144,12 @@ export class BranchLocatorDetailsComponent implements OnInit {
         let errorMessage = '';
         errorMessage = errResp?.error?.message;
 
-        this.commonService.snackBar(
-          this.commonService?.snackbarIcon?.error,
-          errorMessage,
-          'error'
-        );
+        // this.commonService.snackBar(
+        //   this.commonService?.snackbarIcon?.error,
+        //   errorMessage,
+        //   'error'
+        // );
+          this.toastr.error(errorMessage);
       }
     );
   }

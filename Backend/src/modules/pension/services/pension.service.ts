@@ -749,7 +749,10 @@ export class PensionService {
         return {
           status: true,
           message: 'Customer onboarding completed successfully',
-          data: response,
+          data: {
+            status: response.errorCode,
+            message: response.errorMessage,
+          },
         };
       } else {
         throw new BadRequestException(response.errorMessages || 'Service unavailable, please try again later');

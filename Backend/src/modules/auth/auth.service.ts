@@ -55,7 +55,16 @@ export class AuthService {
   ) {}
 
   async signupUser(dto: SignupUserDto): Promise<IApiResponse> {
-    const existingUser = await this.userService.findByEmail(dto.email);
+    let existingUser;
+    let existingPhone;
+
+    if (dto.email) {
+      existingUser = await this.userService.findByEmail(dto.email);
+    }
+
+    if (dto.phone) {
+      existingPhone = await this.userService.findByPhone(dto.phone);
+    }
 
     if (existingUser) {
       if (!existingUser.password) {
@@ -65,7 +74,13 @@ export class AuthService {
       }
       
       throw new ConflictException(
-        'A user with this email address already exists. Please use a different email address.',
+        'A user with this email address or phone number already exists.',
+      );
+    }
+
+    if (existingPhone) {
+      throw new ConflictException(
+        'A user with this email address or phone number already exists.',
       );
     }
 

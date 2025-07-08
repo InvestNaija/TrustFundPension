@@ -245,7 +245,7 @@ export class PensionService {
           to: user.email,
           subject: 'Pension Report',
           body: 'Please find the pension report attached',
-          attachment: buffer.toString('base64')
+          attachment: buffer
         });
       }
       return buffer;
@@ -272,7 +272,7 @@ export class PensionService {
           to: user.email,
           subject: 'Unremitted Contributions Report',
           body: 'Please find the unremitted contributions report attached',
-          attachment: buffer.toString('base64')
+          attachment: buffer
         });
       }
       return buffer;
@@ -295,7 +295,7 @@ export class PensionService {
           to: user.email,
           subject: 'Welcome Letter',
           body: 'Please find the welcome letter attached',
-          attachment: buffer.toString('base64')
+          attachment: buffer
         });
       }
       return buffer;
@@ -454,7 +454,7 @@ export class PensionService {
           to: user.email,
           subject: 'Embassy Letter',
           body: 'Please find the embassy letter attached',
-          attachment: buffer.toString('base64')
+          attachment: buffer
         });
       }
 

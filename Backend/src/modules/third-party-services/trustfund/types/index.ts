@@ -2,7 +2,7 @@ export interface IEmailRequest {
   to: string;
   subject: string;
   body: string;
-  attachment?: string;
+  attachment?: any;
 }
 
 export interface IEmailResponse {

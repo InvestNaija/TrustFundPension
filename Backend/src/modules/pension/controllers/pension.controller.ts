@@ -239,4 +239,36 @@ export class PensionController {
   async getFundPricesPercentageGrowthDuringYear() {
     return await this.pensionService.getFundPricesPercentageGrowthDuringYear();
   }
+
+  @Get('admin/users/active')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get number of active customers' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Active data fetched successfully' })
+  async getActive() {
+    return await this.pensionService.getActive();
+  }
+
+  @Get('admin/users/inactive')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get number of inactive customers' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Inactive data fetched successfully' })
+  async getInActive() {
+    return await this.pensionService.getInActive();
+  }
+
+  @Get('admin/micro-pension-contribution')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get micro pension contribution data' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Micro pension contribution data fetched successfully' })
+  async getMicroPensionContribution() {
+    return await this.pensionService.getMicroPensionContribution();
+  }
+
+  @Get('admin/voluntary-contribution')
+  @UseGuards(JwtAuthGuard, AdminAuthGuard)
+  @ApiOperation({ summary: 'Get voluntary contribution data' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Voluntary contribution data fetched successfully' })
+  async getVoluntaryContribution() {
+    return await this.pensionService.getVoluntaryContribution();
+  }
 } 

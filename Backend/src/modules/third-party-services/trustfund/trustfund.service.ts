@@ -24,7 +24,11 @@ import {
   IRSARegisteredYearFundedDto,
   IRSANotFundedByEndLastYearFundedThisYearDto,
   IRSANotFundedAtLeastFourYrsDto,
-  IFundPricesPercentageGrowthDuringYearDto
+  IFundPricesPercentageGrowthDuringYearDto,
+  IActiveDto,
+  IInActiveDto,
+  IMicroPensionContributionDto,
+  IVoluntaryContributionDto
 } from './types';
 
 @Injectable()
@@ -422,4 +426,25 @@ export class TrustFundService {
     const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/FundPricesPercentageGrowth-During-Year`;
     return this.httpRequest.makeRequest({ method: 'GET', url });
   }
+
+  async getActive(): Promise<IActiveDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/Active`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getInActive(): Promise<IInActiveDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/InActive`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getMicroPensionContribution(): Promise<IMicroPensionContributionDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/MicroPensionContribution`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+
+  async getVoluntaryContribution(): Promise<IVoluntaryContributionDto> {
+    const url = `${envConfig.TRUSTFUND_SERVICE_BASE_URL}api/Admin/VoluntaryContribution`;
+    return this.httpRequest.makeRequest({ method: 'GET', url });
+  }
+  
 }

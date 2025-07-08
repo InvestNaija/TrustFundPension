@@ -558,6 +558,26 @@ export class PensionService {
     return { status: true, message: 'Data fetched successfully', data };
   }
 
+  async getActive(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getActive();
+    return { status: true, message: 'Active Users data fetched successfully', data };
+  }
+
+  async getInActive(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getInActive();
+    return { status: true, message: 'Inactive Users data fetched successfully', data };
+  }
+
+  async getMicroPensionContribution(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getMicroPensionContribution();
+    return { status: true, message: 'Micro pension contribution data fetched successfully', data };
+  }
+
+  async getVoluntaryContribution(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getVoluntaryContribution();
+    return { status: true, message: 'Voluntary contribution data fetched successfully', data };
+  }
+
   async completeOnboarding(userId: string): Promise<IApiResponse> {
     try {
       const user = await this.userService.findOneUser(userId);

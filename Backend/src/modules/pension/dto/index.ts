@@ -5,4 +5,6 @@ export * from './account-manager.dto';
 export * from './summary.dto';
 export * from './customer-onboarding.dto';
 export * from './generate-report-query.dto';
+export * from './welcome-letter-query.dto';
+export * from './embassy-letter-query.dto';
 export * from './fund-transfer.dto'; 

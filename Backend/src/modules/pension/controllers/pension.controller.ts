@@ -5,8 +5,9 @@ import { PensionService } from '../services';
 import {
   EmailRequestDto,
   SmsRequestDto,
-  CustomerOnboardingRequestDto,
   GenerateReportQueryDto,
+  WelcomeLetterQueryDto,
+  EmbassyLetterQueryDto,
   CreateFundTransferDto,
   FundTransferResponseDto,
 } from '../dto';
@@ -92,14 +93,6 @@ export class PensionController {
     return await this.pensionService.getSummary(authenticatedUser.id);
   }
 
-  // @Post('onboarding')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiOperation({ summary: 'Customer onboarding' })
-  // @ApiResponse({ status: HttpStatus.OK, description: 'Customer onboarded successfully' })
-  // async customerOnboarding(@Body() data: CustomerOnboardingRequestDto): Promise<IApiResponse> {
-  //   return await this.pensionService.customerOnboarding(data);
-  // }
-
   @Get('generate-report')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate pension report' })
@@ -118,8 +111,8 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate welcome letter' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Welcome letter generated successfully' })
-  async generateWelcomeLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Query('sendToEmail') sendToEmail: boolean, @Res() res: Response) {
-    const buffer = await this.pensionService.generateWelcomeLetter(authenticatedUser.id, sendToEmail);
+  async generateWelcomeLetter(@Query() query: WelcomeLetterQueryDto, @AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
+    const buffer = await this.pensionService.generateWelcomeLetter(authenticatedUser.id, query.sendToEmail || false);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=welcome-letter.pdf',
@@ -128,16 +121,6 @@ export class PensionController {
     res.end(buffer);
   }
 
-  // @Get('embassy-letter')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiOperation({ summary: 'Generate embassy letter PDF' })
-  // @ApiResponse({ status: HttpStatus.OK, description: 'Embassy letter generated successfully' })
-  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  // @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
-  // async generateEmbassyLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken) {
-  //  return await this.pensionService.getEmbassyLetterUrl(authenticatedUser.id);
-  // }
-
   @Get('embassy-letter')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate embassy letter PDF' })
@@ -145,12 +128,11 @@ export class PensionController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, description: 'Unprocessable Entity' })
   async generateEmbassyLetterUser(
+    @Query() query: EmbassyLetterQueryDto,
     @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
-    @Query('embassyId') embassyId: number,
-    @Query('sendToEmail') sendToEmail: boolean,
     @Res() res: Response
   ) {
-    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId, sendToEmail);
+    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, query.embassyId, query.sendToEmail || false);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=unremitted-contributions.pdf',

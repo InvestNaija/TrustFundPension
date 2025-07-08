@@ -118,8 +118,8 @@ export class PensionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Generate welcome letter' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Welcome letter generated successfully' })
-  async generateWelcomeLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Res() res: Response) {
-    const buffer = await this.pensionService.generateWelcomeLetter(authenticatedUser.id);
+  async generateWelcomeLetter(@AuthenticatedUser() authenticatedUser: IDecodedJwtToken, @Query('sendToEmail') sendToEmail: boolean, @Res() res: Response) {
+    const buffer = await this.pensionService.generateWelcomeLetter(authenticatedUser.id, sendToEmail);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=welcome-letter.pdf',
@@ -147,9 +147,10 @@ export class PensionController {
   async generateEmbassyLetterUser(
     @AuthenticatedUser() authenticatedUser: IDecodedJwtToken,
     @Query('embassyId') embassyId: number,
+    @Query('sendToEmail') sendToEmail: boolean,
     @Res() res: Response
   ) {
-    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId);
+    const buffer = await this.pensionService.getEmbassyLetter(authenticatedUser.id, embassyId, sendToEmail);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=unremitted-contributions.pdf',

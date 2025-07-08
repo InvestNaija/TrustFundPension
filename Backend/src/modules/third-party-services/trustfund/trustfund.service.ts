@@ -49,17 +49,26 @@ export class TrustFundService {
   async sendEmail(emailData: IEmailRequest): Promise<IEmailResponse> {
     try {
       const url = `${envConfig.TRUSTFUND_URL}mobile/sendemail.php`;
-      const emailPayload = {
-        ...emailData,
-        from: this.EMAIL_FROM,
-        from_name: this.EMAIL_FROM_NAME,
-      };
+      const formData = new FormData();
+      
+      // Add all email data to FormData
+      formData.append('to', emailData.to);
+      formData.append('subject', emailData.subject);
+      formData.append('body', emailData.body);
+      formData.append('from', this.EMAIL_FROM || '');
+      formData.append('from_name', this.EMAIL_FROM_NAME || '');
+      
+      // Add attachment if provided
+      if (emailData.attachment) {
+        formData.append('attachment', emailData.attachment);
+      }
+      
       return await this.httpRequest.makeRequest({
         method: 'POST',
         url,
-        data: emailPayload,
+        data: formData,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         },
       });
     } catch (error) {

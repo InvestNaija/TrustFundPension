@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GenerateReportQueryDto {
@@ -11,4 +11,9 @@ export class GenerateReportQueryDto {
   @IsDateString()
   @IsNotEmpty()
   toDate: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  sendToEmail?: boolean;
 } 

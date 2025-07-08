@@ -261,3 +261,19 @@ export interface IFundPricesPercentageGrowthDuringYearDto {
   NONINTERESTundPercentagegrowth: number;
   NONINTERESTFundRetireePercentageGrowth: number;
 }
+
+export interface IActiveDto {
+  Total: number;
+}
+
+export interface IInActiveDto {
+  Total: number;
+}
+
+export interface IMicroPensionContributionDto {
+  Total: number;
+}
+
+export interface IVoluntaryContributionDto {
+  Total: number;
+}

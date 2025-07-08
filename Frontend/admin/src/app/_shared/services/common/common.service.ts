@@ -41,11 +41,23 @@ export class CommonService {
     info: 'ri-information-2-fill',
   };
 
-  duration: number = 4000;
+  duration: number = 4000000;
   verticalPosition: MatSnackBarVerticalPosition | undefined = 'top'; // 'top' | 'bottom'
   horizontalPosition: MatSnackBarHorizontalPosition | undefined = 'end'; //'start' | 'center' | 'end' | 'left' | 'right'
 
   container: any = {};
+
+  relationships: any = [
+    {code: "husband", name: "Husband"},
+    {code: "wife", name: "Wife"},
+    {code: "son", name: "Son"},
+    {code: "daughter", name: "Daughter"},
+    {code: "brother", name: "Brother"},
+    {code: "sister", name: "Sister"},
+    {code: "parent", name: "Parent"},
+    {code: "others", name: "Others"},
+  ]
+
 
   constructor(private _snackBar: MatSnackBar, private http: HttpClient) {}
 

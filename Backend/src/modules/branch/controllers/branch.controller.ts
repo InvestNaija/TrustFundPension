@@ -17,7 +17,6 @@ export class BranchController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll(@Query() query: ListBranchesDto) {
     return this.branchService.findAll(query);
   }

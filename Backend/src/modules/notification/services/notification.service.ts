@@ -1,6 +1,6 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Notification, NotificationStatus } from '../entities/notification.entity';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
 import { UserService } from '../../user/services/user.service';
@@ -8,6 +8,7 @@ import * as admin from 'firebase-admin';
 import * as FCM from 'fcm-notification';
 import { envConfig } from '../../../core/config';
 import { ListUsersDto } from '../../user/dto';
+import { UpdateNotificationDto } from '../dto/update-notification.dto';
 
 @Injectable()
 export class NotificationService implements OnModuleInit {
@@ -70,14 +71,55 @@ export class NotificationService implements OnModuleInit {
 
   private sendNotificationToATopic(payload: any) {
     try {
-    return this.firebaseAdmin.messaging().send({
-      topic: envConfig.FIREBASE_PENSION_CHANNEL,
+      return this.firebaseAdmin.messaging().send({
+        topic: envConfig.FIREBASE_PENSION_CHANNEL,
         ...payload
       })
     } catch (error) {
       this.logger.error('Failed to send notification to a topic:', error);
       throw error;
     }
+  }
+  
+  async getNotification(id: string): Promise<Notification> {
+    const notification = await this.notificationRepository.findOne({ where: { id }, relations: ['user'] });
+    if (!notification) {
+      throw new Error(`Notification ${id} not found`);
+    }
+    return notification;
+  }
+
+  async getAllNotifications(query: any): Promise<{ data: Notification[], total: number }> {
+    const { page = 1, limit = 10, search = '' } = query;
+    const skip = (page - 1) * limit;
+    const take = limit;
+
+    const where: any = {};
+    if (search) {
+      where.title = ILike(`%${search}%`);
+      where.body = ILike(`%${search}%`);
+      where.status = search;
+      where.createdAt = search;
+    }
+
+    const [notifications, total] = await this.notificationRepository.findAndCount({ relations: ['user'], skip, take, where });
+    return { data: notifications, total };
+  }
+
+  async updateNotification(id: string, dto: UpdateNotificationDto): Promise<Notification> {
+    try {
+      const notification = await this.notificationRepository.findOne({ where: { id } });
+      if (!notification) {
+        throw new NotFoundException(`Notification not found`);
+      }
+      return await this.notificationRepository.save({ ...notification, ...dto });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteNotification(id: string): Promise<void> {
+    await this.notificationRepository.softDelete(id);
   }
 
   async sendNotification(notification: Notification): Promise<void> {

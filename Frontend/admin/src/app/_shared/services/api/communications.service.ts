@@ -7,17 +7,14 @@ import { environment } from '@environments/environment';
 })
 export class CommunicationsService {
   private http = inject(HttpClient);
-  constructor() {}
 
   getBranchLocator(branchData: any) {
     let params = new HttpParams();
-
     for (let key in branchData) {
       if (branchData[key]) {
         params = params.append(key, branchData[key]);
       }
     }
-
     return this.http.get<any>(`${environment.baseUrl}/branches`, {
       params: params,
     });
@@ -29,5 +26,26 @@ export class CommunicationsService {
 
   updateBranchLocator(data: any, id: string) {
     return this.http.patch<any>(`${environment.baseUrl}/branches/${id}`, data);
+  }
+
+
+    getNotification(notifyData: any) {
+    let params = new HttpParams();
+    for (let key in notifyData) {
+      if (notifyData[key]) {
+        params = params.append(key, notifyData[key]);
+      }
+    }
+    return this.http.get<any>(`${environment.baseUrl}/notifications`, {
+      params: params,
+    });
+  }
+
+  addNotification(data: any) {
+    return this.http.post<any>(`${environment.baseUrl}/notifications`, data);
+  }
+
+  updateNotification(data: any, id: string) {
+    return this.http.patch<any>(`${environment.baseUrl}/notifications/${id}`, data);
   }
 }

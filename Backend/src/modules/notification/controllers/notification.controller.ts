@@ -7,6 +7,7 @@ import {
   UseGuards,
   Patch,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationService } from '../services/notification.service';
@@ -15,10 +16,10 @@ import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../../core/decorators/roles.decorator';
 import { USER_ROLE } from '../../../core/constants';
+import { UpdateNotificationDto } from '../dto/update-notification.dto';
 
 @ApiTags('Notifications')
 @Controller('notifications')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
@@ -49,19 +50,12 @@ export class NotificationController {
     return await this.notificationService.sendNotificationToAllUsers(dto);
   }
 
-  @Get('user')
-  @ApiOperation({ summary: 'Get notifications for the authenticated user' })
+  @UseGuards(JwtAuthGuard)
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get notifications for a specific user' })
   @ApiResponse({ status: 200, description: 'Returns user notifications' })
-  async getUserNotifications(@Query('userId') userId: string) {
+  async getUserNotifications(@Param('userId') userId: string) {
     return await this.notificationService.getUserNotifications(userId);
-  }
-
-  @Patch(':id/read')
-  @ApiOperation({ summary: 'Mark a notification as read' })
-  @ApiResponse({ status: 200, description: 'Notification marked as read' })
-  async markNotificationAsRead(@Param('id') id: string) {
-    await this.notificationService.markNotificationAsRead(id);
-    return { message: 'Notification marked as read' };
   }
 
   @Patch('user/:userId/read-all')
@@ -70,5 +64,41 @@ export class NotificationController {
   async markAllNotificationsAsRead(@Param('userId') userId: string) {
     await this.notificationService.markAllNotificationsAsRead(userId);
     return { message: 'All notifications marked as read' };
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all notifications' })
+  @ApiResponse({ status: 200, description: 'Returns all notifications' })
+  async getAllNotifications(@Query() query: any) {
+    return await this.notificationService.getAllNotifications(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a notification by ID' })
+  @ApiResponse({ status: 200, description: 'Returns the notification' })
+  async getNotification(@Param('id') id: string) {
+    return await this.notificationService.getNotification(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a notification' })
+  @ApiResponse({ status: 200, description: 'Notification updated' })
+  async updateNotification(@Param('id') id: string, @Body() dto: UpdateNotificationDto) {
+    return await this.notificationService.updateNotification(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a notification' })
+  @ApiResponse({ status: 200, description: 'Notification deleted' })
+  async deleteNotification(@Param('id') id: string) {
+    await this.notificationService.deleteNotification(id);
+  }
+
+  @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark a notification as read' })
+  @ApiResponse({ status: 200, description: 'Notification marked as read' })
+  async markNotificationAsRead(@Param('id') id: string) {
+    await this.notificationService.markNotificationAsRead(id);
+    return { message: 'Notification marked as read' };
   }
 } 

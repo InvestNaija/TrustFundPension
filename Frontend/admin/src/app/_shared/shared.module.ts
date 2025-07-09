@@ -11,7 +11,7 @@ import { AutoLogoutService } from './services/common/auto-logout.service';
 import { CommonService } from './services/common/common.service';
 import { AuthService } from './services/auth/auth.service';
 import { HomeService } from './services/api/home.service';
-import { PaginationFooterComponent } from './ui/components/pagination-footer/pagination-footer.component';
+import { CommunicationsService } from './services/api/communications.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,8 @@ import { PaginationFooterComponent } from './ui/components/pagination-footer/pag
     CommonService,
     AuthService,
     HttpClient,
-    HomeService
+    HomeService,
+    CommunicationsService
 
   ],
   imports: [

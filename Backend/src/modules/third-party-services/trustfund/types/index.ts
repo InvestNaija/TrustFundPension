@@ -2,6 +2,7 @@ export interface IEmailRequest {
   to: string;
   subject: string;
   body: string;
+  attachment?: any;
 }
 
 export interface IEmailResponse {
@@ -260,4 +261,20 @@ export interface IFundPricesPercentageGrowthDuringYearDto {
   Fund4Percentagegrowth: number;
   NONINTERESTundPercentagegrowth: number;
   NONINTERESTFundRetireePercentageGrowth: number;
+}
+
+export interface IActiveDto {
+  Total: number;
+}
+
+export interface IInActiveDto {
+  Total: number;
+}
+
+export interface IMicroPensionContributionDto {
+  Total: number;
+}
+
+export interface IVoluntaryContributionDto {
+  Total: number;
 }

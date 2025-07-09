@@ -239,7 +239,16 @@ export class PensionService {
         fromDate: query.fromDate,
         toDate: query.toDate,
       };
-      return await this.trustFundService.generateReport(data);
+      const buffer = await this.trustFundService.generateReport(data);
+      if (query.sendToEmail) {
+        await this.trustFundService.sendEmail({
+          to: user.email,
+          subject: 'Pension Report',
+          body: 'Please find the pension report attached',
+          attachment: buffer
+        });
+      }
+      return buffer;
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate report');
     }
@@ -257,13 +266,22 @@ export class PensionService {
         fromDate: query.fromDate,
         toDate: query.toDate,
       };
-      return await this.trustFundService.generateUnremittedContributions(data);
+      const buffer = await this.trustFundService.generateUnremittedContributions(data);
+      if (query.sendToEmail) {
+        await this.trustFundService.sendEmail({
+          to: user.email,
+          subject: 'Unremitted Contributions Report',
+          body: 'Please find the unremitted contributions report attached',
+          attachment: buffer
+        });
+      }
+      return buffer;
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate unremitted contributions');
     }
   }
 
-  async generateWelcomeLetter(userId: string) {
+  async generateWelcomeLetter(userId: string, sendToEmail: boolean) {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -271,7 +289,16 @@ export class PensionService {
       }
 
       const data = { pin: user.pen };
-      return await this.trustFundService.generateWelcomeLetter(data);
+      const buffer = await this.trustFundService.generateWelcomeLetter(data);
+      if (sendToEmail) {
+        await this.trustFundService.sendEmail({
+          to: user.email,
+          subject: 'Welcome Letter',
+          body: 'Please find the welcome letter attached',
+          attachment: buffer
+        });
+      }
+      return buffer;
     } catch (error) {
       throw new UnprocessableEntityException('Failed to generate welcome letter');
     }
@@ -410,17 +437,28 @@ export class PensionService {
     }
   }
 
-  async getEmbassyLetter(userId: string, embassyId: number): Promise<Buffer> {
+  async getEmbassyLetter(userId: string, embassyId: number, sendToEmail: boolean): Promise<Buffer> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
         throw new UnprocessableEntityException('User not found');
       }
 
-      return await this.trustFundService.getEmbassyLetter({
+      const buffer = await this.trustFundService.getEmbassyLetter({
         pin: user.pen,
         embassyId
       });
+
+      if (sendToEmail) {
+        await this.trustFundService.sendEmail({
+          to: user.email,
+          subject: 'Embassy Letter',
+          body: 'Please find the embassy letter attached',
+          attachment: buffer
+        });
+      }
+
+      return buffer;
     } catch (error) {
       this.logger.error('Error generating embassy letter:', error);
       throw new UnprocessableEntityException('Could not generate embassy letter');
@@ -556,6 +594,26 @@ export class PensionService {
   async getFundPricesPercentageGrowthDuringYear(): Promise<IApiResponse> {
     const data = await this.trustFundService.getFundPricesPercentageGrowthDuringYear();
     return { status: true, message: 'Data fetched successfully', data };
+  }
+
+  async getActive(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getActive();
+    return { status: true, message: 'Active Users data fetched successfully', data };
+  }
+
+  async getInActive(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getInActive();
+    return { status: true, message: 'Inactive Users data fetched successfully', data };
+  }
+
+  async getMicroPensionContribution(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getMicroPensionContribution();
+    return { status: true, message: 'Micro pension contribution data fetched successfully', data };
+  }
+
+  async getVoluntaryContribution(): Promise<IApiResponse> {
+    const data = await this.trustFundService.getVoluntaryContribution();
+    return { status: true, message: 'Voluntary contribution data fetched successfully', data };
   }
 
   async completeOnboarding(userId: string): Promise<IApiResponse> {
@@ -749,7 +807,10 @@ export class PensionService {
         return {
           status: true,
           message: 'Customer onboarding completed successfully',
-          data: response,
+          data: {
+            status: response.errorCode,
+            message: response.errorMessage,
+          },
         };
       } else {
         throw new BadRequestException(response.errorMessages || 'Service unavailable, please try again later');

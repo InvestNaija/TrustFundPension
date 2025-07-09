@@ -8,11 +8,12 @@ import { CommunicationsService } from '@app/_shared/services/api/communications.
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs';
 import { PaginationFooterComponent } from '@app/_shared/ui/components/pagination-footer/pagination-footer.component';
+import { LoaderComponent } from '@app/_shared/ui/components/loader/loader.component';
 
 @Component({
   selector: 'app-branch-locator',
     standalone: true,
-      imports: [CommonModule, RouterModule, MaterialModule, PaginationFooterComponent],
+      imports: [CommonModule, RouterModule, MaterialModule, PaginationFooterComponent, LoaderComponent],
   templateUrl: './branch-locator.component.html',
   styleUrls: ['./branch-locator.component.css']
 })
@@ -27,7 +28,7 @@ export class BranchLocatorComponent implements OnInit {
   displayedItems: any[] = [];
   totalUser: any;
 
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   searchForm: FormGroup;
 
@@ -63,13 +64,6 @@ export class BranchLocatorComponent implements OnInit {
       }
 
          // branch locator
-
-
-         updateBranchLocatorList(event: boolean) {
-          if(this.updated) {
-          this.getBranchLocator();
-          }
-        }
 
 
 

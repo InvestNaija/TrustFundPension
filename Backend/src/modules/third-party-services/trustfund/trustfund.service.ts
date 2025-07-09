@@ -1,4 +1,6 @@
 import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
+import * as FormData from 'form-data';
+
 import { envConfig } from '../../../core/config';
 import { HttpRequestService } from '../../../shared/http-request';
 import {
@@ -50,6 +52,7 @@ export class TrustFundService {
     try {
       const url = `${envConfig.TRUSTFUND_URL}mobile/sendemail.php`;
       const formData = new FormData();
+
       
       // Add all email data to FormData
       formData.append('to', emailData.to);
@@ -60,7 +63,13 @@ export class TrustFundService {
       
       // Add attachment if provided
       if (emailData.attachment) {
-        formData.append('attachment', emailData.attachment);
+        const type = this.getTypeFromBuffer(emailData.attachment);
+        if (!type) {
+          throw new UnprocessableEntityException('Invalid attachment format');
+        }
+        formData.append('attachment', emailData.attachment, {
+          filename:  `attachment.${type.ext}`,
+        });
       }
       
       return await this.httpRequest.makeRequest({
@@ -68,7 +77,7 @@ export class TrustFundService {
         url,
         data: formData,
         headers: {
-          'Content-Type': 'multipart/form-data'
+          ...formData.getHeaders(),
         },
       });
     } catch (error) {
@@ -76,7 +85,34 @@ export class TrustFundService {
       throw new UnprocessableEntityException('Could not send email');
     }
   }
+  getTypeFromBuffer(arrayBuffer: ArrayBuffer): { ext: string; mime: string } | null {
+    const uint8arr = new Uint8Array(arrayBuffer)
 
+    const len = 4
+    if (uint8arr.length >= len) {
+      let signatureArr = new Array(len)
+      for (let i = 0; i < len; i++)
+        signatureArr[i] = (new Uint8Array(arrayBuffer))[i].toString(16)
+      const signature = signatureArr.join('').toUpperCase()
+
+      switch (signature) {
+        case '89504E47':
+          return {ext: 'png', mime: 'image/png'}
+        case '47494638':
+          return {ext: 'gif', mime: 'image/gif'}
+        case '25504446':
+          return {ext: 'pdf', mime: 'application/pdf'}
+        case 'FFD8FFDB':
+        case 'FFD8FFE0':
+          return {ext: 'jpg', mime: 'image/jpeg'}
+        case '504B0304':
+          return {ext: 'zip', mime: 'application/zip'}
+        default:
+          return null
+      }
+    }
+    return null
+  }
   async sendSms(smsData: ISmsRequest): Promise<ISmsResponse> {
     try {
       const url = `${envConfig.TRUSTFUND_URL}mobile/sendsms.php`;

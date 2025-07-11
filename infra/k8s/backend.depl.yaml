@@ -152,6 +152,11 @@ spec:
                 secretKeyRef:
                   name: common.depl
                   key: FIREBASE_PROJECT_ID
+            - name: FIREBASE_SETTINGS
+              valueFrom:
+                secretKeyRef:
+                  name: common.depl
+                  key: FIREBASE_SETTINGS
             - name: JWT_ACCESS_TOKEN_SECRET
               valueFrom:
                 secretKeyRef:

@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class CreateUserRoleTable1936892715743 implements MigrationInterface {
-  private tableName = 'user_role';
+export class CreateNotificationsTable1936892715748 implements MigrationInterface {
+  private tableName = 'notifications';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -15,32 +15,66 @@ export class CreateUserRoleTable1936892715743 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
-              name: 'userId',
+              name: 'title',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'body',
+              type: 'text',
+              isNullable: false,
+            },
+            {
+              name: 'type',
+              type: 'enum',
+              enum: ['SYSTEM', 'TRANSACTION', 'SECURITY', 'MARKETING'],
+              default: "'SYSTEM'",
+              isNullable: false,
+            },
+            {
+              name: 'status',
+              type: 'enum',
+              enum: ['PENDING', 'SENT', 'FAILED'],
+              default: "'PENDING'",
+              isNullable: false,
+            },
+            {
+              name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
             {
-              name: 'role_id',
-              type: 'uuid',
+              name: 'fcm_token',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'is_read',
+              type: 'boolean',
+              default: false,
               isNullable: false,
             },
             {
-              name: 'createdAt',
+              name: 'data',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },
@@ -48,10 +82,11 @@ export class CreateUserRoleTable1936892715743 implements MigrationInterface {
         }),
       );
 
+      // Add foreign key constraint
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',

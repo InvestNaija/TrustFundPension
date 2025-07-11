@@ -15,11 +15,10 @@ export class CreateMediaTable1936892715740 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
-              name: 'userId',
+              name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
@@ -31,7 +30,7 @@ export class CreateMediaTable1936892715740 implements MigrationInterface {
             {
               name: 'upload_type',
               type: 'enum',
-              enum: ['PROFILE_PICTURE', 'DOCUMENT', 'OTHER'],
+              enum: ['NIN', 'VOTERS_CARD', 'INTERNATIONAL_PASSPORT', 'DRIVING_LICENSE', 'BANK_STATEMENT', 'UTILITY_BILL', 'PASSPORT_PHOTO', 'PROOF_OF_ADDRESS', 'SIGNATURE', 'OTHER'],
               isNullable: false,
             },
             {

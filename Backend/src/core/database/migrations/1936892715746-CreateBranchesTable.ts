@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateFundTransfersTable1936892715747 implements MigrationInterface {
-  private tableName = 'fund_transfers';
+export class CreateBranchesTable1936892715746 implements MigrationInterface {
+  private tableName = 'branches';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -15,49 +15,52 @@ export class CreateFundTransfersTable1936892715747 implements MigrationInterface
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
-              name: 'user_id',
-              type: 'uuid',
-              isNullable: false,
-            },
-            {
-              name: 'current_fund',
+              name: 'name',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'aspiring_fund',
+              name: 'email',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'is_approved',
-              type: 'boolean',
-              default: false,
+              name: 'phone',
+              type: 'varchar',
+              isNullable: false,
             },
             {
-              name: 'approval_date',
-              type: 'timestamptz',
-              isNullable: true,
+              name: 'latitude',
+              type: 'decimal',
+              precision: 10,
+              scale: 8,
+              isNullable: false,
             },
             {
-              name: 'rejection_reason',
+              name: 'longitude',
+              type: 'decimal',
+              precision: 11,
+              scale: 8,
+              isNullable: false,
+            },
+            {
+              name: 'full_address',
               type: 'varchar',
               isNullable: true,
             },
             {
               name: 'created_at',
               type: 'timestamptz',
-              default: 'now()',
+              default: 'CURRENT_TIMESTAMP',
             },
             {
               name: 'updated_at',
               type: 'timestamptz',
-              default: 'now()',
-              onUpdate: 'now()',
+              default: 'CURRENT_TIMESTAMP',
+              onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
               name: 'deleted_at',
@@ -65,16 +68,6 @@ export class CreateFundTransfersTable1936892715747 implements MigrationInterface
               isNullable: true,
             },
           ],
-        }),
-      );
-
-      await queryRunner.createForeignKey(
-        this.tableName,
-        new TableForeignKey({
-          columnNames: ['user_id'],
-          referencedColumnNames: ['id'],
-          referencedTableName: 'users',
-          onDelete: 'CASCADE',
         }),
       );
     }

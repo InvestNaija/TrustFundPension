@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class CreateBvnDataTable1936892715739 implements MigrationInterface {
-  private tableName = 'bvn_data';
+export class CreateNokTable1936892715743 implements MigrationInterface {
+  private tableName = 'noks';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -23,13 +23,38 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               isNullable: false,
             },
             {
-              name: 'bvn',
+              name: 'first_name',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'bvn_response',
-              type: 'json',
+              name: 'middle_name',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'last_name',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'gender',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'phone',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'email',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'relationship',
+              type: 'varchar',
               isNullable: false,
             },
             {

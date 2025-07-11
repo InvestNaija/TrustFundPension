@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { USER_ROLE, ACCOUNT_TYPE } from '../../constants';
+import { ACCOUNT_TYPE } from '../../constants';
 
 export class CreateUsersTable1936892715738 implements MigrationInterface {
   private tableName = 'users';
@@ -16,23 +16,22 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
               name: 'bvn',
               type: 'varchar',
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: 'nin',
               type: 'varchar',
-              isNullable: false,
+              isNullable: true,
             },
             {
-              name: 'rsa_pin',
+              name: 'pen',
               type: 'varchar',
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: 'first_name',
@@ -42,7 +41,7 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
             {
               name: 'middle_name',
               type: 'varchar',
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: 'last_name',
@@ -69,6 +68,7 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               name: 'phone',
               type: 'varchar',
               isNullable: false,
+              isUnique: true,
             },
             {
               name: 'password',
@@ -93,17 +93,17 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
             {
               name: 'show_balance',
               type: 'boolean',
-              default: false,
+              default: true,
             },
             {
               name: 'state_of_posting',
               type: 'varchar',
-              isNullable: true,
+              isNullable: false,
             },
             {
               name: 'lga_of_posting',
               type: 'varchar',
-              isNullable: true,
+              isNullable: false,
             },
             {
               name: 'is_enabled',
@@ -126,55 +126,64 @@ export class CreateUsersTable1936892715738 implements MigrationInterface {
               default: false,
             },
             {
-              name: 'role',
-              type: 'enum',
-              enum: Object.values(USER_ROLE),
-              isNullable: false,
-            },
-            {
               name: 'account_type',
               type: 'enum',
               enum: Object.values(ACCOUNT_TYPE),
-              isNullable: false,
+              isNullable: true,
             },
             {
-              name: 'otpCodeHash',
+              name: 'otp_code_hash',
               type: 'varchar',
               isNullable: true,
             },
             {
-              name: 'otpCodeExpiry',
+              name: 'otp_code_expiry',
               type: 'timestamptz',
               isNullable: true,
             },
             {
-              name: 'isPhoneVerified',
+              name: 'is_email_verified',
               type: 'boolean',
               default: false,
             },
             {
-              name: 'isEmailVerified',
+              name: 'is_phone_verified',
               type: 'boolean',
               default: false,
             },
             {
-              name: 'passwordChangedAt',
+              name: 'password_changed_at',
               type: 'timestamptz',
               isNullable: true,
             },
             {
-              name: 'createdAt',
+              name: 'is_onboarded',
+              type: 'boolean',
+              default: false,
+            },
+            {
+              name: 'onboarding_date',
+              type: 'timestamptz',
+              isNullable: true,
+            },
+            {
+              name: 'fcm_token',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },

@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateBvnDataTable1936892715739 implements MigrationInterface {
-  private tableName = 'bvn_data';
+export class CreateAddressesTable1936892715747 implements MigrationInterface {
+  private tableName = 'addresses';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -18,18 +18,48 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               default: 'gen_random_uuid()',
             },
             {
-              name: 'user_id',
-              type: 'uuid',
-              isNullable: false,
-            },
-            {
-              name: 'bvn',
+              name: 'house_number',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'bvn_response',
-              type: 'json',
+              name: 'street_name',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'city',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'state',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'lga_code',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'zip_code',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'country_code',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'common_id',
+              type: 'uuid',
+              isNullable: false,
+            },
+            {
+              name: 'common_type',
+              type: 'varchar',
               isNullable: false,
             },
             {
@@ -49,16 +79,6 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               isNullable: true,
             },
           ],
-        }),
-      );
-
-      await queryRunner.createForeignKey(
-        this.tableName,
-        new TableForeignKey({
-          columnNames: ['user_id'],
-          referencedColumnNames: ['id'],
-          referencedTableName: 'users',
-          onDelete: 'CASCADE',
         }),
       );
     }

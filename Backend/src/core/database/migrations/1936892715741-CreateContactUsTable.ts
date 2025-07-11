@@ -15,7 +15,6 @@ export class CreateContactUsTable1936892715741 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {

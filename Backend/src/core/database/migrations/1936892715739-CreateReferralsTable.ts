@@ -15,7 +15,6 @@ export class CreateReferralsTable1936892715739 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
@@ -35,18 +34,18 @@ export class CreateReferralsTable1936892715739 implements MigrationInterface {
               isNullable: true,
             },
             {
-              name: 'createdAt',
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },

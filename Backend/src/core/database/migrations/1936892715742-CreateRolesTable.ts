@@ -1,7 +1,7 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateBvnDataTable1936892715739 implements MigrationInterface {
-  private tableName = 'bvn_data';
+export class CreateRolesTable1936892715742 implements MigrationInterface {
+  private tableName = 'roles';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -18,18 +18,13 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               default: 'gen_random_uuid()',
             },
             {
-              name: 'user_id',
-              type: 'uuid',
-              isNullable: false,
-            },
-            {
-              name: 'bvn',
+              name: 'name',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'bvn_response',
-              type: 'json',
+              name: 'description',
+              type: 'varchar',
               isNullable: false,
             },
             {
@@ -52,15 +47,12 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
         }),
       );
 
-      await queryRunner.createForeignKey(
-        this.tableName,
-        new TableForeignKey({
-          columnNames: ['user_id'],
-          referencedColumnNames: ['id'],
-          referencedTableName: 'users',
-          onDelete: 'CASCADE',
-        }),
-      );
+      // Insert default roles
+      await queryRunner.query(`
+        INSERT INTO roles (id, name, description) VALUES 
+        ('403e5c43-a8e1-42c4-b018-87260ce8ac1f', 'client', 'Regular client user'),
+        ('550e8400-e29b-41d4-a716-446655440000', 'admin', 'Administrator user')
+      `);
     }
   }
 

@@ -1,0 +1,13 @@
+export const firebaseAdminSettings = {
+        type: "service_account",
+        project_id: "trustfund-a9afc",
+        private_key_id: "7cfc20a79ff51fc690453ec5e1595a0e9ff246f3",
+        private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvEjI4dARoFNn1\n0HoK6s7cZjt3hn72owe/GWVSaknQQAcL/Jni4dZwOslyoCZwolFj7KLlIW9qRFFc\nB+WCwLteoTYTShxSLguZkEn+TvR/0xWSqWfjycubYFAvm2QseLjkRShUKcEsfaU+\nspEt7ECBevO66YPFt8o07np+3xBOwGcxlixLotJZc/rmaGPtesF+S4Y4BQCNKRGt\nmKg71cgk23GxaCUxNRQ8N5ZYSSYjBiO2bTUA8djB3JjHQCtJro8WlbTRLYaJN/2g\nyxUdfLUhx0PSddjeiLxOTS/IDw3r4cWwMX1c8CyugcocpzwsJMGmypS1CS7fcaEK\nl+rJOE/xAgMBAAECggEABlknIOrMkNteNLKdxUzyybVLj1vNOWtrm81rghW8ddin\nhMLQ7/QjXOwVy1I1OKD7KW/ej4dTCV//MQKQiwlq9e1Ltx75KE33AddUhowlg6fT\nZL8/txfleh2vxK0qYI4zWqQrGGOv93l6IywRlYAnTean5UGD06jkpD8YSibTqh5S\ntywihiNWvEW/hIUvuJBf3qKcV2QybEKqvHmRUx0hkZw9K4ZK2ekoyIHSGbw4WXBz\nYCQ8RAkjBum+2Hif9Uhf3QvqdWdRStznqyueBGpVTY6atFPcgjhcFq1k7iIXOcWi\nX2shuFgiU8QPoXgR0Rjo8Cq76am0R3N40n+4aA23AQKBgQDaih0bbaEvkWvYMnkH\nYqpDjEnQzr/YY0HLFj8UG9em6H0D4L787gDZx4sz8NpEJEEbEiSss/IBbAjPXzeZ\n5n04kYvg/23SvY2pAgNIjcjy5cD8fRc8zxdZngue9746Fl0C8FUVEginmkmXLyR8\nJ1KIbkuKpobi2DmSOssutY+fAQKBgQDNFJ0ctuPsoLpHvpyEB6Zb1gp2uOGILXLa\nZNJI+XdAudPn3ziXkSJ5LHrtZxh6k4EqzqyhuK/gRWBwpuMUrESckbTP7VLMhOA/\n+C5WzvdFh0zUgABH7q6WNdsz27LWji/B5vUpjXJRS2nPdGMKp128cNZy7j1cFSRo\nvNlh3KOg8QKBgBwS8AhM/g7hTIxad4fGWf8Rb44ecTC4F4SiV/oaVYrAhQbRgVd2\nr69KXgyPHUrxqVdz7jgtaaJbIYqaPcdMf7ubnu+JgK844JDcjFVuuWjSsQb+ftS1\n+dbuYanLQ6mso8gz3Yo2Zdw6CsgcK0CzwHt8R8IJAHz1r/ekC+P1OP0BAoGBAJhz\nMG/+DOUEfjWDHrqPLT2rmU+0FAO1NWHf/Oo+eEXnXf1KVLlnLGdDh4YfU3UbXbPC\nu1XlAukG6bAUf04I2WBCeFTxKNHcHQ+woFHrvKk08QoutQbECYikNHUSZplUTXAp\nDip7eXWxR9DtxgpPbED+6Iu7SmW/Wbd6W2aCLCkhAoGAGvlYY8aYSb/bdOTQ3I82\nNM8rBMqe2W38KNF0LBZSFCZDE/+eiKnCYLfOFu3K2eu0brEAAWIlmTchUfqPONHM\n7gk4ZzxqXFINQ2ojbebxEy1f5AhTLvSyyF1so7Ced9if7zilrNgfl/lBVbq843mf\n9WDydunLv6TgCrsDuK5w6m0=\n-----END PRIVATE KEY-----\n",
+        client_email: "firebase-adminsdk-fbsvc@trustfund-a9afc.iam.gserviceaccount.com",
+        client_id: "104853962983756675772",
+        auth_uri: "https://accounts.google.com/o/oauth2/auth",
+        token_uri: "https://oauth2.googleapis.com/token",
+        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+        client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40trustfund-a9afc.iam.gserviceaccount.com",
+        universe_domain: "googleapis.com"
+    }

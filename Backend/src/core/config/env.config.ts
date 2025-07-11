@@ -50,7 +50,10 @@ export const envConfig = {
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
   FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
+  FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID,
   FIREBASE_PENSION_CHANNEL: process.env.FIREBASE_PENSION_CHANNEL,
+  FIREBASE_SETTINGS: process.env.FIREBASE_SETTINGS,
 }
 
 export interface IEnvConfig {
@@ -103,7 +106,10 @@ export const envValidationSchema = Joi.object({
   FIREBASE_PROJECT_ID: Joi.string().required(),
   FIREBASE_CLIENT_EMAIL: Joi.string().required(),
   FIREBASE_PRIVATE_KEY: Joi.string().required(),
+  FIREBASE_PRIVATE_KEY_ID: Joi.string().optional(),
+  FIREBASE_CLIENT_ID: Joi.string().optional(),
   FIREBASE_PENSION_CHANNEL: Joi.string().required(),
+  FIREBASE_SETTINGS: Joi.any().required(),
 });
 
 // import * as dotenv from 'dotenv';

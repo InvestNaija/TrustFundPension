@@ -53,7 +53,7 @@ export class UserRoleService {
   async findOneAuthAdmin(id: string): Promise<UserRole | null> {
     try {
       const userRole = await this.userRoleRepository.findOne({ 
-        where: { userId: id, role: { name: 'admin' } }, 
+        where: { userId: id, role: { name: 'ADMIN' } }, 
         relations: [
         'role'
       ] 

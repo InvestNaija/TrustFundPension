@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class CreateNokTable1936892715742 implements MigrationInterface {
-  private tableName = 'noks';
+export class CreateFundTransfersTable1936892715745 implements MigrationInterface {
+  private tableName = 'fund_transfers';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -15,57 +15,51 @@ export class CreateNokTable1936892715742 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
-              name: 'userId',
+              name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
             {
-              name: 'title',
+              name: 'current_fund',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'first_name',
+              name: 'aspiring_fund',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'other_name',
+              name: 'is_approved',
+              type: 'boolean',
+              default: false,
+            },
+            {
+              name: 'approval_date',
+              type: 'timestamptz',
+              isNullable: true,
+            },
+            {
+              name: 'rejection_reason',
               type: 'varchar',
               isNullable: true,
             },
             {
-              name: 'surname',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'gender',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'phone',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'createdAt',
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },
@@ -76,7 +70,7 @@ export class CreateNokTable1936892715742 implements MigrationInterface {
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',

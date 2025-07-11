@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class CreateBvnDataTable1936892715739 implements MigrationInterface {
-  private tableName = 'bvn_data';
+export class CreateUserRoleTable1936892715744 implements MigrationInterface {
+  private tableName = 'user_role';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -23,13 +23,8 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               isNullable: false,
             },
             {
-              name: 'bvn',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'bvn_response',
-              type: 'json',
+              name: 'role_id',
+              type: 'uuid',
               isNullable: false,
             },
             {
@@ -52,12 +47,23 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
         }),
       );
 
+      // Add foreign key constraints
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
           columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
+          onDelete: 'CASCADE',
+        }),
+      );
+
+      await queryRunner.createForeignKey(
+        this.tableName,
+        new TableForeignKey({
+          columnNames: ['role_id'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'roles',
           onDelete: 'CASCADE',
         }),
       );

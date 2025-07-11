@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class CreateBvnDataTable1936892715739 implements MigrationInterface {
-  private tableName = 'bvn_data';
+export class CreateNotificationsTable1936892715748 implements MigrationInterface {
+  private tableName = 'notifications';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableExists = await queryRunner.hasTable(this.tableName);
@@ -18,19 +18,49 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
               default: 'gen_random_uuid()',
             },
             {
+              name: 'title',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'body',
+              type: 'text',
+              isNullable: false,
+            },
+            {
+              name: 'type',
+              type: 'enum',
+              enum: ['SYSTEM', 'TRANSACTION', 'SECURITY', 'MARKETING'],
+              default: "'SYSTEM'",
+              isNullable: false,
+            },
+            {
+              name: 'status',
+              type: 'enum',
+              enum: ['PENDING', 'SENT', 'FAILED'],
+              default: "'PENDING'",
+              isNullable: false,
+            },
+            {
               name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
             {
-              name: 'bvn',
+              name: 'fcm_token',
               type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'is_read',
+              type: 'boolean',
+              default: false,
               isNullable: false,
             },
             {
-              name: 'bvn_response',
-              type: 'json',
-              isNullable: false,
+              name: 'data',
+              type: 'varchar',
+              isNullable: true,
             },
             {
               name: 'created_at',
@@ -52,6 +82,7 @@ export class CreateBvnDataTable1936892715739 implements MigrationInterface {
         }),
       );
 
+      // Add foreign key constraint
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({

@@ -15,52 +15,56 @@ export class CreateEmployerTable1936892715741 implements MigrationInterface {
               name: 'id',
               type: 'uuid',
               isPrimary: true,
-              generationStrategy: 'uuid',
               default: 'gen_random_uuid()',
             },
             {
-              name: 'userId',
+              name: 'name',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'user_id',
               type: 'uuid',
               isNullable: false,
             },
             {
-              name: 'business',
+              name: 'rc_number',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'phone',
+              name: 'phone_number',
               type: 'varchar',
               isNullable: false,
             },
             {
-              name: 'type',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'rcno',
-              type: 'varchar',
-              isNullable: false,
-            },
-            {
-              name: 'first_appoint_date',
+              name: 'initial_date',
               type: 'date',
               isNullable: false,
             },
             {
-              name: 'createdAt',
+              name: 'current_date',
+              type: 'date',
+              isNullable: false,
+            },
+            {
+              name: 'nature_of_business',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'created_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'updatedAt',
+              name: 'updated_at',
               type: 'timestamptz',
               default: 'CURRENT_TIMESTAMP',
               onUpdate: 'CURRENT_TIMESTAMP',
             },
             {
-              name: 'deletedAt',
+              name: 'deleted_at',
               type: 'timestamptz',
               isNullable: true,
             },
@@ -71,7 +75,7 @@ export class CreateEmployerTable1936892715741 implements MigrationInterface {
       await queryRunner.createForeignKey(
         this.tableName,
         new TableForeignKey({
-          columnNames: ['userId'],
+          columnNames: ['user_id'],
           referencedColumnNames: ['id'],
           referencedTableName: 'users',
           onDelete: 'CASCADE',

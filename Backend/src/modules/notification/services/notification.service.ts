@@ -24,18 +24,37 @@ export class NotificationService implements OnModuleInit {
 
   async onModuleInit() {
     try {
+      // Use individual Firebase environment variables for better security
+      if (!envConfig.FIREBASE_PROJECT_ID || !envConfig.FIREBASE_CLIENT_EMAIL || !envConfig.FIREBASE_PRIVATE_KEY) {
+        throw new Error('Missing required Firebase environment variables');
+      }
+      
+      const serviceAccount = {
+        type: 'service_account',
+        project_id: envConfig.FIREBASE_PROJECT_ID,
+        private_key: envConfig.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Handle escaped newlines
+        client_email: envConfig.FIREBASE_CLIENT_EMAIL,
+        auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+        token_uri: 'https://oauth2.googleapis.com/token',
+        auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${envConfig.FIREBASE_CLIENT_EMAIL}`,
+        universe_domain: 'googleapis.com'
+      } as admin.ServiceAccount;
+      
+      // Add optional fields only if they exist
+      if (envConfig.FIREBASE_PRIVATE_KEY_ID) {
+        (serviceAccount as any).private_key_id = envConfig.FIREBASE_PRIVATE_KEY_ID;
+      }
+      if (envConfig.FIREBASE_CLIENT_ID) {
+        (serviceAccount as any).client_id = envConfig.FIREBASE_CLIENT_ID;
+      }
+      
+      const cerPath = admin.credential.cert(serviceAccount);
+      this.fcm = new FCM(cerPath);
       this.firebaseAdmin = admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: envConfig.FIREBASE_PROJECT_ID,
-          clientEmail: envConfig.FIREBASE_CLIENT_EMAIL,
-          privateKey: envConfig.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }),
+        credential: cerPath,
       });
-      this.fcm = new FCM({
-        projectId: envConfig.FIREBASE_PROJECT_ID,
-        clientEmail: envConfig.FIREBASE_CLIENT_EMAIL,
-        privateKey: envConfig.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      });
+      
       this.logger.log('Firebase Admin initialized successfully');
     } catch (error) {
       this.logger.error('Failed to initialize Firebase Admin:', error);
@@ -46,7 +65,7 @@ export class NotificationService implements OnModuleInit {
     if (!envConfig.FIREBASE_PENSION_CHANNEL) {
       throw new Error('FIREBASE_PENSION_CHANNEL environment variable is not configured');
     }
-    await this.subscribeToTopic({deviceToken: deviceToken, topic: envConfig.FIREBASE_PENSION_CHANNEL});
+    return this.subscribeToTopic({deviceToken: deviceToken, topic: envConfig.FIREBASE_PENSION_CHANNEL});
   }
 
   private async subscribeToTopic({deviceToken, topic}: {deviceToken: string, topic: string}) {
@@ -170,24 +189,13 @@ export class NotificationService implements OnModuleInit {
   }
 
   async sendNotificationToAllUsers(dto: CreateNotificationDto): Promise<void> {
-    const listUsersDto = new ListUsersDto();
-    listUsersDto.page = 1;
-    listUsersDto.limit = 1000;
-    
-    const response = await this.userService.listUsers(listUsersDto);
-    const users = response.data.data;
-    
-    const notifications = await Promise.all(
-      users.map(user => 
-        this.createNotification({
-          ...dto,
-          userId: user.id,
-          fcmToken: user.fcmToken,
-        })
-      )
-    );
-
-    await Promise.all(notifications.map(notification => this.sendNotification(notification)));
+    await this.sendNotificationToATopic({
+      notification: {
+        title: dto.title,
+        body: dto.body,
+      },
+      data: dto.data ? { data: dto.data } : undefined,
+    });
   }
 
   async getUserNotifications(userId: string): Promise<Notification[]> {

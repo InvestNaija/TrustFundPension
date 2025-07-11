@@ -50,8 +50,8 @@ export class CreateRolesTable1936892715742 implements MigrationInterface {
       // Insert default roles
       await queryRunner.query(`
         INSERT INTO roles (id, name, description) VALUES 
-        ('403e5c43-a8e1-42c4-b018-87260ce8ac1f', 'CLIENT', 'Regular client user'),
-        ('550e8400-e29b-41d4-a716-446655440000', 'ADMIN', 'Administrator user')
+        ('403e5c43-a8e1-42c4-b018-87260ce8ac1f', 'client', 'Regular client user'),
+        ('550e8400-e29b-41d4-a716-446655440000', 'admin', 'Administrator user')
       `);
     }
   }
